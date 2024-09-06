@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "417369954731",
+    "project_id": "doomchain-10d3c",
+    "storage_bucket": "doomchain-10d3c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417369954731:android:ac2c830b4fe136f8e89aee",
+        "android_client_info": {
+          "package_name": "com.example.doom_chain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "417369954731-l2j6muj36ql9g07b48brd9cr1tm0cjlk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.doom_chain",
+            "certificate_hash": "de164fd3ce66182f527a7d2c4241372d0b1591b6"
+          }
+        },
+        {
+          "client_id": "417369954731-47u8obgfer6nc176ib0qqet4g74djk51.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMEhSEe9PjeyOdVP6UgXYGUzCMv0l7syI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "417369954731-47u8obgfer6nc176ib0qqet4g74djk51.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "417369954731-s96fuahocb119u17ne6jnulcttl24krn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.doomChain"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

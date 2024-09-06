@@ -1,0 +1,371 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'dart:math';
+import 'package:fluttertoast/fluttertoast.dart';
+
+class CreateChainTagsPage extends StatefulWidget{
+
+  final void Function(String, Map<String, dynamic>?) changePageHeader;
+  final Map<String, dynamic>? addData;
+
+  CreateChainTagsPage({required this.changePageHeader, required this.addData});
+
+  @override
+  _CreateChainTagsPage createState() => _CreateChainTagsPage();
+}
+
+class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProviderStateMixin {
+
+  final TextEditingController _chainPiecesController = TextEditingController(text: '10');
+  late final AnimationController _animationControllerIcon;
+  late final Animation<double> _animationIcon;
+
+  bool randomOrFriends = true;
+  bool allOrPartChain = true;
+  int chainPieces = 10;
+
+  List<String> tagList = List.empty(growable: true);
+
+  @override
+  void initState(){
+    super.initState();
+
+    if(widget.addData != null && widget.addData!['randomOrFriends'] != null){
+      randomOrFriends = widget.addData!['randomOrFriends'];
+      allOrPartChain = widget.addData!['allOrPartChain'];
+      chainPieces = widget.addData!['chainPieces'];
+
+      _chainPiecesController.text = chainPieces.toString();
+    }
+
+    _animationControllerIcon = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1)
+    );
+
+    _animationIcon = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationControllerIcon, curve: Curves.easeOut));
+  }
+
+  @override
+  Widget build(BuildContext context){
+
+    final double width = MediaQuery.of(context).size.width;
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if(!didPop){
+          if(widget.addData != null){
+            widget.addData!['randomOrFriends'] = randomOrFriends;
+            widget.addData!['allOrPartChain'] = allOrPartChain;
+            widget.addData!['chainPieces'] = chainPieces;
+            
+            if(widget.addData!['categoryType'] == 0){
+              widget.changePageHeader('New chain (story)', widget.addData);
+            }
+            
+            if(widget.addData!['categoryType'] == 1){
+              widget.changePageHeader('New chain (gossip)', widget.addData);
+            }
+
+            if(widget.addData!['categoryType'] == 2){
+              widget.changePageHeader('New chain (challange)', widget.addData);
+            }
+          }
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(width * 0.01),
+                    child: Text('This will be send to either one of your random friends or a stranger', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: width * 0.05, top: width * 0.075, bottom: width * 0.075),
+                        child: Material(
+                          color: randomOrFriends ? widget.addData!['baseCategoryColor'].withOpacity(0.75) : Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.01),
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(15)),
+                              onTap: () async {
+                                setState(() {
+                                  randomOrFriends = true;
+                                });
+                              },
+                              splashColor: randomOrFriends ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.01),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(width * 0.01),
+                                      child: Image.asset('assets/image/random.png', width: width * 0.12, height: width * 0.12, color: randomOrFriends ? Colors.white : Colors.black87),
+                                    ),
+                                    Text('Random', style: GoogleFonts.nunito(fontSize: width * 0.04, color: randomOrFriends ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                  ],
+                                )
+                              )
+                            ),
+                          )
+                        )
+                      ),
+                      
+                      Padding(
+                        padding: EdgeInsets.only(left: width * 0.05, top: width * 0.075, bottom: width * 0.075),
+                        child: Material(
+                          color: !randomOrFriends ? widget.addData!['baseCategoryColor'].withOpacity(0.75) : Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.01),
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(15)),
+                              onTap: () async {
+                                setState(() {
+                                  randomOrFriends = false;
+                                });
+                              },
+                              splashColor: !randomOrFriends ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.01),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(width * 0.01),
+                                      child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12, color: !randomOrFriends ? Colors.white : Colors.black87),
+                                    ),
+                                    Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !randomOrFriends ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                  ],
+                                )
+                              )
+                            ),
+                          )
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              )
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(width * 0.01),
+                    child: Text('Contributors can see either what the person before did or the whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: width * 0.05, top: width * 0.075, bottom: width * 0.075),
+                        child: Material(
+                          color: allOrPartChain ? widget.addData!['baseCategoryColor'].withOpacity(0.75) : Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.01),
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(15)),
+                              onTap: () async {
+                                setState(() {
+                                  allOrPartChain = true;
+                                });
+                              },
+                              splashColor: allOrPartChain ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.01),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(width * 0.01),
+                                      child: Image.asset('assets/image/one.png', width: width * 0.12, height: width * 0.12, color: allOrPartChain ? Colors.white : Colors.black87),
+                                    ),
+                                    Text('Last piece', style: GoogleFonts.nunito(fontSize: width * 0.04, color: allOrPartChain ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                  ],
+                                )
+                              )
+                            ),
+                          )
+                        )
+                      ),
+                      
+                      Padding(
+                        padding: EdgeInsets.only(left: width * 0.05, top: width * 0.075, bottom: width * 0.075),
+                        child: Material(
+                          color: !allOrPartChain ? widget.addData!['baseCategoryColor'].withOpacity(0.75) : Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.01),
+                            child: InkWell(
+                              borderRadius: const BorderRadius.all(Radius.circular(15)),
+                              onTap: () async {
+                                setState(() {
+                                  allOrPartChain = false;
+                                });
+                              },
+                              splashColor: !allOrPartChain ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.01),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(width * 0.01),
+                                      child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: !allOrPartChain ? Colors.white : Colors.black87),
+                                    ),
+                                    Text('Whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !allOrPartChain ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                  ],
+                                )
+                              )
+                            ),
+                          )
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ), 
+
+            Padding(
+              padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(width * 0.01),
+                    child: Text('Number of people to contribute', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if(chainPieces > 1){
+                            setState(() {
+                              chainPieces--;
+                              _chainPiecesController.text = chainPieces.toString();
+                            });
+                          }
+                        }, 
+                        icon: Image.asset('assets/image/minus.png', width: width * 0.1, height: width * 0.1)
+                      ),
+
+                      Padding(
+                        padding: EdgeInsets.all(width * 0.05),
+                        child: AnimatedContainer(
+                          duration: const Duration(seconds: 2),
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.00),
+                            child: SizedBox(
+                              width: width * 0.1,
+                              height: width * 0.05,
+                              child: TextField(
+                                controller: _chainPiecesController,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold),
+                              )
+                            ),
+                          )
+                        )
+                      ),
+
+                      IconButton(
+                        onPressed: () {
+                          if(chainPieces < 20){
+                            setState(() {
+                              chainPieces++;
+                              _chainPiecesController.text = chainPieces.toString();
+                            });
+                          }
+                        }, 
+                        icon: Image.asset('assets/image/add.png', width: width * 0.1, height: width * 0.1)
+                      )
+                    ],
+                  )
+                ]
+              )
+            ),
+
+            Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(width * 0.05),
+                  child: Material(
+                    color: widget.addData!['baseCategoryColor'],
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15))
+                    ),
+                    child: InkWell(
+                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                      onTap: () async {
+
+                        if(widget.addData != null){
+                          widget.addData!['randomOrFriends'] = randomOrFriends;
+                          widget.addData!['allOrPartChain'] = allOrPartChain;
+                          widget.addData!['chainPieces'] = chainPieces;
+
+                          if(widget.addData!['categoryType'] == 0){
+                          widget.changePageHeader('New chain (tags)', widget.addData);
+                          }
+                          
+                          if(widget.addData!['categoryType'] == 1){
+                            widget.changePageHeader('New chain (gossip tags)', widget.addData);
+                          }
+
+                          if(widget.addData!['categoryType'] == 2){
+                            widget.changePageHeader('New chain (challange tags)', widget.addData);
+                          }
+                        }
+                      }, 
+                      splashColor: widget.addData!['splashColor'],
+                      child: Padding(
+                        padding: EdgeInsets.all(width * 0.025),
+                        child: Text('CONTINUE', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))
+                      )
+                    )
+                  )
+                ),
+
+                Text('> to adding tags <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold))
+              ],
+            )
+          ],
+        )
+      )
+    );
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _chainPiecesController.dispose();
+    _animationControllerIcon.dispose();
+  }
+}
