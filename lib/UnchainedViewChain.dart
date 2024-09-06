@@ -170,7 +170,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     }
 
     allWidgetContrib.add(
-      SizedBox(height: widget.width * 0.05, width: widget.width)
+      SizedBox(height: widget.width * (0.05 + 0.32), width: widget.width)
     );
 
     _checkForLiked();
@@ -254,342 +254,365 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         child: Scaffold(
           body: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: widget.width * 0.05, right: widget.width * 0.025, top: widget.width * 0.025, bottom: widget.width * 0.025),
-                child: FadeTransition(
-                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(widget.width * 0.025),
-                        child: Image.asset(widget.categoryAssetPath, fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12),
-                      ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200]
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: widget.width * 0.05, right: widget.width * 0.025, top: widget.width * 0.025, bottom: widget.width * 0.025),
+                  child: FadeTransition(
+                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(widget.width * 0.025),
+                          child: Image.asset(widget.categoryAssetPath, fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12),
+                        ),
 
-                      Padding(
-                        padding: EdgeInsets.all(widget.width * 0.025),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(widget.width * 0.01),
-                              child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                            ),
+                        Padding(
+                          padding: EdgeInsets.all(widget.width * 0.025),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(widget.width * 0.01),
+                                child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                              ),
 
-                            Padding(
-                              padding: EdgeInsets.all(widget.width * 0.01),
-                              child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                            )
-                          ],
-                        )
-                      ),
-
-                      const Spacer(),
-
-                      FadeTransition(
-                        opacity:Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerButtonFade, curve: Curves.easeOut)),
-                        child: Visibility(
-                          visible: alreadyExtended,
-                          child: Padding(
-                            padding: EdgeInsets.all(widget.width * 0.025),
-                            child: !chainSentForUpload ? IconButton(
-                              onPressed: () {
-
-                                if(_textController.text.trim().isEmpty){
-                                  Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
-                                  return;
-                                }
-
-                                _animationControllerSlideDown.forward();
-                                uploadExtendData(false);
-                              }, 
-                              icon: Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12)
-                            ) : CircularProgressIndicator(color: widget.categoryColor)
+                              Padding(
+                                padding: EdgeInsets.all(widget.width * 0.01),
+                                child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                              )
+                            ],
                           )
-                        )
-                      ),
-                    ],
+                        ),
+                      ],
+                    )
                   )
                 )
               ),
 
               Divider(
                 height: 1,
-                color: Colors.grey[200],
+                color: Colors.grey[300],
               ),
 
               Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    children: allWidgetContrib
-                  ),
-                ),
-              ),
-
-              Divider(
-                height: 1,
-                color: Colors.grey[200]
-              ),
-
-              Visibility(
-                visible: !widget.calledByExplore,
-                child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.0)).animate(CurvedAnimation(parent: _animationControllerSlideDown, curve: Curves.easeOut)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-
-                        Expanded(
-                          child: SlideTransition(
-                          position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
-                            child: Padding(
-                              padding: EdgeInsets.all(widget.width * 0.05),
-                              child: Material(
-                                color: widget.categoryColor,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(15))
-                                ),
-                                child: InkWell(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                  onTap: () async {
-                                    final List<CameraDescription> cameraList;
-                                    final CameraDescription camera;
-                                    CameraController _cameraController;
-
-                                    cameraList = await availableCameras();
-                                    camera = cameraList.first;
-
-                                    _cameraController = CameraController(
-                                      camera, 
-                                      ResolutionPreset.max,
-                                    );
-
-                                    await _cameraController.initialize();
-
-                                    await _cameraController.setZoomLevel(1.5);
-
-                                    Map<String, dynamic> addData = Map<String, dynamic>();
-                                    if(widget.categoryName == 'Story'){
-                                      addData = {
-                                        'categoryType' : 0
-                                      };
-                                    }
-                                    else if(widget.categoryName == 'Gossip'){
-                                      addData = {
-                                        'categoryType' : 1
-                                      };
-                                    }
-                                    else if(widget.categoryName == 'Chainllange'){
-                                      addData = {
-                                        'categoryType' : 2
-                                      };
-                                    }
-
-                                    addData.addAll({
-                                      'allOrPartChain' : widget.chainMap['allPieces'],
-                                      'randomOrFriends' : widget.chainMap['random'],
-                                      'baseCategoryColor' : widget.categoryColor,
-                                      'splashColor' : widget.categoryColor
-                                    });
-
-                                    if(mounted){
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateChainCamera(
-                                        cameraList: cameraList, 
-                                        camera: camera, 
-                                        cameraBackground: CameraPreview(_cameraController), 
-                                        cameraController: _cameraController, 
-                                        addData: addData, 
-                                        changePageHeader: widget.changePageHeader, 
-                                        isUserCreatingNewChain: false,
-                                        callBackAfterPhoto: callBackAfterPhoto,
-                                      )));
-                                    }
-                                  }, 
-                                  splashColor: Colors.grey,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(widget.width * 0.025),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(right: widget.width * 0.025),
-                                          child: Image.asset(alreadyExtended ? 'assets/image/camera.png' : 'assets/image/logo.png', width: widget.width * 0.075, height: widget.width * 0.075, color: Colors.white),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(widget.width * 0.01),
-                                          child: Text(buttonText, style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                                        )
-                                      ],
-                                    )
-                                  )
-                                )
-                              )
-                            )
-                          )
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          children: allWidgetContrib
                         ),
+                      )
+                    ),
 
-                        Expanded(
-                          child: SlideTransition(
-                            position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
-                            child: Padding(
-                              padding: EdgeInsets.all(widget.width * 0.05),
-                              child: Material(
-                                color: widget.categoryColor,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(15))
-                                ),
-                                child: InkWell(
-                                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                  onTap: () async {
-                                    uploadExtendData(true);
-                                  }, 
-                                  splashColor: Colors.grey,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(widget.width * 0.025),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(right: widget.width * 0.025),
-                                          child: Image.asset('assets/image/skip.png', width: widget.width * 0.075, height: widget.width * 0.075, color: Colors.white),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(widget.width * 0.01),
-                                          child: Text('Skip', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Visibility(
+                        visible: widget.calledByExplore,
+                        child: SlideTransition(
+                          position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.0)).animate(CurvedAnimation(parent: _animationControllerSlideDown, curve: Curves.easeOut)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.grey[200]!, Colors.grey[200]!]
+                                )
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+
+                                  Expanded(
+                                    child: SlideTransition(
+                                    position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        child: Material(
+                                          color: widget.categoryColor,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(15))
+                                          ),
+                                          child: InkWell(
+                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                            onTap: () async {
+                                              if(liked){
+                                                setState(() {
+                                                  likesNumber--;
+                                                  liked = false;
+                                                });
+                                                await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).delete();
+                                              }
+                                              else{
+                                                setState(() {
+                                                  likesNumber++;
+                                                  liked = true;
+                                                });
+                                                await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).set({
+                                                  'categoryName' : widget.categoryName, 
+                                                  'chainNationality' : widget.chainMap['chainNationality']
+                                                });
+                                              }
+
+                                              await widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainMap['chainNationality']).doc(widget.chainId).update({
+                                                'likes' : likesNumber
+                                              });
+                                            }, 
+                                            splashColor: Colors.grey,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(widget.width * 0.025),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(right: widget.width * 0.025),
+                                                    child: Image.asset('assets/image/star.png', width: widget.width * 0.075, height: widget.width * 0.075, color: liked ? Colors.white : Colors.transparent),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(widget.width * 0.01),
+                                                    child: Text('Like ($likesNumber)', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                                  )
+                                                ],
+                                              )
+                                            )
+                                          )
                                         )
-                                      ]
+                                      )
+                                    )
+                                  ),
+
+                                  Expanded(
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        child: Material(
+                                          color: widget.categoryColor,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(15))
+                                          ),
+                                          child: InkWell(
+                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                            onTap: () async {
+                                              if(saved){
+                                                setState(() {
+                                                  saved = false;
+                                                });
+                                                await widget.firebase.collection('UserDetails').doc(widget.userId).collection('SavedChains${widget.categoryName}').doc(widget.chainId).delete();
+                                              }
+                                              else{
+                                                setState(() {
+                                                  saved = true;
+                                                });
+                                                await widget.firebase.collection('UserDetails').doc(widget.userId).collection('SavedChains${widget.categoryName}').doc(widget.chainId).set({
+                                                  'categoryName' : widget.categoryName, 
+                                                  'chainNationality' : widget.chainMap['chainNationality']
+                                                });
+                                              }
+                                            }, 
+                                            splashColor: Colors.grey,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(widget.width * 0.025),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(right: widget.width * 0.025),
+                                                    child: Image.asset('assets/image/save.png', width: widget.width * 0.075, height: widget.width * 0.075, color: saved ? Colors.white : Colors.transparent),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(widget.width * 0.01),
+                                                    child: Text('Save', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                                  )
+                                                ],
+                                              )
+                                            )
+                                          )
+                                        )
+                                      )
                                     )
                                   )
-                                )
-                              )
+                                ],
                             )
                           )
                         )
-                      ],
-                    )
-                )
-              ),
+                      )
+                    ),
 
-              Visibility(
-                visible: widget.calledByExplore,
-                child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.0)).animate(CurvedAnimation(parent: _animationControllerSlideDown, curve: Curves.easeOut)),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-
-                          Expanded(
-                            child: SlideTransition(
-                            position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
-                              child: Padding(
-                                padding: EdgeInsets.all(widget.width * 0.05),
-                                child: Material(
-                                  color: widget.categoryColor,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(15))
-                                  ),
-                                  child: InkWell(
-                                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                    onTap: () async {
-                                      if(liked){
-                                        setState(() {
-                                          likesNumber--;
-                                          liked = false;
-                                        });
-                                        await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).delete();
-                                      }
-                                      else{
-                                        setState(() {
-                                          likesNumber++;
-                                          liked = true;
-                                        });
-                                        await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).set({
-                                          'categoryName' : widget.categoryName, 
-                                          'chainNationality' : widget.chainMap['chainNationality']
-                                        });
-                                      }
-
-                                      await widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainMap['chainNationality']).doc(widget.chainId).update({
-                                        'likes' : likesNumber
-                                      });
-                                    }, 
-                                    splashColor: Colors.grey,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(widget.width * 0.025),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(right: widget.width * 0.025),
-                                            child: Image.asset('assets/image/star.png', width: widget.width * 0.075, height: widget.width * 0.075, color: liked ? Colors.white : Colors.transparent),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(widget.width * 0.01),
-                                            child: Text('Like ($likesNumber)', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                                          ),
-                                        ],
-                                      )
-                                    )
-                                  )
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Visibility(
+                      visible: !widget.calledByExplore,
+                        child: SlideTransition(
+                          position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.0)).animate(CurvedAnimation(parent: _animationControllerSlideDown, curve: Curves.easeOut)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.grey[200]!, Colors.grey[200]!]
                                 )
-                              )
-                            )
-                          ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
 
-                          Expanded(
-                            child: SlideTransition(
-                              position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
-                              child: Padding(
-                                padding: EdgeInsets.all(widget.width * 0.05),
-                                child: Material(
-                                  color: widget.categoryColor,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(15))
-                                  ),
-                                  child: InkWell(
-                                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                    onTap: () async {
-                                      if(saved){
-                                        setState(() {
-                                          saved = false;
-                                        });
-                                        await widget.firebase.collection('UserDetails').doc(widget.userId).collection('SavedChains${widget.categoryName}').doc(widget.chainId).delete();
-                                      }
-                                      else{
-                                        setState(() {
-                                          saved = true;
-                                        });
-                                        await widget.firebase.collection('UserDetails').doc(widget.userId).collection('SavedChains${widget.categoryName}').doc(widget.chainId).set({
-                                          'categoryName' : widget.categoryName, 
-                                          'chainNationality' : widget.chainMap['chainNationality']
-                                        });
-                                      }
-                                    }, 
-                                    splashColor: Colors.grey,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(widget.width * 0.025),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(right: widget.width * 0.025),
-                                            child: Image.asset('assets/image/save.png', width: widget.width * 0.075, height: widget.width * 0.075, color: saved ? Colors.white : Colors.transparent),
+                                  Expanded(
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        child: Material(
+                                          color: widget.categoryColor,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(15))
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.all(widget.width * 0.01),
-                                            child: Text('Save', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                          child: InkWell(
+                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                            onTap: () async {
+                                              final List<CameraDescription> cameraList;
+                                              final CameraDescription camera;
+                                              CameraController _cameraController;
+
+                                              cameraList = await availableCameras();
+                                              camera = cameraList.first;
+
+                                              _cameraController = CameraController(
+                                                camera, 
+                                                ResolutionPreset.max,
+                                              );
+
+                                              await _cameraController.initialize();
+
+                                              await _cameraController.setZoomLevel(1.5);
+
+                                              Map<String, dynamic> addData = Map<String, dynamic>();
+                                              if(widget.categoryName == 'Story'){
+                                                addData = {
+                                                  'categoryType' : 0
+                                                };
+                                              }
+                                              else if(widget.categoryName == 'Gossip'){
+                                                addData = {
+                                                  'categoryType' : 1
+                                                };
+                                              }
+                                              else if(widget.categoryName == 'Chainllange'){
+                                                addData = {
+                                                  'categoryType' : 2
+                                                };
+                                              }
+
+                                              addData.addAll({
+                                                'allOrPartChain' : widget.chainMap['allPieces'],
+                                                'randomOrFriends' : widget.chainMap['random'],
+                                                'baseCategoryColor' : widget.categoryColor,
+                                                'splashColor' : widget.categoryColor
+                                              });
+
+                                              if(mounted){
+                                                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateChainCamera(
+                                                  cameraList: cameraList, 
+                                                  camera: camera, 
+                                                  cameraBackground: CameraPreview(_cameraController), 
+                                                  cameraController: _cameraController, 
+                                                  addData: addData, 
+                                                  changePageHeader: widget.changePageHeader, 
+                                                  isUserCreatingNewChain: false,
+                                                  callBackAfterPhoto: callBackAfterPhoto,
+                                                )));
+                                              }
+                                            }, 
+                                            splashColor: Colors.grey,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(widget.width * 0.025),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(widget.width * 0.01),
+                                                    child: Text(buttonText, style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                                  ),
+                                                  Image.asset(alreadyExtended ? 'assets/image/camera.png' : 'assets/image/logo.png', width: widget.width * 0.075, height: widget.width * 0.075, color: Colors.white),
+                                                ],
+                                              )
+                                            )
                                           )
-                                        ],
+                                        )
+                                      )
+                                    )
+                                  ),
+
+                                  Visibility(
+                                    visible: alreadyExtended,
+                                    child: FadeTransition(
+                                      opacity:Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerButtonFade, curve: Curves.easeOut)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.0),
+                                        child: !chainSentForUpload ? IconButton(
+                                          onPressed: () {
+
+                                            if(_textController.text.trim().isEmpty){
+                                              Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                              return;
+                                            }
+
+                                            _animationControllerSlideDown.forward();
+                                            uploadExtendData(false);
+                                          }, 
+                                          icon: Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12)
+                                        ) : CircularProgressIndicator(color: widget.categoryColor)
+                                      )
+                                    )
+                                  ),
+
+                                  Expanded(
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        child: Material(
+                                          color: widget.categoryColor,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(15))
+                                          ),
+                                          child: InkWell(
+                                            borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                            onTap: () async {
+                                              uploadExtendData(true);
+                                            }, 
+                                            splashColor: Colors.grey,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(widget.width * 0.025),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(widget.width * 0.01),
+                                                    child: Text('SKIP', style: GoogleFonts.nunito(fontSize: widget.width * 0.045, color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                                  ),
+                                                  Image.asset('assets/image/skip.png', width: widget.width * 0.075, height: widget.width * 0.075, color: Colors.white)
+                                                ]
+                                              )
+                                            )
+                                          )
+                                        )
                                       )
                                     )
                                   )
-                                )
+                                ],
                               )
                             )
-                          )
-                        ],
+                        )
+                      )
                     )
-                  )
+                  ],
+                ),
               )
             ],
           ),
@@ -710,6 +733,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
       if(alreadyExtended){
         allWidgetContrib.remove(allWidgetContrib.last);
+        allWidgetContrib.remove(allWidgetContrib.last);
       }
       else{
         alreadyExtended = true;
@@ -756,9 +780,16 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         getExtentChainContainer(photoPath, hasImage)
       );
 
-      WidgetsBinding.instance.addPostFrameCallback((_) { 
-        scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.easeOut);
-      });
+      allWidgetContrib.add(
+        SizedBox(
+          width: widget.width,
+          height: widget.width * (0.05 + 0.32),
+        )
+      );
+
+      // WidgetsBinding.instance.addPostFrameCallback((_) { 
+      //   scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.easeOut);
+      // });
 
       _textController.text = extendTextCopy;
     });
@@ -769,7 +800,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
   Widget _createWidgetContrib(int index, List<String> contributor, bool hasImage, double widgetTopPadding, double widgetBottomPadding) {
     return Padding(
-      padding: EdgeInsets.only(left: widget.width * 0.15, right: widget.width * 0.15, top: widgetTopPadding, bottom: widgetBottomPadding),
+      padding: EdgeInsets.only(left: widget.width * 0.1, right: widget.width * 0.1, top: widgetTopPadding, bottom: widgetBottomPadding),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: AnimatedContainer(
@@ -937,7 +968,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
   Widget getExtentChainContainer(String? imagePath, bool hasImage){
     return Padding(
-      padding: EdgeInsets.only(left: widget.width * 0.2, right: widget.width * 0.2, bottom: widget.width * 0.075),
+      padding: EdgeInsets.only(left: widget.width * 0.1, right: widget.width * 0.1, bottom: widget.width * 0.075),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: AnimatedContainer(

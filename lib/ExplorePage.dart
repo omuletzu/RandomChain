@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,6 +42,11 @@ class _ExplorePage extends State<ExplorePage>{
 
   int totalNumberOfChains = 0;
 
+  List<UnchainedElement> searchingResults = [];
+  bool searchingMode = false;
+  bool searchingHasElements = false;
+  bool searchFinished = false;
+
   Random random = Random();
 
   @override
@@ -55,6 +61,7 @@ class _ExplorePage extends State<ExplorePage>{
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           
@@ -70,12 +77,6 @@ class _ExplorePage extends State<ExplorePage>{
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                     borderSide: BorderSide(width: 2.0),
                   ),
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-
-                    },
-                    child: const Icon(Icons.search),
-                  ),
                   focusColor: const Color.fromARGB(255, 30, 144, 255),
                   label: Center(
                     child: Text(
@@ -87,7 +88,20 @@ class _ExplorePage extends State<ExplorePage>{
                 ),
                 
                 textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold)
+                style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold),
+                onChanged: (value) {
+                  if(value.isEmpty){
+                    setState(() {
+                      searchingMode = false;
+                    });
+                  }
+                  else{
+                    setState(() {
+                      _searchByTag(value.toLowerCase().trim());
+                      searchingMode = true;
+                    });
+                  }
+                },
               )
             ),
           ),
@@ -97,7 +111,8 @@ class _ExplorePage extends State<ExplorePage>{
             color: Colors.grey[200],
           ),
 
-          hasCheckedForExistingChains ?
+          !searchingMode 
+            ? hasCheckedForExistingChains ?
             (!existingChains 
               ? Expanded(
                 child: Center(
@@ -117,7 +132,30 @@ class _ExplorePage extends State<ExplorePage>{
                 child: Center(
                   child: CircularProgressIndicator(),
                 ),
-              ),
+              )
+          : searchFinished ?
+            (
+              searchingHasElements ?
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    children: searchingResults
+                  )
+                )
+              )
+              : Expanded(
+                child: Center(
+                  child: Text('No chains found :(', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                ),
+              )
+            )
+            : const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
         ],
       ),
     );
@@ -163,6 +201,49 @@ class _ExplorePage extends State<ExplorePage>{
         hasCheckedForExistingChains = true;
       });
     }
+  }
+
+  void _searchByTag(String tagToSearch) async {
+
+    setState(() {
+      searchFinished = false;
+      searchingHasElements = false;
+    });
+
+    searchingResults.clear();
+    List<UnchainedElement> tempSearchingResults = [];
+
+    DocumentSnapshot searchingDocuments = await _firebase.collection('ChainTags').doc(tagToSearch).get();
+
+    if(searchingDocuments.exists){
+      for(var mapEntry in (searchingDocuments.data() as Map<String, dynamic>).entries){
+
+        List<dynamic> chainMiniDetails = jsonDecode(mapEntry.value);
+        
+        Map<String, dynamic> chainDetails = (await _firebase.collection('FinishedChains').doc(chainMiniDetails[0]).collection(chainMiniDetails[1]).doc(mapEntry.key).get()).data() as Map<String, dynamic>;
+
+        tempSearchingResults.add(
+          UnchainedElement(
+            userId: widget.exploreData!['userId'], 
+            firebase: _firebase, 
+            storage: _storage, 
+            calledByExplore: true, 
+            chainIdAndCategoryName: Pair(first: mapEntry.key, second: chainMiniDetails[0]), 
+            chainData: chainDetails, 
+            changePageHeader: widget.changePageHeader!, 
+            removeIndexFromWidgetList: () {})
+        );
+      };
+      
+      setState(() {
+        searchingHasElements = true;
+      });
+    }
+
+    setState(() {
+      searchFinished = true;
+      searchingResults.addAll(tempSearchingResults);
+    });
   }
 
 

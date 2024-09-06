@@ -242,76 +242,109 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
             ),
 
             Expanded(
-              child: FadeTransition(
-                opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacity, curve: Curves.easeOut)),
-                child: currentPage,
-              )
-            ),
-
-            Padding(
-              padding: EdgeInsets.only(top: width * 0.05, bottom: width * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
                 children: [
-                  FadeTransition(
-                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconExplore, curve: Curves.easeOut)),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
-                      child: IconButton(
-                        onPressed: () {
-                          changePageHeader('Explore', null);
-                          animateOpacity(_animationOpacityIconExplore);
-                        }, 
-                        icon: Image.asset('assets/image/explore.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                  Align(
+                    alignment: Alignment.center,
+                    child: FadeTransition(
+                      opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacity, curve: Curves.easeOut)),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: currentPage
+                          ),
+
+                          Visibility(
+                            visible: unchainedPage,
+                              child: SizedBox(
+                                height: width * 0.32,
+                                width: width,
+                              ),
+                            )
+                        ],
                       ),
                     )
                   ),
 
-                  FadeTransition(
-                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconUnchained, curve: Curves.easeOut)),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
-                      child: IconButton(
-                        onPressed: () {
-                          changePageHeader('Unchained', null);
-                          animateOpacity(_animationOpacityIconUnchained);
-                        }, 
-                        icon: Image.asset('assets/image/newchain.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.white, Colors.white]
+                        )
                       ),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: width * 0.05, bottom: width * 0.05),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            FadeTransition(
+                              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconExplore, curve: Curves.easeOut)),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
+                                child: IconButton(
+                                  onPressed: () {
+                                    changePageHeader('Explore', null);
+                                    animateOpacity(_animationOpacityIconExplore);
+                                  }, 
+                                  icon: Image.asset('assets/image/explore.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                ),
+                              )
+                            ),
+
+                            FadeTransition(
+                              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconUnchained, curve: Curves.easeOut)),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
+                                child: IconButton(
+                                  onPressed: () {
+                                    changePageHeader('Unchained', null);
+                                    animateOpacity(_animationOpacityIconUnchained);
+                                  }, 
+                                  icon: Image.asset('assets/image/newchain.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                ),
+                              )
+                            ),
+
+                            FadeTransition(
+                              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconFriends, curve: Curves.easeOut)),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
+                                child: IconButton(
+                                  onPressed: () {
+                                    changePageHeader('Friends', null);
+                                    animateOpacity(_animationOpacityIconFriends);
+                                  }, 
+                                  icon: Image.asset('assets/image/friends.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                ),
+                              )
+                            ),
+
+                            FadeTransition(
+                              opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconProfile, curve: Curves.easeOut)),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
+                                child: IconButton(
+                                  onPressed: () {
+                                    changePageHeader('Profile', {
+                                      'userId' : widget.phoneOrEmail,
+                                    });
+                                    animateOpacity(_animationOpacityIconProfile);
+                                  }, 
+                                  icon: Image.asset('assets/image/profile.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                ),
+                              )
+                            )
+                          ],
+                        ),
+                      )
                     )
                   ),
-
-                  FadeTransition(
-                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconFriends, curve: Curves.easeOut)),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
-                      child: IconButton(
-                        onPressed: () {
-                          changePageHeader('Friends', null);
-                          animateOpacity(_animationOpacityIconFriends);
-                        }, 
-                        icon: Image.asset('assets/image/friends.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
-                      ),
-                    )
-                  ),
-
-                  FadeTransition(
-                    opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacityIconProfile, curve: Curves.easeOut)),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
-                      child: IconButton(
-                        onPressed: () {
-                          changePageHeader('Profile', {
-                            'userId' : widget.phoneOrEmail,
-                          });
-                          animateOpacity(_animationOpacityIconProfile);
-                        }, 
-                        icon: Image.asset('assets/image/profile.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
-                      ),
-                    )
-                  )
                 ],
-              ),
+              )
             )
           ],
         ),
@@ -672,7 +705,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
         setState(() {
           topTitleColor = const Color.fromARGB(255, 102, 0, 255);
-          unchainedPage = false;
         });
 
       case 'New chain (category)' :
@@ -681,7 +713,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
         setState(() {
           topTitleColor = const Color.fromARGB(255, 102, 0, 255);
-          unchainedPage = false;
         });
 
       case 'New chain (details)' :

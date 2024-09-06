@@ -250,11 +250,15 @@ class CreateChainCamera extends StatefulWidget{
     });
   }
 
-  static void updateGlobalTagList(List<String> tagList, String chainId, String categoryName, String chainNationality, FirebaseFirestore firebase) {
-    for(String tag in tagList){
-      firebase.collection('SpecialChains').doc('ChainTags').collection(tag).doc(chainId).set({
-        'categoryName' : categoryName,
-        'chainNationality' : chainNationality
+  static void updateGlobalTagList(List<String> tagList, String chainId, String categoryName, String chainNationality, FirebaseFirestore firebase) async {
+
+    await firebase.collection('ChainTags').doc(tagList.first.toLowerCase().trim()).set({
+      chainId : jsonEncode([categoryName, chainNationality])
+    });
+
+    for(int i = 1; i < tagList.length; i++){
+      firebase.collection('ChainTags').doc(tagList[i].toLowerCase().trim()).update({
+        chainId : jsonEncode([categoryName, chainNationality])
       });
     }
   }

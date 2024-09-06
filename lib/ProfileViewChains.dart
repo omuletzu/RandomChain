@@ -112,7 +112,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.all(width * 0.025),
+            padding: EdgeInsets.all(width * 0.05),
             child: Text('Select a chain category from below',
                 style: GoogleFonts.nunito(
                     fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold),
@@ -140,42 +140,6 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
           _buildChainList(0, width, storySelected),
           _buildChainList(1, width, gossipSelected),
           _buildChainList(2, width, chainllangeSelected)
-
-          // Expanded(
-          //   child: FutureBuilder<List<UnchainedElement>>(
-          //     future: getCurrentCategoryByIndex(index),
-          //     builder: (context, snapshot) {
-          //       if (snapshot.connectionState == ConnectionState.waiting) {
-          //         return Center(child: CircularProgressIndicator(color: getColor(index)));
-          //       } else if (snapshot.hasError) {
-          //         return const Center(child: Icon(Icons.error_outline_sharp));
-          //       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          //         return Padding(
-          //           padding: EdgeInsets.all(width * 0.075),
-          //           child: Center(
-          //             child: Text('This user has no ${categoryNameByIndex[index]} chains in this category',
-          //                 style: GoogleFonts.nunito(
-          //                     fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
-          //                 textAlign: TextAlign.center),
-          //           ),
-          //         );
-          //       } else {
-          //         return SlideTransition(
-          //           position: Tween<Offset>(begin: const Offset(-2.0, 0.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideLeft, curve: Curves.easeOut)),
-          //           child: SlideTransition(
-          //             position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(2.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideRight, curve: Curves.easeOut)),
-          //             child: SingleChildScrollView(
-          //               child: StaggeredGrid.count(
-          //                 crossAxisCount: 2,
-          //                 children: snapshot.data!,
-          //               ),
-          //             )
-          //           ),
-          //         );
-          //       }
-          //     },
-          //   ),
-          // ),
         ],
       ),
     );
@@ -253,10 +217,9 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
                     ),
                   )
                   : Center(
-                    child: Text('This user has no ${categoryNameByIndex[categoryIndex]} chains in this category',
-                        style: GoogleFonts.nunito(
-                            fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center),
+                      child: Padding(
+                        padding: EdgeInsets.all(width * 0.1),
+                        child: Text('This user has no ${categoryNameByIndex[categoryIndex]} chains in this category', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center))
                     )
               )
               : const Expanded(
