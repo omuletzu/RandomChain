@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:doom_chain/AbstractMenu.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,6 +27,8 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
   @override
   void initState(){
     super.initState();
+
+    _checkForDarkMode();
 
     _animationAfterSplash = AnimationController(
       vsync: this,
@@ -55,17 +58,12 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
   }
 
   @override
-  void dispose(){
-    super.dispose();
-    _animationAfterSplash.dispose();
-  }
-
-  @override
   Widget build(BuildContext context){
 
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: globalBackground,
       body: Stack(
         children: [
           Container(
@@ -80,17 +78,9 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
                   position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, -2.5)).animate(CurvedAnimation(parent: _animationAfterSplash, curve: Curves.easeIn)),
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.1),
-                    child: Image.asset('assets/image/logo.png', fit: BoxFit.fill, width: width * 0.5, height: width * 0.5),
+                    child: Image.asset('assets/image/logo.png', fit: BoxFit.fill, width: width * 0.5, height: width * 0.5, color: globalTextBackground),
                   )
                 ),
-
-                // SlideTransition(
-                //   position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.5)).animate(CurvedAnimation(parent: _animationAfterSplash, curve: Curves.easeIn)),
-                //   child: Padding(
-                //     padding: EdgeInsets.all(width * 0.1),
-                //     child: Text('DoomChain', style: GoogleFonts.nunito(fontSize: width * 0.12, color: Colors.black87, fontWeight: FontWeight.bold)),
-                //   )
-                // ),
 
                 const Spacer(),
 
@@ -107,5 +97,33 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
         ],
       )
     );
+  }
+
+  Future<void> _checkForDarkMode() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    bool darkModeEnabled = sharedPreferences.getBool('darkModeEnabled') ?? true;
+
+    if(darkModeEnabled){
+      setState(() {
+        globalPurple = const Color.fromARGB(255, 128, 0, 255);
+        globalBackground = const Color(0xFF121212);
+        globalTextBackground = Colors.grey[200]!;
+        globalDrawerBackground = Colors.grey;
+      });
+    }
+    else{
+      setState(() {
+        globalPurple = const Color.fromARGB(255, 102, 0, 255);
+        globalBackground = Colors.white;
+        globalTextBackground = Colors.black87;
+        globalDrawerBackground = Colors.grey[200]!;
+      });
+    }
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _animationAfterSplash.dispose();
   }
 }

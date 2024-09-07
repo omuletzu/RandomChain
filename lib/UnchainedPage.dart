@@ -47,6 +47,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: globalBackground,
       body: Column(
         children: [
        
@@ -54,13 +55,16 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.all(width * 0.05),
-              child: Text('Down below are all the chains sent to you ($totalNumberOfUnchained)', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+              child: Text('Down below are all the chains sent to you ($totalNumberOfUnchained)', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
             )
           ),
 
-          Divider(
-            height: 1,
-            color: Colors.grey[200],
+          Padding(
+            padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
+            child: Divider(
+              height: 1,
+              color: globalDrawerBackground,
+            )
           ),
 
           hasCheckedForExistingUnchained ?
@@ -87,10 +91,10 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
                 ),
               ),
 
-          Divider(
-            height: 1,
-            color: Colors.grey[200],
-          ),
+          // Divider(
+          //   height: 1,
+          //   color: Colors.grey[200],
+          // ),
 
           Padding(
               padding: EdgeInsets.only(top: width * 0.05, left: width * 0.2, right: width * 0.2),

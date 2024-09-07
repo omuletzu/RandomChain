@@ -76,6 +76,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,7 +88,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                 children: [
                   Padding(
                     padding: EdgeInsets.all(width * 0.01),
-                    child: Text('This will be send to either one of your random friends or a stranger', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('This will be send to either one of your random friends or a stranger', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Row(
@@ -116,9 +117,9 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/random.png', width: width * 0.12, height: width * 0.12, color: randomOrFriends ? Colors.white : Colors.black87),
+                                      child: Image.asset('assets/image/random.png', width: width * 0.12, height: width * 0.12, color: randomOrFriends ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Random', style: GoogleFonts.nunito(fontSize: width * 0.04, color: randomOrFriends ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                    Text('Random', style: GoogleFonts.nunito(fontSize: width * 0.04, color: randomOrFriends ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
@@ -150,9 +151,9 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12, color: !randomOrFriends ? Colors.white : Colors.black87),
+                                      child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12, color: !randomOrFriends ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !randomOrFriends ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                    Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !randomOrFriends ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
@@ -173,7 +174,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                 children: [
                   Padding(
                     padding: EdgeInsets.all(width * 0.01),
-                    child: Text('Contributors can see either what the person before did or the whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('Contributors can see either what the person before did or the whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Row(
@@ -202,9 +203,9 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/one.png', width: width * 0.12, height: width * 0.12, color: allOrPartChain ? Colors.white : Colors.black87),
+                                      child: Image.asset('assets/image/one.png', width: width * 0.12, height: width * 0.12, color: allOrPartChain ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Last piece', style: GoogleFonts.nunito(fontSize: width * 0.04, color: allOrPartChain ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                    Text('Last piece', style: GoogleFonts.nunito(fontSize: width * 0.04, color: allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
@@ -236,9 +237,9 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: !allOrPartChain ? Colors.white : Colors.black87),
+                                      child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: !allOrPartChain ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !allOrPartChain ? Colors.white : Colors.black87, fontWeight: FontWeight.bold))
+                                    Text('Whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
@@ -259,7 +260,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                 children: [
                   Padding(
                     padding: EdgeInsets.all(width * 0.01),
-                    child: Text('Number of people to contribute', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('Number of people to contribute', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Row(
@@ -274,7 +275,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                             });
                           }
                         }, 
-                        icon: Image.asset('assets/image/minus.png', width: width * 0.1, height: width * 0.1)
+                        icon: Image.asset('assets/image/minus.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
                       ),
 
                       Padding(
@@ -290,7 +291,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                 controller: _chainPiecesController,
                                 maxLines: 1,
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold),
                               )
                             ),
                           )
@@ -306,7 +307,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                             });
                           }
                         }, 
-                        icon: Image.asset('assets/image/add.png', width: width * 0.1, height: width * 0.1)
+                        icon: Image.asset('assets/image/add.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
                       )
                     ],
                   )
@@ -354,7 +355,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                   )
                 ),
 
-                Text('> to adding tags <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold))
+                Text('> to adding tags <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold))
               ],
             )
           ],

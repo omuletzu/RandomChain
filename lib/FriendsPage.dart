@@ -66,6 +66,7 @@ class _FriendsPage extends State<FriendsPage>{
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -83,6 +84,8 @@ class _FriendsPage extends State<FriendsPage>{
                       borderSide: BorderSide(width: 2.0),
                     ),
                     focusColor: globalBlue,
+                    suffixIcon: const Icon(Icons.search),
+                    suffixIconColor: globalTextBackground,
                     label: Center(
                       child: Text(
                         'Nickname',
@@ -113,19 +116,17 @@ class _FriendsPage extends State<FriendsPage>{
               alignment: Alignment.center,
                 child: Padding(
                 padding: EdgeInsets.all(width * 0.05),
-                child: Text('Here you can search your friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                child: Text('Here you can search your friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
               )
             ),
 
             Padding(
-              padding: EdgeInsets.only(bottom: width * 0.01),
+              padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
               child: Divider(
-                height: 2.0,
-                color: Colors.grey[200],
+                height: 1,
+                color: globalDrawerBackground,
               ),
             ),
-
-
 
             Expanded(
               child: FutureBuilder<List<FriendElement>>(

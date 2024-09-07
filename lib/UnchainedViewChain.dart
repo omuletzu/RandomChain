@@ -253,11 +253,12 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       }),
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: globalBackground,
           body: Column(
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[200]
+                  color: globalBackground
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(left: widget.width * 0.05, right: widget.width * 0.025, top: widget.width * 0.025, bottom: widget.width * 0.025),
@@ -268,7 +269,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                       children: [
                         Padding(
                           padding: EdgeInsets.all(widget.width * 0.025),
-                          child: Image.asset(widget.categoryAssetPath, fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12),
+                          child: Image.asset(widget.categoryAssetPath, fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12, color: globalTextBackground),
                         ),
 
                         Padding(
@@ -282,7 +283,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
                               Padding(
                                 padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                                child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                               )
                             ],
                           )
@@ -322,7 +323,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.grey[200]!, Colors.grey[200]!]
+                                   colors: [globalBackground.withOpacity(0.1), globalBackground.withOpacity(0.9), globalBackground, globalBackground]
                                 )
                               ),
                               child: Row(
@@ -460,7 +461,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.grey[200]!, Colors.grey[200]!]
+                                  colors: [globalBackground.withOpacity(0.1), globalBackground.withOpacity(0.9), globalBackground, globalBackground]
                                 )
                               ),
                               child: Row(
@@ -570,7 +571,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                             _animationControllerSlideDown.forward();
                                             uploadExtendData(false);
                                           }, 
-                                          icon: Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12)
+                                          icon: Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12, color: globalTextBackground)
                                         ) : CircularProgressIndicator(color: widget.categoryColor)
                                       )
                                     )
@@ -811,7 +812,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
           decoration: BoxDecoration(
             border: Border.all(width: 2.0, color: widget.categoryColor),
             borderRadius: const BorderRadius.all(Radius.circular(15)),
-            color: Colors.grey[200]
+            color: Colors.grey.withOpacity(0.1),
           ),
           child: Column(
             children: [
@@ -853,12 +854,12 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           return CircularProgressIndicator(color: widget.categoryColor);
                                         },
                                       )
-                                    : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075)
+                                    : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075, color: globalTextBackground)
                                 )
                               ),
                               Padding(
                                 padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(username, style: GoogleFonts.nunito(color: Colors.black87, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
+                                child: Text(username, style: GoogleFonts.nunito(color: globalTextBackground, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
                               )
                             ],
                           );
@@ -868,11 +869,11 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           children: [
                             Padding(
                               padding: EdgeInsets.all(widget.width * 0.01),
-                              child: Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075)
+                              child: Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075, color: globalTextBackground)
                             ),
                             Padding(
                               padding: EdgeInsets.all(widget.width * 0.01),
-                              child: Text('Unknown user', style: GoogleFonts.nunito(color: Colors.black87, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
+                              child: Text('Unknown user', style: GoogleFonts.nunito(color: globalTextBackground, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
                             )
                           ],
                         );
@@ -896,7 +897,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
               Padding(
                 padding: EdgeInsets.only(top: widget.width * 0.01, bottom: widget.width * 0.01),
-                child: Text(contributor[1], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.black87), textAlign: TextAlign.center),
+                child: Text(contributor[1], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalTextBackground), textAlign: TextAlign.center),
               ),
 
               Visibility(
@@ -921,10 +922,10 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                   }
                                 }
                             )
-                            : Image.asset('assets/image.logo.png');
+                            : Image.asset('assets/image.logo.png', color: globalTextBackground);
                         }
 
-                        return Image.asset('assets/image/logo.png', width: widget.width * 0.12, height: widget.width * 0.12);
+                        return Image.asset('assets/image/logo.png', width: widget.width * 0.12, height: widget.width * 0.12, color: globalTextBackground);
                       }
                     )
                   )
@@ -987,7 +988,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
           decoration: BoxDecoration(
             border: Border.all(width: 2.0, color: widget.categoryColor),
             borderRadius: const BorderRadius.all(Radius.circular(15)),
-            color: Colors.grey[200]
+            color: Colors.grey.withOpacity(0.1)
           ),
           child: Column(
             children: [
@@ -1033,7 +1034,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
                     child: hasImage 
                     ? Image.file(File(imagePath!), fit: BoxFit.cover)
-                    : Image.asset('assets/image.logo.png')
+                    : Image.asset('assets/image.logo.png', color: globalTextBackground)
                   )
                 )
               )

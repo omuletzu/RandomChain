@@ -61,6 +61,7 @@ class _FriendElement extends State<FriendElement>{
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Material(
+          color: Colors.grey.withOpacity(0.1),
           child: InkWell(
             splashColor: globalPurple.withOpacity(0.1),
             
@@ -82,7 +83,7 @@ class _FriendElement extends State<FriendElement>{
 
                   Padding(
                     padding: EdgeInsets.all(width * 0.025),
-                    child: Text(friendDetailsLoaded ? friendNickname : ' ', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text(friendDetailsLoaded ? friendNickname : ' ', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Padding(
@@ -126,7 +127,7 @@ class _FriendElement extends State<FriendElement>{
                                   Fluttertoast.showToast(msg: 'Sent request to ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                                 });
                               }, 
-                              icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075)
+                              icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
                             )
                           : IconButton(
                               onPressed: () async {
@@ -134,7 +135,7 @@ class _FriendElement extends State<FriendElement>{
                                   friendAddedOrNot = false;
                                 });
                               }, 
-                              icon: Image.asset('assets/image/minus.png', width: width * 0.075, height: width * 0.075)
+                              icon: Image.asset('assets/image/minus.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
                             )
                       ),
 
@@ -142,7 +143,7 @@ class _FriendElement extends State<FriendElement>{
                         onPressed: () {
                           print(widget.friendOrStranger);
                         }, 
-                        icon: Image.asset('assets/image/details.png', width: width * 0.05, height: width * 0.05)
+                        icon: Image.asset('assets/image/details.png', width: width * 0.05, height: width * 0.05, color: globalTextBackground)
                       )
                     ],
                   )

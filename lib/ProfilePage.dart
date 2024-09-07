@@ -70,6 +70,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         body: Column(
           children: [
             Wrap(
@@ -106,7 +107,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                                     return Icon(Icons.error, size: width * 0.025);
                                   },
                               )
-                              : Image.asset('assets/image/profile.png', width: width * 0.25, height: width * 0.25)
+                              : Image.asset('assets/image/profile.png', width: width * 0.25, height: width * 0.25, color: globalTextBackground)
                             )
                             : const CircularProgressIndicator()
                         )
@@ -117,7 +118,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
 
                 Align(
                   alignment: Alignment.center,
-                  child: Text(userDataRetreived ? profileInfo['nickname'] : '', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  child: Text(userDataRetreived ? profileInfo['nickname'] : '', style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                 )
               ],
             ),
@@ -126,7 +127,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
               padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.01),
               child: Divider(
                 height: 2.0,
-                color: Colors.grey[200],
+                color: globalDrawerBackground,
               ),
             ),
 
@@ -142,7 +143,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                         children: [
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12),
+                            child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
@@ -150,7 +151,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Text('Total points', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text('Total points', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           ),
                         ],
                       ),
@@ -168,7 +169,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           children: [
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
-                              child: Image.asset('assets/image/infinite.png', width: width * 0.12, height: width * 0.12),
+                              child: Image.asset('assets/image/infinite.png', width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
@@ -176,7 +177,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
-                              child: Text('All chains', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              child: Text('All chains', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                             ),
                           ],
                         )
@@ -193,7 +194,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           children: [
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
-                              child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12),
+                              child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
@@ -201,7 +202,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
-                              child: Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              child: Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                             ),
                           ],
                         )
@@ -212,7 +213,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                         children: [
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Image.asset('assets/image/time.png', width: width * 0.12, height: width * 0.12),
+                            child: Image.asset('assets/image/time.png', width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
@@ -220,7 +221,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Text('User since', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text('User since', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           ),
                         ],
                       ),

@@ -1,14 +1,18 @@
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 class ProfileSettings extends StatefulWidget{
 
   final void Function(String, Map<String, dynamic>?) changePageHeader;
+  final void Function() updateUIFromSetting;
   final String userId;
 
   ProfileSettings({
     required this.changePageHeader,
+    required this.updateUIFromSetting,
     required this.userId
   });
 
@@ -42,6 +46,7 @@ class _ProfileSettings extends State<ProfileSettings> {
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         body: Column(
           children: [
             
@@ -52,10 +57,10 @@ class _ProfileSettings extends State<ProfileSettings> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(width * 0.05),
-                    child: Text('Notifications', style: GoogleFonts.nunito(fontSize: width * 0.045, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                    child: Text('Notifications', style: GoogleFonts.nunito(fontSize: width * 0.045, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                   ),
 
-                  Icon(Icons.notifications, size: width * 0.075),
+                  Icon(Icons.notifications, size: width * 0.075, color: globalTextBackground),
               
                   const Spacer(),
               
@@ -68,6 +73,20 @@ class _ProfileSettings extends State<ProfileSettings> {
                         setState(() {
                           notificationsEnabled = value;
                         });
+
+                        if(value){
+                          Workmanager().registerPeriodicTask(
+                            '1', 
+                            'listenerTask',
+                            frequency: const Duration(minutes: 15),
+                            inputData: {
+                              'userId' : widget.userId
+                            }
+                          );
+                        }
+                        else{
+                          Workmanager().cancelByUniqueName('1');
+                        }
                       }
                     )
                   )
@@ -76,10 +95,10 @@ class _ProfileSettings extends State<ProfileSettings> {
             ),
 
             Padding(
-              padding: EdgeInsets.all(width * 0.025),
+              padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
               child: Divider(
                 height: 2.0,
-                color: Colors.grey[200],
+                color: globalDrawerBackground,
               ),
             ),
 
@@ -90,10 +109,10 @@ class _ProfileSettings extends State<ProfileSettings> {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(width * 0.05),
-                    child: Text('Dark Mode', style: GoogleFonts.nunito(fontSize: width * 0.045, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                    child: Text('Dark Mode', style: GoogleFonts.nunito(fontSize: width * 0.045, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                   ),
 
-                  Icon(Icons.dark_mode, size: width * 0.075),
+                  Icon(Icons.dark_mode, size: width * 0.075, color: globalTextBackground),
               
                   const Spacer(),
               
@@ -106,6 +125,25 @@ class _ProfileSettings extends State<ProfileSettings> {
                         setState(() {
                           darkModeEnabled = value;
                         });
+
+                        if(value){
+                          setState(() {
+                            globalPurple = const Color.fromARGB(255, 128, 0, 255);
+                            globalBackground = const Color(0xFF121212);
+                            globalTextBackground = Colors.grey[200]!;
+                            globalDrawerBackground = Colors.grey;
+                          });
+                        }
+                        else{
+                          setState(() {
+                            globalPurple = const Color.fromARGB(255, 102, 0, 255);
+                            globalBackground = Colors.white;
+                            globalTextBackground = Colors.black87;
+                            globalDrawerBackground = Colors.grey[200]!;
+                          });
+                        }
+
+                        widget.updateUIFromSetting();
                       }
                     )
                   )
@@ -130,8 +168,8 @@ class _ProfileSettings extends State<ProfileSettings> {
     }
 
     if(sharedPreferences.getBool('darkModeEnabled') == null){
-      sharedPreferences.setBool('darkModeEnabled', false);
-      darkModeEnabled = false;
+      sharedPreferences.setBool('darkModeEnabled', true);
+      darkModeEnabled = true;
     }
     else{
       darkModeEnabled = sharedPreferences.getBool('darkModeEnabled')!;

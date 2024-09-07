@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/SplashScreen.dart';
 import 'package:doom_chain/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,8 @@ void main() async {
   );
 
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.grey,
+    SystemUiOverlayStyle(
+      statusBarColor: globalBackground,
       systemNavigationBarColor: Colors.black
     )
   );

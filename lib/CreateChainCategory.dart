@@ -60,8 +60,8 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     );
 
     _animationColorStory = ColorTween(
-      begin: Colors.black87,
-      end: Color.fromARGB(255, 102, 0, 255)
+      begin: globalTextBackground,
+      end: globalPurple
     ).animate(_controllerStory);
 
     _controllerGossip = AnimationController(
@@ -70,7 +70,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     );
 
     _animationColorGossip = ColorTween(
-      begin: Colors.black87,
+      begin: globalTextBackground,
       end: globalBlue
     ).animate(_controllerGossip);
 
@@ -80,7 +80,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     );
 
     _animationColorChainllange = ColorTween(
-      begin: Colors.black87,
+      begin: globalTextBackground,
       end: globalGreen
     ).animate(_controllerChainllange);
 
@@ -125,6 +125,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         body: Column(
           children: [
 
@@ -132,7 +133,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
             Padding(
               padding: EdgeInsets.all(width * 0.075),
-              child: Text('Select a category from below to start a chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+              child: Text('Select a category from below to start a chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
             ),
 
             const Spacer(),
@@ -154,7 +155,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                               index = 0;
                               updateUI(index);
                             }, 
-                            icon: Image.asset('assets/image/book.png', width: width * 0.1, height: width * 0.1, color: storySelected ? _animationColorStory.value : null)
+                            icon: Image.asset('assets/image/book.png', width: width * 0.1, height: width * 0.1, color: storySelected ? _animationColorStory.value : globalTextBackground)
                           )
                         );
                       },
@@ -171,7 +172,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                             index = 1;
                             updateUI(index);
                           }, 
-                          icon: Image.asset('assets/image/gossip.png', width: width * 0.1, height: width * 0.1, color: gossipSelected ? _animationColorGossip.value : null)
+                          icon: Image.asset('assets/image/gossip.png', width: width * 0.1, height: width * 0.1, color: gossipSelected ? _animationColorGossip.value : globalTextBackground)
                         );
                       }
                     )
@@ -187,7 +188,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                             index = 2;
                             updateUI(index);
                           }, 
-                          icon: Image.asset('assets/image/challange.png', width: width * 0.1, height: width * 0.1, color: chainllangeSelected ? _animationColorChainllange.value : null)
+                          icon: Image.asset('assets/image/challange.png', width: width * 0.1, height: width * 0.1, color: chainllangeSelected ? _animationColorChainllange.value : globalTextBackground)
                         );
                       }
                     )
@@ -223,7 +224,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                           position: Tween<Offset>(begin: const Offset(-2.0, 0.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideLeft, curve: Curves.easeOut)),
                           child: SlideTransition(
                             position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(2.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideRight, curve: Curves.easeOut)),
-                            child: Text(currentDesc, style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text(currentDesc, style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           )
                         )
                       )

@@ -96,7 +96,7 @@ class _UnchainedElement extends State<UnchainedElement>{
                       children: [
                         Padding(
                           padding: EdgeInsets.all(width * 0.01),
-                          child: Image.asset(titleCategoryIconAssetPath, width: width * 0.075, height: width * 0.075),
+                          child: Image.asset(titleCategoryIconAssetPath, width: width * 0.075, height: width * 0.075, color: globalTextBackground),
                         ),
 
                         Padding(
@@ -109,7 +109,7 @@ class _UnchainedElement extends State<UnchainedElement>{
 
                   Padding(
                     padding: EdgeInsets.all(width * 0.01),
-                    child: Text(containerImageLoaded ? theme : ' ', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text(containerImageLoaded ? theme : ' ', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Visibility(
@@ -145,12 +145,12 @@ class _UnchainedElement extends State<UnchainedElement>{
                         children: [
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: allPieces ? Image.asset('assets/image/logo.png', width: width * 0.075, height: width * 0.075) : Image.asset('assets/image/one.png', width: width * 0.075, height: width * 0.075)
+                            child: allPieces ? Image.asset('assets/image/logo.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground) : Image.asset('assets/image/one.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
                           ),
 
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: random ? Image.asset('assets/image/random.png', width: width * 0.075, height: width * 0.075) : Image.asset('assets/image/friends.png', width: width * 0.075, height: width * 0.075)
+                            child: random ? Image.asset('assets/image/random.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground) : Image.asset('assets/image/friends.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
                           )
                         ],
                       )

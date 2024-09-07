@@ -69,6 +69,8 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +78,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
 
               Padding(
                 padding: EdgeInsets.all(width * 0.075),
-                child: Text('Tags are meant for others to search chains like this or to be recommanded to others', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                child: Text('Tags are meant for others to search chains like this or to be recommanded to others', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
               ),
 
               Padding(
@@ -122,7 +124,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                                 await _animationControllerIcon.forward();
                               }
                             }, 
-                            icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075)
+                            icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
                           )
                         )
                       ),
@@ -160,10 +162,10 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                                   tagList.removeAt(index);
                                 });
                               }, 
-                              icon: Image.asset('assets/image/x.png', width: width * 0.06, height: width * 0.06)
+                              icon: Image.asset('assets/image/x.png', width: width * 0.06, height: width * 0.06, color: globalTextBackground)
                             ),
                             const Spacer(),
-                            Text(tagList[index], style: GoogleFonts.nunito(fontSize: width * 0.03, color: Colors.black87, fontWeight: FontWeight.bold)),
+                            Text(tagList[index], style: GoogleFonts.nunito(fontSize: width * 0.03, color: globalTextBackground, fontWeight: FontWeight.bold)),
                             const Spacer()
                           ],
                         )

@@ -146,7 +146,7 @@ class CreateChainCamera extends StatefulWidget{
 
     if(addData!['randomOrFriends']){
 
-      List<int> userRandomIndexes = List.filled(3, -1);
+      List<int> userRandomIndexes = [-1, -1, -1];
 
       allUsersFromSameCountry ??= await firebase.collection('UserDetails').where('countryName', isEqualTo: userNationality).get();
       allUserNotFromSameCountry ??= await firebase.collection('UserDetails').where('countryName', isNotEqualTo: userNationality).get();
@@ -163,30 +163,37 @@ class CreateChainCamera extends StatefulWidget{
         }
       }
 
-      if(allUserNotFromSameCountry!.docChanges.isNotEmpty){
+      if(allUserNotFromSameCountry.docs.isNotEmpty){
         userRandomIndexes[2] = random.nextInt(allUserNotFromSameCountry.docs.length);
       }
 
       int randomFinalUserIndex = random.nextInt(userRandomIndexes.length);
 
       if(randomFinalUserIndex == 2 && allUserNotFromSameCountry.docs.isNotEmpty){
-        userIdToSendChain = allUserNotFromSameCountry.docs[randomFinalUserIndex].id;
+        userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
       }
       else{
-        if(allUsersFromSameCountry.docs[randomFinalUserIndex].id == userId){
-          if(randomFinalUserIndex == 0){
-            if(userRandomIndexes[1] != -1){
-              randomFinalUserIndex = 1;
-            }
-          }
-          else{
-            if(userRandomIndexes[0] != -1){
-              randomFinalUserIndex = 0;
-            }
-          }
-        }
+        if(allUsersFromSameCountry.docs.length == 1){
+          randomFinalUserIndex = 2;
 
-        userIdToSendChain = allUsersFromSameCountry.docs[randomFinalUserIndex].id;
+          userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
+        }
+        else{
+          if(allUsersFromSameCountry.docs[randomFinalUserIndex].id == userId){
+            if(randomFinalUserIndex == 0){
+              if(userRandomIndexes[1] != -1){
+                randomFinalUserIndex = 1;
+              }
+            }
+            else{
+              if(userRandomIndexes[0] != -1){
+                randomFinalUserIndex = 0;
+              }
+            }
+          }
+
+          userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
+        }
       }
     }
     else{
@@ -252,6 +259,10 @@ class CreateChainCamera extends StatefulWidget{
   }
 
   static void updateGlobalTagList(List<String> tagList, String chainId, String categoryName, String chainNationality, FirebaseFirestore firebase) async {
+
+    if(tagList.isEmpty){
+      return;
+    }
 
     await firebase.collection('ChainTags').doc(tagList.first.toLowerCase().trim()).set({
       chainId : jsonEncode([categoryName, chainNationality])
@@ -423,6 +434,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
       },
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: globalBackground,
           body: SingleChildScrollView(
             child: Column(
               children: [
@@ -435,7 +447,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                       children: [
                         Padding(
                           padding: EdgeInsets.all(width * 0.025),
-                          child: Image.asset(categoryIconPath, fit: BoxFit.fill, width: width * 0.12, height: width * 0.12),
+                          child: Image.asset(categoryIconPath, fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                         ),
 
                         Padding(
@@ -451,7 +463,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                   visible: !photoTaken,
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.025),
-                    child: Text('> Press the button below to take a photo <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold))
+                    child: Text('> Press the button below to take a photo <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold))
                   )
                 ),
 
@@ -571,7 +583,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                           
                           Padding(
                             padding: EdgeInsets.only(top: width * 0.05),
-                            child: Text(categoryFirstPhraseDescription, style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text(categoryFirstPhraseDescription, style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           )
                         ],
                       )
@@ -706,7 +718,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
 
                 Visibility(
                   visible: uploadIsLoading,
-                  child: const CircularProgressIndicator(),
+                  child: CircularProgressIndicator(color: widget.addData!['baseCategoryColor']),
                 )
               ],
             )
@@ -748,7 +760,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
               });
             }
           }, 
-          icon: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1) : Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1)
+          icon: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground) : Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
         )
       ),
 
@@ -762,7 +774,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
               });
             }
           }, 
-          icon: widget.addData!['randomOrFriends'] ? Image.asset('assets/image/random.png', width: width * 0.1, height: width * 0.1) : Image.asset('assets/image/friends.png', width: width * 0.1, height: width * 0.1)
+          icon: widget.addData!['randomOrFriends'] ? Image.asset('assets/image/random.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground) : Image.asset('assets/image/friends.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
         )
       ),
       
@@ -772,7 +784,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
           onPressed: () {
             //
           }, 
-          child: Text(widget.addData!['chainPieces'].toString(), style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold))
+          child: Text(widget.addData!['chainPieces'].toString(), style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold))
         )
       )
     ];

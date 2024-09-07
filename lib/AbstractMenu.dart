@@ -127,7 +127,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
     return SafeArea(
       child: Scaffold(
-        //backgroundColor: globalBackground,
+        backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -140,7 +140,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   children: [
                     Padding(
                       padding: EdgeInsets.all(width * 0.02),
-                      child: Image.asset(topImageAsset, fit: BoxFit.fill, width: width * 0.12, height: width * 0.12),
+                      child: Image.asset(topImageAsset, fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground),
                     ),
 
                     Padding(
@@ -284,7 +284,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.9), Colors.white, Colors.white]
+                          colors: [globalBackground.withOpacity(0.1), globalBackground.withOpacity(0.9), globalBackground, globalBackground]
                         )
                       ),
                       child: Padding(
@@ -301,7 +301,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                     changePageHeader('Explore', null);
                                     animateOpacity(_animationOpacityIconExplore);
                                   }, 
-                                  icon: Image.asset('assets/image/explore.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                  icon: Image.asset('assets/image/explore.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground)
                                 ),
                               )
                             ),
@@ -315,7 +315,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                     changePageHeader('Unchained', null);
                                     animateOpacity(_animationOpacityIconUnchained);
                                   }, 
-                                  icon: Image.asset('assets/image/newchain.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                  icon: Image.asset('assets/image/newchain.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground)
                                 ),
                               )
                             ),
@@ -331,7 +331,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                     });
                                     animateOpacity(_animationOpacityIconFriends);
                                   }, 
-                                  icon: Image.asset('assets/image/friends.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                  icon: Image.asset('assets/image/friends.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground)
                                 ),
                               )
                             ),
@@ -347,7 +347,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                     });
                                     animateOpacity(_animationOpacityIconProfile);
                                   }, 
-                                  icon: Image.asset('assets/image/profile.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
+                                  icon: Image.asset('assets/image/profile.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground)
                                 ),
                               )
                             )
@@ -365,7 +365,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         endDrawer: Builder(
           builder: (context) {
             return Drawer(
-              backgroundColor: Colors.grey[200],
+              backgroundColor: globalDrawerBackground,
               child: ListView(
                 children: [
 
@@ -548,7 +548,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
     String assetPath = ' ';
     Widget page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
-
+    
     if(title != 'Go Back'){
       lastPageBools[0] = friendsPage;
       lastPageBools[1] = profilePage;
@@ -762,7 +762,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
         page = ProfileSettings(
           changePageHeader: changePageHeader, 
-          userId: widget.phoneOrEmail
+          userId: widget.phoneOrEmail,
+          updateUIFromSetting: updateUIFromSetting,
         );
         break;
 
@@ -867,5 +868,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   Future<void> _setUserIdentifier() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setString('userId', widget.phoneOrEmail);
+  }
+
+  void updateUIFromSetting(){
+    setState(() {});
   }
 }

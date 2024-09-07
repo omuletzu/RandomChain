@@ -78,7 +78,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     );
 
     _animationColorStory = ColorTween(
-      begin: Colors.black87,
+      begin: globalTextBackground,
       end: globalPurple,
     ).animate(_controllerStory);
 
@@ -88,7 +88,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     );
 
     _animationColorGossip = ColorTween(
-      begin: Colors.black87,
+      begin: globalTextBackground,
       end: globalBlue,
     ).animate(_controllerGossip);
 
@@ -98,7 +98,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     );
 
     _animationColorChainllange = ColorTween(
-      begin: Colors.black87,
+      begin: globalTextBackground,
       end: globalGreen,
     ).animate(_controllerChainllange);
 
@@ -117,13 +117,15 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
         }
       }),
       child: Scaffold(
+        backgroundColor: globalBackground,
+        resizeToAvoidBottomInset: false,
         body: Column(
           children: [
             Padding(
               padding: EdgeInsets.all(width * 0.05),
               child: Text('Select a chain category from below',
                   style: GoogleFonts.nunito(
-                      fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold),
+                      fontSize: width * 0.04, fontWeight: FontWeight.bold, color: globalTextBackground),
                   textAlign: TextAlign.center),
             ),
             Padding(
@@ -131,17 +133,17 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory),
-                  _buildCategoryIcon(width, 1, 'assets/image/gossip.png', _animationColorGossip),
-                  _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange),
+                  _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory, storySelected),
+                  _buildCategoryIcon(width, 1, 'assets/image/gossip.png', _animationColorGossip, gossipSelected),
+                  _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange, chainllangeSelected),
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: width * 0.01),
+              padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
               child: Divider(
                 height: 2.0,
-                color: Colors.grey[200],
+                color: globalDrawerBackground,
               ),
             ),
 
@@ -243,7 +245,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     );
   }
 
-  Padding _buildCategoryIcon(double width, int catIndex, String asset, Animation<Color?> animation) {
+  Padding _buildCategoryIcon(double width, int catIndex, String asset, Animation<Color?> animation, bool categorySelectedBool) {
     return Padding(
       padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
       child: AnimatedBuilder(
@@ -258,7 +260,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
               updateUI(catIndex);
             },
-            icon: Image.asset(asset, width: width * 0.1, height: width * 0.1, color: getColorForIndex(catIndex)),
+            icon: Image.asset(asset, width: width * 0.1, height: width * 0.1, color: categorySelectedBool ? getColorForIndex(catIndex) : globalTextBackground),
           );
         },
       ),

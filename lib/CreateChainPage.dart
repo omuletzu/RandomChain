@@ -67,6 +67,7 @@ class _CreateChain extends State<CreateChain>{
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -104,7 +105,7 @@ class _CreateChain extends State<CreateChain>{
                       
                       Padding(
                         padding: EdgeInsets.only(top: width * 0.05),
-                        child: Text('Give this story a captivating name that hints to what\'s to come', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                        child: Text('Give this story a captivating name that hints to what\'s to come', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       )
                     ],
                   )
@@ -139,7 +140,7 @@ class _CreateChain extends State<CreateChain>{
                     
                     Padding(
                       padding: EdgeInsets.only(top: width * 0.05),
-                      child: Text(themeDescription, style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                      child: Text(themeDescription, style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                     )
                   ],
                 )
@@ -202,7 +203,7 @@ class _CreateChain extends State<CreateChain>{
                   )
                 ),
 
-                Text('> to adding details <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold))
+                Text('> to adding details <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold))
               ],
             )
           ],

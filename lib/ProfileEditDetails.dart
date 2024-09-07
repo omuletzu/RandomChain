@@ -62,6 +62,8 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -82,7 +84,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                 child: notPickedImage ?
                                 (
                                   hasOriginalAvatar ? Image.network(originalAvatar, height: width * 0.25, width: width * 0.25, fit: BoxFit.cover)
-                                    : Image.asset('assets/image/profile.png', height: width * 0.25, width: width * 0.25)
+                                    : Image.asset('assets/image/profile.png', height: width * 0.25, width: width * 0.25, color: globalTextBackground)
                                 )
                                 : Image.file(imagePicked!, height: width * 0.25, width: width * 0.25, fit: BoxFit.cover)
                               )
@@ -92,13 +94,13 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                               alignment: Alignment.bottomRight,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[200],
+                                  color: globalBackground,
                                   shape: BoxShape.circle,
                                   border: Border.all(color: Colors.grey)
                                 ),
                                 child: Padding(
                                   padding: EdgeInsets.all(width * 0.01),
-                                  child: Image.asset('assets/image/camera.png', height: width * 0.06, width: width * 0.06),
+                                  child: Image.asset('assets/image/camera.png', height: width * 0.06, width: width * 0.06, color: globalTextBackground),
                                 ),
                               ),
                             )
@@ -110,14 +112,17 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                   
                   Padding(
                     padding: EdgeInsets.all(width * 0.03),
-                    child: Text('> Profile Image <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('> Profile Image <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
                 ],
               ),
 
-              Divider(
-                height: 1.0,
-                color: Colors.grey[200],
+              Padding(
+                padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
+                child: Divider(
+                  height: 1,
+                  color: globalDrawerBackground,
+                ),
               ),
 
               Padding(
@@ -131,9 +136,9 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                         maxLines: 1,
                         maxLength: 15,
                         decoration: InputDecoration(
-                          focusedBorder: const UnderlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide(color: Color.fromARGB(255, 102, 0, 255), width: 2.0)
+                          focusedBorder: UnderlineInputBorder(
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            borderSide: BorderSide(color: globalPurple, width: 2.0)
                           ),
                           label: Center(
                             child: Text(
@@ -148,16 +153,19 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                       
                       Padding(
                         padding: EdgeInsets.all(width * 0.03),
-                        child: Text('> Nickname <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                        child: Text('> Nickname <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       )
                     ],
                   )
                 )
               ),
 
-              Divider(
-                height: 1.0,
-                color: Colors.grey[200],
+              Padding(
+                padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
+                child: Divider(
+                  height: 1,
+                  color: globalDrawerBackground,
+                ),
               ),
 
               Column(
@@ -179,18 +187,18 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                           }
                         );
                       }, 
-                      child: Text('$countryEmoji $countryName', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold)),
+                      child: Text('$countryEmoji $countryName', style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold)),
                     ),
                   ),
 
                   Padding(
                     padding: EdgeInsets.all(width * 0.025),
-                    child: Text('> Country <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('> Country <', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
                   Divider(
                     height: 1.0,
-                    color: Colors.grey[200],
+                    color: globalDrawerBackground,
                   ),
 
                   Padding(

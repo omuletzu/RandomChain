@@ -66,6 +66,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
         }
       },
       child: Scaffold(
+        backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -74,7 +75,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
               alignment: Alignment.center,
                 child: Padding(
                 padding: EdgeInsets.all(width * 0.05),
-                child: Text('Find out new people', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                child: Text('Find out new people', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
               )
             ),
 
@@ -91,6 +92,8 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                       borderSide: BorderSide(width: 2.0),
                     ),
                     focusColor: globalBlue,
+                    suffixIcon: const Icon(Icons.search),
+                    suffixIconColor: globalTextBackground,
                     label: Center(
                       child: Text(
                         'Nickname',
@@ -118,10 +121,10 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
             ),
 
             Padding(
-              padding: EdgeInsets.only(bottom: width * 0.01),
+              padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
               child: Divider(
-                height: 2.0,
-                color: Colors.grey[200],
+                height: 1,
+                color: globalDrawerBackground,
               ),
             ),
 

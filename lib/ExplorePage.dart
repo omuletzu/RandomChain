@@ -65,7 +65,7 @@ class _ExplorePage extends State<ExplorePage>{
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      //backgroundColor: globalBackground,
+      backgroundColor: globalBackground,
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
@@ -83,6 +83,8 @@ class _ExplorePage extends State<ExplorePage>{
                     borderSide: BorderSide(width: 2.0),
                   ),
                   focusColor: globalBlue,
+                  suffixIcon: const Icon(Icons.search),
+                  suffixIconColor: globalTextBackground,
                   label: Center(
                     child: Text(
                       'Search chain',
@@ -113,9 +115,12 @@ class _ExplorePage extends State<ExplorePage>{
             ),
           ),
 
-          Divider(
-            height: 1,
-            color: Colors.grey[200],
+          Padding(
+            padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
+            child: Divider(
+              height: 1,
+              color: globalDrawerBackground,
+            ),
           ),
 
           !searchingMode 
@@ -305,14 +310,14 @@ class _ExplorePage extends State<ExplorePage>{
         }
       }
     }
-    else{
+    // else{
       
-      QuerySnapshot allUsers = await _firebase.collection('UserDetails').get();
+    //   QuerySnapshot allUsers = await _firebase.collection('UserDetails').get();
 
-      for(int i = 0; i < 5; i++){
-        //int randomUserIndex = 
-      }
-    }
+    //   for(int i = 0; i < 5; i++){
+    //     int randomUserIndex = 
+    //   }
+    // }
 
     orderForCountryRandomness = (orderForCountryRandomness + 1) % 3;
 
