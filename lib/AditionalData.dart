@@ -75,6 +75,7 @@ class _AditionalData extends State<AditionalData>{
               padding: EdgeInsets.all(width * 0.1),
                 child: TextField(
                   controller: _nicknameController,
+                  maxLength: 15,
                   decoration: InputDecoration(
                     hintText: 'Nickname',
                     hintStyle: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),

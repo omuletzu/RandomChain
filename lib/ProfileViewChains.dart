@@ -15,7 +15,7 @@ class ProfileViewChains extends StatefulWidget {
   ProfileViewChains({
     required this.changePageHeader,
     required this.userData,
-    required this.personalLikedSavedChains,
+    required this.personalLikedSavedChains
   });
 
   @override
@@ -47,7 +47,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
   List<String> categoryNameByIndex = List.from({'Story', 'Gossip', 'Chainllange'});
 
-  List<List<UnchainedElement>> allCategoryChains = [[], [], []];
+  List<List<Widget>> allCategoryChains = [[], [], []];
   List<bool> hasCheckedCategory = [false, false, false];
   List<bool> hasElementsCategory = [false, false, false];
 
@@ -139,7 +139,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
           _buildChainList(0, width, storySelected),
           _buildChainList(1, width, gossipSelected),
-          _buildChainList(2, width, chainllangeSelected)
+          _buildChainList(2, width, chainllangeSelected),
         ],
       ),
     );

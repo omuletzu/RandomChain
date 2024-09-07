@@ -835,6 +835,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     pfpUrl, 
                                     width: widget.width * 0.075, 
                                     height: widget.width * 0.075,
+                                    fit: BoxFit.cover,
                                     loadingBuilder: (context, child, loadingProgress) {
                                       if(loadingProgress == null){
                                         return child;

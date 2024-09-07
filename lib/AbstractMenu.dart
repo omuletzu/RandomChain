@@ -6,6 +6,8 @@ import 'package:doom_chain/CreateChainCategory.dart';
 import 'package:doom_chain/CreateChainDetails.dart';
 import 'package:doom_chain/CreateChainPage.dart';
 import 'package:doom_chain/CreateChainTagsPage.dart';
+import 'package:doom_chain/ProfileEditDetails.dart';
+import 'package:doom_chain/ProfileSettings.dart';
 import 'package:doom_chain/ProfileViewChains.dart';
 import 'package:doom_chain/UnchainedPage.dart';
 import 'package:doom_chain/main.dart';
@@ -330,7 +332,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 child: IconButton(
                                   onPressed: () {
                                     changePageHeader('Profile', {
-                                      'userId' : widget.phoneOrEmail,
+                                      'userId' : widget.phoneOrEmail
                                     });
                                     animateOpacity(_animationOpacityIconProfile);
                                   }, 
@@ -407,8 +409,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                       ),
                       title: Text('Edit profile', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       onTap: () {
-
-
+                        changePageHeader('Profile (edit profile)', null);
                         Scaffold.of(context).closeEndDrawer();
                       },
                     ),
@@ -425,8 +426,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                       ),
                       title: Text('Settings', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       onTap: () {
-
-
+                        changePageHeader('Settings', null);
                         Scaffold.of(context).closeEndDrawer();
                       },
                     ),
@@ -658,7 +658,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         setState(() {
           topTitleColor = const Color.fromARGB(255, 102, 0, 255);
           friendsPage = false;
-          profilePage = false;
           unchainedPage = false;
         });
 
@@ -673,7 +672,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         setState(() {
           topTitleColor = const Color.fromARGB(255, 102, 0, 255);
           friendsPage = false;
-          profilePage = false;
           unchainedPage = false;
         });
 
@@ -688,7 +686,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         setState(() {
           topTitleColor = const Color.fromARGB(255, 102, 0, 255);
           friendsPage = false;
-          profilePage = false;
           unchainedPage = false;
         });
 
@@ -696,6 +693,28 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           changePageHeader: changePageHeader, 
           userData: addData!,
           personalLikedSavedChains: 2);
+        break;
+
+      case 'Profile (edit profile)' :
+        assetPath = 'assets/image/profile.png';
+        setState(() {
+          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          friendsPage = false;
+          unchainedPage = false;
+        });
+
+      case 'Settings' :
+        assetPath = 'assets/image/key.png';
+        setState(() {
+          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          friendsPage = false;
+          unchainedPage = false;
+        });
+
+        page = ProfileSettings(
+          changePageHeader: changePageHeader, 
+          userId: widget.phoneOrEmail
+        );
         break;
 
       case 'New chain (story)' :
