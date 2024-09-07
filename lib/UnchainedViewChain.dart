@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/CreateChainCamera.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -211,7 +212,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           onTap: () async {
                             Navigator.of(context).popUntil((route) => route.isFirst);
                           }, 
-                          splashColor: const Color.fromARGB(255, 30, 144, 255),
+                          splashColor: globalBlue,
                           child: Padding(
                             padding: EdgeInsets.all(widget.width * 0.025),
                             child: Text('Yeah', style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -232,7 +233,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           onTap: () async {
                             Navigator.of(context).pop();
                           }, 
-                          splashColor: const Color.fromARGB(255, 30, 144, 255),
+                          splashColor: globalBlue,
                           child: Padding(
                             padding: EdgeInsets.all(widget.width * 0.025),
                             child: Text('Close', style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -341,6 +342,10 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           child: InkWell(
                                             borderRadius: const BorderRadius.all(Radius.circular(15)),
                                             onTap: () async {
+                                              if(!mounted){
+                                                return;
+                                              }
+
                                               if(liked){
                                                 setState(() {
                                                   likesNumber--;
@@ -558,7 +563,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           onPressed: () {
 
                                             if(_textController.text.trim().isEmpty){
-                                              Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                              Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                                               return;
                                             }
 
@@ -624,14 +629,16 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
   void uploadExtendData(bool extendingSkipped) async {
     if(extendingSkipped){
       callStaticSentMethod();
-      Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+      Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
     }
     else{
       try{
 
-        setState(() {
-          chainSentForUpload = true;
-        });
+        if(mounted){
+          setState(() {
+            chainSentForUpload = true;
+          });
+        }
         
         String extensionImagePath = '-';
 
@@ -653,7 +660,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         }); 
 
         callStaticSentMethod();
-        Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+        Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
       }
       catch(e){
         print(e);
@@ -787,10 +794,6 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         )
       );
 
-      // WidgetsBinding.instance.addPostFrameCallback((_) { 
-      //   scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.easeOut);
-      // });
-
       _textController.text = extendTextCopy;
     });
 
@@ -826,24 +829,31 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           String username = snapshot.data!['username']!;
                           String pfpUrl = snapshot.data!['pfp']!;
 
+                          bool hasPfp = false;
+                          if(pfpUrl != '-'){
+                            hasPfp = true;
+                          }
+
                           return Row(
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(widget.width * 0.01),
                                 child: ClipOval(
-                                  child: Image.network(
-                                    pfpUrl, 
-                                    width: widget.width * 0.075, 
-                                    height: widget.width * 0.075,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if(loadingProgress == null){
-                                        return child;
-                                      }
-                                      
-                                      return CircularProgressIndicator(color: widget.categoryColor);
-                                    },
-                                  )
+                                  child: hasPfp 
+                                    ? Image.network(
+                                        pfpUrl, 
+                                        width: widget.width * 0.075, 
+                                        height: widget.width * 0.075,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if(loadingProgress == null){
+                                            return child;
+                                          }
+                                          
+                                          return CircularProgressIndicator(color: widget.categoryColor);
+                                        },
+                                      )
+                                    : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075)
                                 )
                               ),
                               Padding(
@@ -1040,7 +1050,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     String pfpLink = '-';
 
     if(userDocument.get('avatarPath') != '-'){
-      Reference pfpReference = widget.storage.ref().child(userDocument.get('avatarPath') + '.png');
+      Reference pfpReference = widget.storage.ref().child(userDocument.get('avatarPath'));
       pfpLink = await pfpReference.getDownloadURL();
     }
 
@@ -1079,15 +1089,17 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
     int tempLikesNumber = (await widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainMap['chainNationality']).doc(widget.chainId).get(const GetOptions(source: Source.server))).get('likes');
 
-    setState(() {
-      likesNumber = tempLikesNumber;
-    });
+    if(mounted){
+      setState(() {
+        likesNumber = tempLikesNumber;
+      });
+    }
 
     print(likesNumber);
 
     DocumentSnapshot checkDocument = await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).get();
 
-    if(checkDocument.exists){
+    if(mounted && checkDocument.exists){
       setState(() {
         liked = true;
       });
@@ -1102,7 +1114,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
     DocumentSnapshot checkDocument = await widget.firebase.collection('UserDetails').doc(widget.userId).collection('SavedChains${widget.categoryName}').doc(widget.chainId).get();
 
-    if(checkDocument.exists){
+    if(mounted && checkDocument.exists){
       setState(() {
         saved = true;
       });

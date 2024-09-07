@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -47,6 +49,8 @@ class _ExplorePage extends State<ExplorePage>{
   bool searchingHasElements = false;
   bool searchFinished = false;
 
+  int orderForCountryRandomness = 0;  // 0, 1 - same country, 2 - random country
+
   Random random = Random();
 
   @override
@@ -61,6 +65,7 @@ class _ExplorePage extends State<ExplorePage>{
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      //backgroundColor: globalBackground,
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
@@ -77,7 +82,7 @@ class _ExplorePage extends State<ExplorePage>{
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                     borderSide: BorderSide(width: 2.0),
                   ),
-                  focusColor: const Color.fromARGB(255, 30, 144, 255),
+                  focusColor: globalBlue,
                   label: Center(
                     child: Text(
                       'Search chain',
@@ -88,18 +93,20 @@ class _ExplorePage extends State<ExplorePage>{
                 ),
                 
                 textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold),
+                style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
                 onChanged: (value) {
-                  if(value.isEmpty){
-                    setState(() {
-                      searchingMode = false;
-                    });
-                  }
-                  else{
-                    setState(() {
-                      _searchByTag(value.toLowerCase().trim());
-                      searchingMode = true;
-                    });
+                  if(mounted){
+                    if(value.isEmpty){
+                      setState(() {
+                        searchingMode = false;
+                      });
+                    }
+                    else{
+                      setState(() {
+                        _searchByTag(value.toLowerCase().trim());
+                        searchingMode = true;
+                      });
+                    }
                   }
                 },
               )
@@ -205,16 +212,18 @@ class _ExplorePage extends State<ExplorePage>{
 
   void _searchByTag(String tagToSearch) async {
 
-    setState(() {
-      searchFinished = false;
-      searchingHasElements = false;
-    });
+    if(mounted){
+      setState(() {
+        searchFinished = false;
+        searchingHasElements = false;
+      });
+    }
 
     searchingResults.clear();
     List<UnchainedElement> tempSearchingResults = [];
 
     DocumentSnapshot searchingDocuments = await _firebase.collection('ChainTags').doc(tagToSearch).get();
-
+    
     if(searchingDocuments.exists){
       for(var mapEntry in (searchingDocuments.data() as Map<String, dynamic>).entries){
 
@@ -235,60 +244,77 @@ class _ExplorePage extends State<ExplorePage>{
         );
       };
       
-      setState(() {
-        searchingHasElements = true;
-      });
+      if(mounted){
+        setState(() {
+          searchingHasElements = true;
+        });
+      }
     }
 
-    setState(() {
-      searchFinished = true;
-      searchingResults.addAll(tempSearchingResults);
-    });
+    if(mounted){
+      setState(() {
+        searchFinished = true;
+        searchingResults.addAll(tempSearchingResults);
+      });
+    }
   }
 
 
   Future<void> updateScrollChainData() async {
 
-    if(allChainsWidget.length >= totalNumberOfChains){
-      return;
-    }
-
-    for(int i = 0; i < 5; i++){
-
-      int categoryIndex = random.nextInt(finishedChainsCategory.length);
-      int index = random.nextInt((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs.length);
+    if(orderForCountryRandomness < 2){
 
       if(allChainsWidget.length >= totalNumberOfChains){
-        break;
+        return;
       }
-      else{
 
-        if(!allChainsWidget.map((e) => e.second).contains((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id)){
+      for(int i = 0; i < 5; i++){
 
-          allChainsWidget.add(
-            Pair(
-              first: UnchainedElement(
-                userId: widget.exploreData!['userId'], 
-                firebase: _firebase, 
-                storage: _storage, 
-                calledByExplore: true,
-                chainIdAndCategoryName: Pair(
-                  first: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id, 
-                  second: (finishedChainsCategory[categoryIndex].second as String)
-                ), 
-                chainData: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].data() as Map<String, dynamic>, 
-                changePageHeader: widget.changePageHeader!, 
-                removeIndexFromWidgetList: () {}
-              ), 
-              second: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id
-            )
-          );
+        int categoryIndex = random.nextInt(finishedChainsCategory.length);
+        int index = random.nextInt((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs.length);
+
+        if(allChainsWidget.length >= totalNumberOfChains){
+          break;
         }
         else{
-          i--;
+
+          if(!allChainsWidget.map((e) => e.second).contains((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id)){
+
+            allChainsWidget.add(
+              Pair(
+                first: UnchainedElement(
+                  userId: widget.exploreData!['userId'], 
+                  firebase: _firebase, 
+                  storage: _storage, 
+                  calledByExplore: true,
+                  chainIdAndCategoryName: Pair(
+                    first: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id, 
+                    second: (finishedChainsCategory[categoryIndex].second as String)
+                  ), 
+                  chainData: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].data() as Map<String, dynamic>, 
+                  changePageHeader: widget.changePageHeader!, 
+                  removeIndexFromWidgetList: () {}
+                ), 
+                second: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id
+              )
+            );
+          }
+          else{
+            i--;
+          }
         }
       }
     }
+    else{
+      
+      QuerySnapshot allUsers = await _firebase.collection('UserDetails').get();
+
+      for(int i = 0; i < 5; i++){
+        //int randomUserIndex = 
+      }
+    }
+
+    orderForCountryRandomness = (orderForCountryRandomness + 1) % 3;
 
     scrollController.addListener(() {
       if(scrollController.position.atEdge){

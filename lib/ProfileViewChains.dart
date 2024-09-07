@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -78,7 +79,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
     _animationColorStory = ColorTween(
       begin: Colors.black87,
-      end: const Color.fromARGB(255, 102, 0, 255),
+      end: globalPurple,
     ).animate(_controllerStory);
 
     _controllerGossip = AnimationController(
@@ -88,7 +89,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
     _animationColorGossip = ColorTween(
       begin: Colors.black87,
-      end: const Color.fromARGB(255, 30, 144, 255),
+      end: globalBlue,
     ).animate(_controllerGossip);
 
     _controllerChainllange = AnimationController(
@@ -98,7 +99,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
     _animationColorChainllange = ColorTween(
       begin: Colors.black87,
-      end: const Color.fromARGB(255, 0, 150, 136),
+      end: globalGreen,
     ).animate(_controllerChainllange);
 
     _controllerStory.forward();
@@ -108,40 +109,48 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(width * 0.05),
-            child: Text('Select a chain category from below',
-                style: GoogleFonts.nunito(
-                    fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center),
-          ),
-          Padding(
-            padding: EdgeInsets.all(width * 0.00),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory),
-                _buildCategoryIcon(width, 1, 'assets/image/gossip.png', _animationColorGossip),
-                _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange),
-              ],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: ((didPop) {
+        if(!didPop){
+          widget.changePageHeader('Go Back', null);
+        }
+      }),
+      child: Scaffold(
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(width * 0.05),
+              child: Text('Select a chain category from below',
+                  style: GoogleFonts.nunito(
+                      fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: width * 0.01),
-            child: Divider(
-              height: 2.0,
-              color: Colors.grey[200],
+            Padding(
+              padding: EdgeInsets.all(width * 0.00),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory),
+                  _buildCategoryIcon(width, 1, 'assets/image/gossip.png', _animationColorGossip),
+                  _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange),
+                ],
+              ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.only(bottom: width * 0.01),
+              child: Divider(
+                height: 2.0,
+                color: Colors.grey[200],
+              ),
+            ),
 
-          _buildChainList(0, width, storySelected),
-          _buildChainList(1, width, gossipSelected),
-          _buildChainList(2, width, chainllangeSelected),
-        ],
-      ),
+            _buildChainList(0, width, storySelected),
+            _buildChainList(1, width, gossipSelected),
+            _buildChainList(2, width, chainllangeSelected),
+          ],
+        ),
+      )
     );
   }
 
@@ -331,14 +340,14 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
 
   Color getColor(int index) {
     if (index == 1) {
-      return const Color.fromARGB(255, 30, 144, 255);
+      return globalBlue;
     }
 
     if (index == 2) {
-      return const Color.fromARGB(255, 0, 150, 136);
+      return globalGreen;
     }
 
-    return const Color.fromARGB(255, 102, 0, 255); // Default color for Story
+    return globalPurple; // Default color for Story
   }
 
   @override

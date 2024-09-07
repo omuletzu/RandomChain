@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/AbstractMenu.dart';
 import 'package:doom_chain/AditionalData.dart';
 import 'package:doom_chain/EmailPassSignIn.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -124,7 +125,7 @@ class _PhoneAuth extends State<PhoneAuth>{
 
           displayProgress ? const CircularProgressIndicator()
             : Material(
-                color: const Color.fromARGB(255, 102, 0, 255),
+                color: globalPurple,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15))
                 ),
@@ -143,7 +144,7 @@ class _PhoneAuth extends State<PhoneAuth>{
                       });
 
                       if(_codeController.text.isEmpty){
-                        Fluttertoast.showToast(msg: 'Empty SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                        Fluttertoast.showToast(msg: 'Empty SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                         setState(() {
                           displayProgress = false;
                         });
@@ -172,13 +173,13 @@ class _PhoneAuth extends State<PhoneAuth>{
                       on FirebaseAuthException catch(e){
                         switch(e.code){
                           case 'invalid-verification-code' : 
-                            Fluttertoast.showToast(msg: 'Invalid SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                            Fluttertoast.showToast(msg: 'Invalid SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                             break;
                           case 'session-expired' : 
-                            Fluttertoast.showToast(msg: 'Session expired. SMS sent again', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                            Fluttertoast.showToast(msg: 'Session expired. SMS sent again', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                             break;
                           default :
-                            Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                            Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                         }
                         
                         print(e);
@@ -195,7 +196,7 @@ class _PhoneAuth extends State<PhoneAuth>{
 
                   }, 
                   
-                  splashColor: const Color.fromARGB(255, 30, 144, 255),
+                  splashColor: globalBlue,
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.025),
                     child: Text('CONTINUE', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))
@@ -219,7 +220,7 @@ class _PhoneAuth extends State<PhoneAuth>{
       }, 
       verificationFailed: (FirebaseAuthException e) {
         if(e.code == 'invalid-phone-number'){
-          Fluttertoast.showToast(msg: 'Invalid phone number', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+          Fluttertoast.showToast(msg: 'Invalid phone number', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
         }
 
         print(e);
@@ -230,7 +231,7 @@ class _PhoneAuth extends State<PhoneAuth>{
           displayProgress = false;
         }),
 
-        Fluttertoast.showToast(msg: 'SMS Code sent', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255)),
+        Fluttertoast.showToast(msg: 'SMS Code sent', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue),
         setState(() {
           this.verificationId = verificationId;
           codeSent = true;

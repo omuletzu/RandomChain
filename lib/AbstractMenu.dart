@@ -6,11 +6,11 @@ import 'package:doom_chain/CreateChainCategory.dart';
 import 'package:doom_chain/CreateChainDetails.dart';
 import 'package:doom_chain/CreateChainPage.dart';
 import 'package:doom_chain/CreateChainTagsPage.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/ProfileEditDetails.dart';
 import 'package:doom_chain/ProfileSettings.dart';
 import 'package:doom_chain/ProfileViewChains.dart';
 import 'package:doom_chain/UnchainedPage.dart';
-import 'package:doom_chain/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,17 +51,21 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   late AnimationController _animationOpacityIconProfile;
 
   late Widget currentPage;
+  late Widget lastCurrentPage;
 
   String topImageAsset = 'assets/image/explore.png';
   String topTitle = 'Explore';
-  String lastTopTile = 'Explore';
-  Color topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+  String lastTopTile = 'Explore'; 
+  String lastAssetsPath = '';
+  List<bool> lastPageBools = List.filled(5, false);
+  Color topTitleColor = globalPurple;
 
   bool friendsPage = false;
   bool lastFriendsButtonMode = false;
   bool profilePage = false;
   bool unchainedPage = false;
   bool explorePage = true;
+  bool unchainedPageRefresh = false;
 
   @override
   void initState(){
@@ -72,6 +76,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     currentPage = ExplorePage(exploreData: {
       'userId' : widget.phoneOrEmail
     }, changePageHeader: changePageHeader, key: null);
+
+    lastCurrentPage = currentPage;
 
     _animationOpacity = AnimationController(
       vsync: this,
@@ -112,8 +118,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         'userId' : widget.phoneOrEmail
       }
     );
-
-    //MyApp.platform.invokeMethod('startNotif', {'userId' : widget.phoneOrEmail});
   }
 
   @override
@@ -123,6 +127,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
     return SafeArea(
       child: Scaffold(
+        //backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -158,9 +163,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                               lastFriendsButtonMode = false;
                             });
                             
-                            changePageHeader('Friends', null);
+                            changePageHeader('Friends', {
+                              'userId' : widget.phoneOrEmail
+                            });
                           }, 
-                          icon: Image.asset('assets/image/list.png', width: width * 0.1, height: width * 0.1, color: const Color.fromARGB(255, 102, 0, 255))
+                          icon: Image.asset('assets/image/list.png', width: width * 0.1, height: width * 0.1, color: globalPurple)
                         )
                       )
                     ),
@@ -174,9 +181,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                             setState(() {
                               lastFriendsButtonMode = true;
                             });
-                            changePageHeader('Strangers', null);
+                            changePageHeader('Strangers', {
+                              'userId' : widget.phoneOrEmail
+                            });
                           }, 
-                          icon: Image.asset('assets/image/addfriends.png', width: width * 0.1, height: width * 0.1, color: const Color.fromARGB(255, 102, 0, 255))
+                          icon: Image.asset('assets/image/addfriends.png', width: width * 0.1, height: width * 0.1, color: globalPurple)
                         )
                       )
                     ),
@@ -196,7 +205,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                               onPressed: () {
                                 Scaffold.of(context).openEndDrawer();
                               }, 
-                              icon: Image.asset('assets/image/slidemenu.png', width: width * 0.1, height: width * 0.1, color: const Color.fromARGB(255, 102, 0, 255))
+                              icon: Image.asset('assets/image/slidemenu.png', width: width * 0.1, height: width * 0.1, color: globalPurple)
                             )
                           );
                         }
@@ -204,19 +213,19 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     ),
 
                     Visibility(
-                      visible: unchainedPage,
+                      visible: unchainedPageRefresh,
                       child: const Spacer()
                     ),
 
                     Visibility(
-                      visible: unchainedPage,
+                      visible: unchainedPageRefresh,
                       child: Padding(
                         padding: EdgeInsets.all(width * 0.02),
                         child: IconButton(
                           onPressed: () {
                             changePageHeader('Unchained (refresh)', null);
                           }, 
-                          icon: Image.asset('assets/image/refresh.png', width: width * 0.05, height: width * 0.05, color: const Color.fromARGB(255, 102, 0, 255))
+                          icon: Image.asset('assets/image/refresh.png', width: width * 0.05, height: width * 0.05, color: globalPurple)
                         )
                       )
                     ),
@@ -234,7 +243,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                           onPressed: () {
                             changePageHeader('Explore (refresh)', null);
                           }, 
-                          icon: Image.asset('assets/image/refresh.png', width: width * 0.05, height: width * 0.05, color: const Color.fromARGB(255, 102, 0, 255))
+                          icon: Image.asset('assets/image/refresh.png', width: width * 0.05, height: width * 0.05, color: globalPurple)
                         )
                       )
                     ),
@@ -317,7 +326,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 padding: EdgeInsets.only(left: width * 0.025, right: width * 0.025),
                                 child: IconButton(
                                   onPressed: () {
-                                    changePageHeader('Friends', null);
+                                    changePageHeader('Friends', {
+                                      'userId' : widget.phoneOrEmail
+                                    });
                                     animateOpacity(_animationOpacityIconFriends);
                                   }, 
                                   icon: Image.asset('assets/image/friends.png', fit: BoxFit.fill, width: width * 0.12, height: width * 0.12)
@@ -361,9 +372,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.1, bottom: width * 0.025),
                     child: ListTile(
-                      leading: Image.asset('assets/image/star.png', width: width * 0.075, height: width * 0.075, color: const Color.fromARGB(255, 102, 0, 255)),
+                      leading: Image.asset('assets/image/star.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
                       trailing: const Icon(Icons.arrow_right),
-                      splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+                      splashColor: globalPurple.withOpacity(0.1),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       ),
@@ -381,9 +392,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.025, bottom: width * 0.025),
                     child: ListTile(
-                      leading: Image.asset('assets/image/save.png', width: width * 0.075, height: width * 0.075, color: const Color.fromARGB(255, 102, 0, 255)),
+                      leading: Image.asset('assets/image/save.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
                       trailing: const Icon(Icons.arrow_right),
-                      splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+                      splashColor: globalPurple.withOpacity(0.1),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       ),
@@ -401,9 +412,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.025, bottom: width * 0.025),
                     child: ListTile(
-                      leading: Image.asset('assets/image/info.png', width: width * 0.075, height: width * 0.075, color: const Color.fromARGB(255, 102, 0, 255)),
+                      leading: Image.asset('assets/image/info.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
                       trailing: const Icon(Icons.arrow_right),
-                      splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+                      splashColor: globalPurple.withOpacity(0.1),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       ),
@@ -418,9 +429,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.025, bottom: width * 0.025),
                     child: ListTile(
-                      leading: Image.asset('assets/image/key.png', width: width * 0.075, height: width * 0.075, color: const Color.fromARGB(255, 102, 0, 255)),
+                      leading: Image.asset('assets/image/key.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
                       trailing: const Icon(Icons.arrow_right),
-                      splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+                      splashColor: globalPurple.withOpacity(0.1),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       ),
@@ -435,9 +446,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.025, bottom: width * 0.025),
                     child: ListTile(
-                      leading: Image.asset('assets/image/signout.png', width: width * 0.075, height: width * 0.075, color: const Color.fromARGB(255, 102, 0, 255)),
+                      leading: Image.asset('assets/image/signout.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
                       trailing: const Icon(Icons.arrow_right),
-                      splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+                      splashColor: globalPurple.withOpacity(0.1),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15))
                       ),
@@ -461,7 +472,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 Padding(
                                   padding: EdgeInsets.all(width * 0.01),
                                   child: Material(
-                                    color: const Color.fromARGB(255, 102, 0, 255),
+                                    color: globalPurple,
                                     shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(15))
                                     ),
@@ -477,7 +488,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
                                         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Auth(width: width)));
                                       }, 
-                                      splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                      splashColor: globalBlue,
                                       child: Padding(
                                         padding: EdgeInsets.all(width * 0.025),
                                         child: Text('Yeah', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -491,7 +502,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 Padding(
                                   padding: EdgeInsets.all(width * 0.01),
                                   child: Material(
-                                    color: const Color.fromARGB(255, 102, 0, 255),
+                                    color: globalPurple,
                                     shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(15))
                                     ),
@@ -502,7 +513,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                           Navigator.of(context).popUntil((route) => route.isFirst);
                                         }
                                       }, 
-                                      splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                      splashColor: globalBlue,
                                       child: Padding(
                                         padding: EdgeInsets.all(width * 0.025),
                                         child: Text('Close', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -538,15 +549,24 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     String assetPath = ' ';
     Widget page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
 
+    if(title != 'Go Back'){
+      lastPageBools[0] = friendsPage;
+      lastPageBools[1] = profilePage;
+      lastPageBools[2] = unchainedPage;
+      lastPageBools[3] = explorePage;
+      lastPageBools[4] = unchainedPageRefresh;
+    }
+
     switch(title){
       case 'Explore' :
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
           explorePage = true;
         });
         break;
@@ -555,10 +575,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: UniqueKey());
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
         break;
 
@@ -566,10 +587,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/newchain.png';
         page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.phoneOrEmail, key: null);
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
           unchainedPage = true;
+          unchainedPageRefresh = true;
           explorePage = false;
         });
         break;
@@ -578,10 +600,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/newchain.png';
         page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.phoneOrEmail, key: UniqueKey());
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
           unchainedPage = true;
+          unchainedPageRefresh = true;
           explorePage = false;
         });
         break;
@@ -589,48 +612,62 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Friends' :
         assetPath = 'assets/image/friends.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = true;
           profilePage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
           explorePage = false;
         });
 
-        page = FriendsPage(
-          userId: widget.phoneOrEmail,
-          changePageHeader: changePageHeader,
-        );
+        if(lastCurrentPage is FriendsPage || lastCurrentPage is FriendsPageStrangers){
+          page = lastCurrentPage;
+        }
+        else{
+          page = FriendsPage(
+            userId: addData!['userId'],
+            changePageHeader: changePageHeader,
+          );
+        }
         break;
 
       case 'Strangers' :
         assetPath = 'assets/image/friends.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = true;
           profilePage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
           explorePage = false;
         });
-       
-        page = FriendsPageStrangers(
-          userId: widget.phoneOrEmail,
-          changePageHeader: changePageHeader,
-        );
+
+        if(lastCurrentPage is FriendsPage || lastCurrentPage is FriendsPageStrangers){
+          page = lastCurrentPage;
+        }
+        else{
+          page = FriendsPageStrangers(
+            userId: addData!['userId'],
+            changePageHeader: changePageHeader,
+          );
+        }
         break;
 
       case 'Profile' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = true;
           unchainedPage = false;
+          unchainedPageRefresh = false;
           explorePage = false;
         });
 
         page = ProfilePage(
           changePageHeader: changePageHeader,
-          userId: addData!['userId'],
+          userIdToDisplay: addData!['userId'],
+          originalUserId: widget.phoneOrEmail,
           isThisUser: true,
           key: UniqueKey());
 
@@ -639,15 +676,17 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (friend)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
 
         page = ProfilePage(
           changePageHeader: changePageHeader,
-          userId: addData!['userId'],
+          userIdToDisplay: addData!['userId'],
+          originalUserId: widget.phoneOrEmail,
           isThisUser: false,
           key: null);
 
@@ -656,9 +695,10 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (chains)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
 
         page = ProfileViewChains(
@@ -670,9 +710,10 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (liked chains)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
 
         page = ProfileViewChains(
@@ -684,9 +725,10 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (saved chains)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
 
         page = ProfileViewChains(
@@ -698,17 +740,24 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (edit profile)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
+
+        page = ProfileEditDetails(
+          changePageHeader: changePageHeader, 
+          userId: widget.phoneOrEmail
+        );
 
       case 'Settings' :
         assetPath = 'assets/image/key.png';
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
+          unchainedPageRefresh = false;
         });
 
         page = ProfileSettings(
@@ -723,7 +772,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = CreateChain(changePageHeader: changePageHeader, addData: addData);
 
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
         });
 
       case 'New chain (category)' :
@@ -731,7 +780,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = CreateChainCategory(changePageHeader: changePageHeader, userId: widget.phoneOrEmail);
 
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 102, 0, 255);
+          topTitleColor = globalPurple;
+          unchainedPageRefresh = false;
         });
 
       case 'New chain (details)' :
@@ -748,7 +798,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = CreateChain(changePageHeader: changePageHeader, addData: addData);
 
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 30, 144, 255);
+          topTitleColor = globalBlue;
         });
 
       case 'New chain (gossip details)' :
@@ -765,7 +815,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = CreateChain(changePageHeader: changePageHeader, addData: addData);
 
         setState(() {
-          topTitleColor = const Color.fromARGB(255, 0, 150, 136);
+          topTitleColor = globalGreen;
         });
 
       case 'New chain (challange details)' :
@@ -776,6 +826,17 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/challange.png';
         page = CreateChainDetails(changePageHeader: changePageHeader, addData: addData);
 
+      case 'Go Back' :
+        assetPath = lastAssetsPath;
+        page = lastCurrentPage;
+        setState(() {
+          friendsPage = lastPageBools[0];
+          profilePage = lastPageBools[1];
+          unchainedPage = lastPageBools[2];
+          explorePage = lastPageBools[3];
+          unchainedPageRefresh = lastPageBools[4];
+        });
+
       default :
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
@@ -783,6 +844,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     }
 
     lastTopTile = topTitle;
+    lastCurrentPage = currentPage;
+    lastAssetsPath = assetPath;
 
     if(mounted){
       setState(() {

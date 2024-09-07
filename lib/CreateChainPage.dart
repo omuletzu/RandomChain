@@ -1,3 +1,4 @@
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -161,12 +162,12 @@ class _CreateChain extends State<CreateChain>{
                       onTap: () async {
 
                         if(_titleController.text.trim().isEmpty && isStoryCategory){
-                          Fluttertoast.showToast(msg: 'Empty title', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                          Fluttertoast.showToast(msg: 'Empty title', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                           return;
                         }
 
                         if(_themeController.text.trim().isEmpty){
-                          Fluttertoast.showToast(msg: 'Empty theme', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                          Fluttertoast.showToast(msg: 'Empty theme', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                           return;
                         }
 

@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/ProfilePage.dart';
 import 'package:doom_chain/UnchainedViewChain.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FriendElement extends StatefulWidget{
@@ -37,6 +39,7 @@ class _FriendElement extends State<FriendElement>{
   bool friendDetailsLoaded = false;
   bool containerImageLoaded = false;
   bool hasImage = false;
+  bool friendAddedOrNot = false;
 
   String friendNickname = '';
 
@@ -59,7 +62,7 @@ class _FriendElement extends State<FriendElement>{
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Material(
           child: InkWell(
-            splashColor: const Color.fromARGB(255, 102, 0, 255).withOpacity(0.1),
+            splashColor: globalPurple.withOpacity(0.1),
             
             onTap: () {
               widget.changePageHeader('Profile (friend)', {
@@ -82,12 +85,11 @@ class _FriendElement extends State<FriendElement>{
                     child: Text(friendDetailsLoaded ? friendNickname : ' ', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   ),
 
-                  Visibility(
-                    visible: hasImage,
-                    child: Padding(
-                      padding: EdgeInsets.all(width * 0.025),
-                      child: ClipOval(
-                        child: Image.network(
+                  Padding(
+                    padding: EdgeInsets.all(width * 0.025),
+                    child: ClipOval(
+                      child: hasImage 
+                        ? Image.network(
                           containerImageUrl,
                           width: width * 0.15,
                           height: width * 0.15,
@@ -107,7 +109,7 @@ class _FriendElement extends State<FriendElement>{
                             return Icon(Icons.error, size: width * 0.025);
                           },
                         )
-                      )
+                      : Image.asset('assets/image/profile.png', width: width * 0.15, height: width * 0.15)
                     )
                   ),
 
@@ -116,19 +118,29 @@ class _FriendElement extends State<FriendElement>{
                     children: [
                       Visibility(
                         visible: !widget.friendOrStranger,
-                        child: IconButton(
-                          onPressed: () async {
-                            await widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).set({
-                              'nickname' : widget.friendData!['nickname']
-                            });
-                          }, 
-                          icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075)
-                        )
+                        child: !friendAddedOrNot 
+                          ? IconButton(
+                              onPressed: () async {
+                                setState(() {
+                                  friendAddedOrNot = true;
+                                  Fluttertoast.showToast(msg: 'Sent request to ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                });
+                              }, 
+                              icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075)
+                            )
+                          : IconButton(
+                              onPressed: () async {
+                                setState(() {
+                                  friendAddedOrNot = false;
+                                });
+                              }, 
+                              icon: Image.asset('assets/image/minus.png', width: width * 0.075, height: width * 0.075)
+                            )
                       ),
 
                       IconButton(
                         onPressed: () {
-
+                          print(widget.friendOrStranger);
                         }, 
                         icon: Image.asset('assets/image/details.png', width: width * 0.05, height: width * 0.05)
                       )
@@ -150,7 +162,7 @@ class _FriendElement extends State<FriendElement>{
       if(widget.friendData!['avatarPath'] != '-'){
         
         try{
-          Reference reference = widget.storage.ref().child(widget.friendData!['avatarPath'] + '.png');
+          Reference reference = widget.storage.ref().child(widget.friendData!['avatarPath']);
           containerImageUrl =  await reference.getDownloadURL();
 
           if(mounted){
@@ -179,18 +191,34 @@ class _FriendElement extends State<FriendElement>{
     int index = random.nextInt(1);
 
     if(index == 0){
-      return const Color.fromARGB(255, 102, 0, 255);
+      return globalPurple;
     }
 
     if(index == 1){
-      return const Color.fromARGB(255, 30, 144, 255);
+      return globalBlue;
     }
 
-    return const Color.fromARGB(255, 0, 150, 136);
+    return globalGreen;
+  }
+
+  void _addFriend() async {
+    await widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).set({
+      'nickname' : widget.friendData!['nickname']
+    });
+
+    int currentFriendsCount = (await widget.firebase.collection('UserDetails').doc(widget.userId).get()).get('friendsCount');
+
+    await widget.firebase.collection('UserDetails').doc(widget.userId).update({
+      'friendsCount' : currentFriendsCount + 1
+    });
   }
 
   @override
   void dispose(){
+    if(friendAddedOrNot){
+      _addFriend();
+    }
+
     super.dispose();
   }
 }

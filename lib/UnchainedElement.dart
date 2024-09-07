@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedViewChain.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -178,15 +179,15 @@ class _UnchainedElement extends State<UnchainedElement>{
     String categoryName = widget.chainIdAndCategoryName.second as String;
 
     if(categoryName == 'Story'){
-      categoryColor = const Color.fromARGB(255, 102, 0, 255);
+      categoryColor = globalPurple;
     }else if(categoryName == 'Gossip'){
-      categoryColor = const Color.fromARGB(255, 30, 144, 255);
+      categoryColor = globalBlue;
       titleCategoryIconAssetPath = 'assets/image/gossip.png';
     }else if(categoryName == "Chainllange"){
-      categoryColor = const Color.fromARGB(255, 0, 150, 136);
+      categoryColor = globalGreen;
       titleCategoryIconAssetPath = 'assets/image/challange.png';
     }else{
-      categoryColor = const Color.fromARGB(255, 102, 0, 255);
+      categoryColor = globalPurple;
     }
 
     List<dynamic> contributions = jsonDecode(widget.chainData['contributions']);

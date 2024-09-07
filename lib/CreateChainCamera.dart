@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:doom_chain/AbstractMenu.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -73,7 +74,7 @@ class CreateChainCamera extends StatefulWidget{
         if(addData!['randomOrFriends']){
 
           if(addData['chainPieces'] > allUserNotFromSameCountry.docs.length && addData['chainPieces'] > allUsersFromSameCountry.docs.length){
-            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
             return Future.value(false);
           }
         }
@@ -81,7 +82,7 @@ class CreateChainCamera extends StatefulWidget{
           allFriends = await firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : chainMap!['userIdForFriendList']).collection('Friends').get();
 
           if(addData['chainPieces'] > allFriends.docs.length){
-            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
             return Future.value(false);
           }
         }
@@ -237,7 +238,7 @@ class CreateChainCamera extends StatefulWidget{
     changePageHeader('Unchained (refresh)', null);
 
     if(newChainOrExtend){
-      Fluttertoast.showToast(msg: 'Chain sent', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+      Fluttertoast.showToast(msg: 'Chain sent', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
     }
 
     return Future.value(true);
@@ -413,11 +414,6 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
               photoLatDivider = 1;
             }
             else{
-              if(photo != null && widget.callBackAfterPhoto != null){
-                //widget.callBackAfterPhoto!(photo!.path, false);
-                //Navigator.of(context).pop();
-              }
-
               Navigator.of(context).pop();
             }
           });
@@ -599,7 +595,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                           onTap: () async {
 
                             if(!disableFirstPhraseForChallange && _textController.text.isEmpty){
-                              Fluttertoast.showToast(msg: 'Empty first phrase', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                              Fluttertoast.showToast(msg: 'Empty first phrase', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                               return;
                             }
 
@@ -661,7 +657,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                                               });
                                             }
                                           }, 
-                                          splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                          splashColor: globalBlue,
                                           child: Padding(
                                             padding: EdgeInsets.all(width * 0.025),
                                             child: Text('Yeah', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -684,7 +680,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                                           onTap: () async {
                                             Navigator.of(context).pop();
                                           }, 
-                                          splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                          splashColor: globalBlue,
                                           child: Padding(
                                             padding: EdgeInsets.all(width * 0.025),
                                             child: Text('Close', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))

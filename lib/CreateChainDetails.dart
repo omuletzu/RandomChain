@@ -1,4 +1,5 @@
 import 'package:doom_chain/CreateChainCamera.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
@@ -211,7 +212,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                                       onTap: () async {
                                         finishNewChainPost(context, false);
                                       }, 
-                                      splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                      splashColor: globalBlue,
                                       child: Padding(
                                         padding: EdgeInsets.all(width * 0.025),
                                         child: Text('I\'m fine', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -234,7 +235,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                                       onTap: () async {
                                         Navigator.of(context).pop();
                                       }, 
-                                      splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                      splashColor: globalBlue,
                                       child: Padding(
                                         padding: EdgeInsets.all(width * 0.025),
                                         child: Text('Close', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))

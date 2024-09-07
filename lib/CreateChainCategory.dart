@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -70,7 +71,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
     _animationColorGossip = ColorTween(
       begin: Colors.black87,
-      end: const Color.fromARGB(255, 30, 144, 255)
+      end: globalBlue
     ).animate(_controllerGossip);
 
     _controllerChainllange = AnimationController(
@@ -80,7 +81,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
     _animationColorChainllange = ColorTween(
       begin: Colors.black87,
-      end: const Color.fromARGB(255, 0, 150, 136)
+      end: globalGreen
     ).animate(_controllerChainllange);
 
     _animationControllerSlideUp = AnimationController(
@@ -241,7 +242,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                 child: Padding(
                   padding: EdgeInsets.all(width * 0.05),
                   child: Material(
-                    color: const Color.fromARGB(255, 102, 0, 255),
+                    color: globalPurple,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15))
                     ),
@@ -251,8 +252,8 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                         if(index == 0){
                           widget.changePageHeader('New chain (story)', {
                             'categoryType' : 0,
-                            'baseCategoryColor' : const Color.fromARGB(255, 102, 0, 255),
-                            'splashColor' : const Color.fromARGB(255, 30, 144, 255),
+                            'baseCategoryColor' : globalPurple,
+                            'splashColor' : globalBlue,
                             'userId' : widget.userId
                           });
                         }
@@ -260,8 +261,8 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                         if(index == 1){
                           widget.changePageHeader('New chain (gossip)', {
                             'categoryType' : 1,
-                            'baseCategoryColor' : const Color.fromARGB(255, 30, 144, 255),
-                            'splashColor' : const Color.fromARGB(255, 102, 0, 255),
+                            'baseCategoryColor' : globalBlue,
+                            'splashColor' : globalPurple,
                             'userId' : widget.userId
                           });
                         }
@@ -269,13 +270,13 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                         if(index == 2){
                           widget.changePageHeader('New chain (challange)', {
                             'categoryType' : 2,
-                            'baseCategoryColor' : const Color.fromARGB(255, 0, 150, 136),
-                            'splashColor' : const Color.fromARGB(255, 30, 144, 255),
+                            'baseCategoryColor' : globalGreen,
+                            'splashColor' : globalBlue,
                             'userId' : widget.userId
                           });
                         }
                       }, 
-                      splashColor: const Color.fromARGB(255, 30, 144, 255),
+                      splashColor: globalBlue,
                       child: Padding(
                         padding: EdgeInsets.all(width * 0.025),
                         child: Text('CONTINUE', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))
@@ -382,14 +383,14 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
   Color getColor(int index){
     if(index == 1){
-      return const Color.fromARGB(255, 30, 144, 255);
+      return globalBlue;
     }
 
     if(index == 2){
-      return const Color.fromARGB(255, 0, 150, 136);
+      return globalGreen;
     }
 
-    return const Color.fromARGB(255, 102, 0, 255);
+    return globalPurple;
   }
 
   @override

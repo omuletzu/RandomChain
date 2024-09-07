@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/FriendElement.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'Pair.dart';
 
 class FriendsPage extends StatefulWidget{
 
@@ -42,6 +42,7 @@ class _FriendsPage extends State<FriendsPage>{
 
     retreiveFriendsFirebase();
     listToDisplay = Future.value(allFriendsList);
+    scrollController.addListener(scrollListenerFunction);
   }
 
   @override
@@ -54,6 +55,14 @@ class _FriendsPage extends State<FriendsPage>{
       onPopInvoked: (didPop){
         if(!didPop){
 
+          if(_textController.text.isNotEmpty){
+            _textController.text = '';
+          }
+          else{
+            widget.changePageHeader('Profile', {
+              'userId' : widget.userId
+            });
+          }
         }
       },
       child: Scaffold(
@@ -73,7 +82,7 @@ class _FriendsPage extends State<FriendsPage>{
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                       borderSide: BorderSide(width: 2.0),
                     ),
-                    focusColor: const Color.fromARGB(255, 30, 144, 255),
+                    focusColor: globalBlue,
                     label: Center(
                       child: Text(
                         'Nickname',
@@ -84,9 +93,9 @@ class _FriendsPage extends State<FriendsPage>{
                   ),
                   
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold),
+                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
                   onChanged: (value) async {
-                    if(value.isEmpty){
+                    if(mounted && value.isEmpty){
                       setState(() {
                         searchingMode = false;
                         listToDisplay = Future.value(allFriendsList);
@@ -170,10 +179,6 @@ class _FriendsPage extends State<FriendsPage>{
 
       DocumentSnapshot friend = peopleToSearchDetails.docs[index];
 
-      if(friend.id == widget.userId){
-        continue;
-      }
-
       Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(friend.id).get()).data() as Map<String, dynamic>;
 
       if(mounted){
@@ -200,18 +205,13 @@ class _FriendsPage extends State<FriendsPage>{
       });
     }
 
-    if(!scrollListenerAdded){   // executed only once
-
-      scrollController.addListener(() {
-        if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
-          retreiveFriendsFirebase();
-        }
-      });
-
-      scrollListenerAdded = true;
-    }
-
     return allFriendsList;
+  }
+
+  void scrollListenerFunction(){
+    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
+      retreiveFriendsFirebase();
+    }
   }
 
   Future<List<FriendElement>> _searchByNickname(String filterNickname) async {
@@ -254,6 +254,8 @@ class _FriendsPage extends State<FriendsPage>{
   @override
   void dispose(){
     _textController.dispose();
+    scrollController.removeListener(scrollListenerFunction);
+    scrollController.dispose();
     super.dispose();
   }
 }

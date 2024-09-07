@@ -1,3 +1,4 @@
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
@@ -108,7 +109,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   randomOrFriends = true;
                                 });
                               },
-                              splashColor: randomOrFriends ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              splashColor: randomOrFriends ? globalBlue : widget.addData!['baseCategoryColor'],
                               child: Padding(
                                 padding: EdgeInsets.all(width * 0.01),
                                 child: Row(
@@ -142,7 +143,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   randomOrFriends = false;
                                 });
                               },
-                              splashColor: !randomOrFriends ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              splashColor: !randomOrFriends ? globalBlue : widget.addData!['baseCategoryColor'],
                               child: Padding(
                                 padding: EdgeInsets.all(width * 0.01),
                                 child: Row(
@@ -194,7 +195,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   allOrPartChain = true;
                                 });
                               },
-                              splashColor: allOrPartChain ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              splashColor: allOrPartChain ? globalBlue : widget.addData!['baseCategoryColor'],
                               child: Padding(
                                 padding: EdgeInsets.all(width * 0.01),
                                 child: Row(
@@ -228,7 +229,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   allOrPartChain = false;
                                 });
                               },
-                              splashColor: !allOrPartChain ? const Color.fromARGB(255, 30, 144, 255) : widget.addData!['baseCategoryColor'],
+                              splashColor: !allOrPartChain ? globalBlue : widget.addData!['baseCategoryColor'],
                               child: Padding(
                                 padding: EdgeInsets.all(width * 0.01),
                                 child: Row(

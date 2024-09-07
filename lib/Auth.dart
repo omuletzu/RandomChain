@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/PhoneAuth.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -28,7 +29,7 @@ class Auth extends StatefulWidget{
       GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
 
       if(googleSignInAccount == null){
-        Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+        Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
         return;
       }
 
@@ -58,7 +59,7 @@ class Auth extends StatefulWidget{
     }
     catch(e){
       print(e);
-      Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+      Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
     }
   }
 }
@@ -127,7 +128,7 @@ class _Auth extends State<Auth> with TickerProviderStateMixin{
                       TypewriterAnimatedText(
                         typedStrings[typedStringIndex],
                         speed: const Duration(milliseconds: 500),
-                        textStyle: GoogleFonts.courierPrime(fontSize: width * 0.05, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold)
+                        textStyle: GoogleFonts.courierPrime(fontSize: width * 0.05, color: globalPurple, fontWeight: FontWeight.bold)
                       )
                     ],
 

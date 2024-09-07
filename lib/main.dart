@@ -22,7 +22,7 @@ void main() async {
 
   await Workmanager().initialize(
     callBackDipatcher,
-    isInDebugMode: true
+    isInDebugMode: false
   );
 
   SystemChrome.setSystemUIOverlayStyle(

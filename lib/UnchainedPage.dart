@@ -1,3 +1,4 @@
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:doom_chain/main.dart';
@@ -95,7 +96,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
               padding: EdgeInsets.only(top: width * 0.05, left: width * 0.2, right: width * 0.2),
               child: Center(
                 child: Material(
-                  color: const Color.fromARGB(255, 102, 0, 255),
+                  color: globalPurple,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15))
                   ),
@@ -104,7 +105,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
                     onTap: () {
                       widget.changePageHeader('New chain (category)', null);
                     }, 
-                    splashColor: const Color.fromARGB(255, 30, 144, 255),
+                    splashColor: globalBlue,
                     child: Padding(
                       padding: EdgeInsets.all(width * 0.02),
                       child: Row(

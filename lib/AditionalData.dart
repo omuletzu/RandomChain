@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/EmailPassSignUp.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/PhoneAuth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -124,12 +125,12 @@ class _AditionalData extends State<AditionalData>{
               children: [
                 
                 Padding(
-                  padding: EdgeInsets.all(widget.width * 0.05),
+                  padding: EdgeInsets.all(widget.width * 0.025),
                   child: Text('Country', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.black87, fontWeight: FontWeight.bold)),
                 ),
 
                 Padding(
-                  padding: EdgeInsets.all(widget.width * 0.05),
+                  padding: EdgeInsets.all(widget.width * 0.025),
                   child: TextButton(
                     onPressed: () {
                       showCountryPicker(
@@ -153,7 +154,7 @@ class _AditionalData extends State<AditionalData>{
             Padding(
               padding: EdgeInsets.all(widget.width * 0.1),
               child: Material(
-                color: const Color.fromARGB(255, 102, 0, 255),
+                color: globalPurple,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15))
                 ),
@@ -162,27 +163,27 @@ class _AditionalData extends State<AditionalData>{
                   onTap: () async {
                     
                     if(dateTimeText == 'DD / MM / YYYY'){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(dateTime == null){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(DateTime.now().year - (dateTime?.year ?? 0) < 10){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(_nicknameController.text.isEmpty){
-                      Fluttertoast.showToast(msg: 'Invalid nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                      Fluttertoast.showToast(msg: 'Invalid nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(countryName == '-'){
-                      Fluttertoast.showToast(msg: 'Invalid country', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                      Fluttertoast.showToast(msg: 'Invalid country', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                       return;
                     }
 
@@ -199,13 +200,15 @@ class _AditionalData extends State<AditionalData>{
                       'GossipContributions' : 0,
                       'ChainllangeContributions' : 0,
                       'totalContributions' : 0,
-                      'accountSince' : timestamp
+                      'totalPoints' : 0,
+                      'accountSince' : timestamp,
+                      'friendsCount' : 0,
                     });
 
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: widget.phoneOrEmail)));
 
                   }, 
-                  splashColor: const Color.fromARGB(255, 30, 144, 255),
+                  splashColor: globalBlue,
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.025),
                     child: Text('CONTINUE', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))

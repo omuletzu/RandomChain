@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,13 +8,15 @@ import 'package:intl/intl.dart';
 class ProfilePage extends StatefulWidget{
 
   final void Function(String, Map<String, dynamic>?) changePageHeader;
-  final String userId;
+  final String userIdToDisplay;
+  final String originalUserId;
   final bool isThisUser;
   final Key? key;
 
   ProfilePage({
     required this.changePageHeader,
-    required this.userId,
+    required this.userIdToDisplay,
+    required this.originalUserId,
     required this.isThisUser,
     required this.key
   }) : super(key: key);
@@ -61,7 +64,9 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
       canPop: widget.isThisUser,
       onPopInvoked: (didPop) {
         if(!didPop){
-
+          if(!widget.isThisUser){
+            widget.changePageHeader('Friends', null);
+          }
         }
       },
       child: Scaffold(
@@ -141,7 +146,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Text(userDataRetreived ? totalPoints.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text(userDataRetreived ? totalPoints.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
@@ -154,7 +159,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                         onTap: () {
                           if(userDataRetreived){
                             Map<String, dynamic> profileInfoWithUserId = profileInfo;
-                            profileInfoWithUserId['userId'] = widget.userId;
+                            profileInfoWithUserId['userId'] = widget.userIdToDisplay;
                             widget.changePageHeader('Profile (chains)', profileInfoWithUserId);
                           }
                         },
@@ -167,7 +172,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
-                              child: Text(userDataRetreived ? totalContributions.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                              child: Text(userDataRetreived ? totalContributions.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                             ),
                             Padding(
                               padding: EdgeInsets.all(width * 0.01),
@@ -176,23 +181,30 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           ],
                         )
                       ),
-
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(width * 0.01),
-                            child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(width * 0.01),
-                            child: Text(userDataRetreived ? totalFriends.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(width * 0.01),
-                            child: Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                          ),
-                        ],
+                      
+                      InkWell(
+                        onTap: () {
+                          widget.changePageHeader('Friends', {
+                            'userId' : widget.userIdToDisplay
+                          });
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(width * 0.01),
+                              child: Image.asset('assets/image/friends.png', width: width * 0.12, height: width * 0.12),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(width * 0.01),
+                              child: Text(userDataRetreived ? totalFriends.toString() : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(width * 0.01),
+                              child: Text('Friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            ),
+                          ],
+                        )
                       ),
 
                       Column(
@@ -204,7 +216,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
-                            child: Text(userDataRetreived ? format.format(accountSince) : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                            child: Text(userDataRetreived ? format.format(accountSince) : '-', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                           ),
                           Padding(
                             padding: EdgeInsets.all(width * 0.01),
@@ -225,10 +237,10 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
   Future<void> retreiveDataFirebase() async {
     try{
 
-      profileInfo = (await _firebase.collection('UserDetails').doc(widget.userId).get()).data() as Map<String, dynamic>;
+      profileInfo = (await _firebase.collection('UserDetails').doc(widget.userIdToDisplay).get()).data() as Map<String, dynamic>;
 
-      int numberOfFriends = (await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').get()).docs.length;
-      Timestamp accountSinceTimestamp = (await _firebase.collection('UserDetails').doc(widget.userId).get()).get('accountSince');
+      int numberOfFriends = profileInfo['friendsCount'] ?? 0;
+      Timestamp accountSinceTimestamp = (await _firebase.collection('UserDetails').doc(widget.userIdToDisplay).get()).get('accountSince');
 
       accountSince = accountSinceTimestamp.toDate();
 
@@ -240,7 +252,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
       });
 
       if(profileInfo['avatarPath'] != '-'){
-        Reference avatarPath = _storage.ref().child(profileInfo['avatarPath'] + '.png');
+        Reference avatarPath = _storage.ref().child(profileInfo['avatarPath']);
         profileImageUrl = await avatarPath.getDownloadURL();
         setState(() {
           hasProfileImage = true;

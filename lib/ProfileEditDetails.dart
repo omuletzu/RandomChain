@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileEditDetails extends StatefulWidget{
 
-  final void Function(String, Map<String, dynamic>) changePageHeader;
+  final void Function(String, Map<String, dynamic>?) changePageHeader;
   final String userId;
 
   ProfileEditDetails({
@@ -57,9 +58,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
       canPop: false,
       onPopInvoked: (didPop) {
         if(!didPop){
-          widget.changePageHeader('Profile', {
-            'userId' : widget.userId
-          });
+          widget.changePageHeader('Go Back', null);
         }
       },
       child: Scaffold(
@@ -144,7 +143,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                           )
                         ),
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.nunito(fontSize: width * 0.05, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold),
+                        style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalPurple, fontWeight: FontWeight.bold),
                       ),
                       
                       Padding(
@@ -201,7 +200,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                         child: CircularProgressIndicator()
                       )
                       : Material(
-                          color: const Color.fromARGB(255, 102, 0, 255),
+                          color: globalPurple,
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(15))
                           ),
@@ -210,7 +209,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                             onTap: () async {
 
                               if(_nicknameController.text.isEmpty){
-                                Fluttertoast.showToast(msg: 'Empty nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                Fluttertoast.showToast(msg: 'Empty nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                                 return;
                               }
 
@@ -231,7 +230,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                       Padding(
                                         padding: EdgeInsets.all(width * 0.01),
                                         child: Material(
-                                          color: const Color.fromARGB(255, 102, 0, 255),
+                                          color: globalPurple,
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(Radius.circular(15))
                                           ),
@@ -248,21 +247,23 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                               }
 
                                               if(!notPickedImage){
-                                                Reference newAvatarReference = _storage.ref().child('avatars/${widget.userId}' + '.png');
+                                                Reference newAvatarReference = _storage.ref().child('avatars/${widget.userId}');
                                                 await newAvatarReference.putFile(imagePicked!);
                                               }
 
                                               await _firebase.collection('UserDetails').doc(widget.userId).update({
-                                                'nickname' : _nicknameController.text,
+                                                'nickname' : _nicknameController.text.trim(),
+                                                'nicknameLowercase' : _nicknameController.text.toLowerCase().trim(),
                                                 'countryName' : countryName,
-                                                'countryEmoji' : countryEmoji
+                                                'countryEmoji' : countryEmoji,
+                                                'avatarPath' : 'avatars/${widget.userId}'
                                               });
 
                                               widget.changePageHeader('Profile', {
                                                 'userId' : widget.userId
                                               });
                                             }, 
-                                            splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                            splashColor: globalBlue,
                                             child: Padding(
                                               padding: EdgeInsets.all(width * 0.025),
                                               child: Text('Yeah', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -276,7 +277,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                       Padding(
                                         padding: EdgeInsets.all(width * 0.01),
                                         child: Material(
-                                          color: const Color.fromARGB(255, 102, 0, 255),
+                                          color: globalPurple,
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(Radius.circular(15))
                                           ),
@@ -285,7 +286,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                             onTap: () async {
                                               Navigator.of(context).pop();
                                             }, 
-                                            splashColor: const Color.fromARGB(255, 30, 144, 255),
+                                            splashColor: globalBlue,
                                             child: Padding(
                                               padding: EdgeInsets.all(width * 0.025),
                                               child: Text('Close', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
@@ -298,7 +299,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                 }
                               );
                             }, 
-                            splashColor: const Color.fromARGB(255, 30, 144, 255),
+                            splashColor: globalBlue,
                             child: Padding(
                               padding: EdgeInsets.all(width * 0.03),
                               child: Text('SAVE', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))
@@ -327,7 +328,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
     countryName = userData['countryName'];
 
     if(userData['avatarPath'] != '-'){
-      Reference avatarReference = _storage.ref().child('avatars/${widget.userId}' + '.png');
+      Reference avatarReference = _storage.ref().child('avatars/${widget.userId}');
       originalAvatar = await avatarReference.getDownloadURL();
 
       setState(() {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/AditionalData.dart';
 import 'package:doom_chain/EmailPassSignIn.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'PhoneAuth.dart';
@@ -145,7 +146,7 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                     Padding(
                       padding: EdgeInsets.all(width * 0.05),
                       child: Material(
-                        color: const Color.fromARGB(255, 102, 0, 255),
+                        color: globalPurple,
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(15))
                         ),
@@ -224,7 +225,7 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                           onTap: () async {
                             widget.currentAuthRefresh(EmailPassSignIn(currentAuthRefresh: widget.currentAuthRefresh, firebaseAuth: widget.firebaseAuth, firebaseFirestore: widget.firebaseFirestore));
                           }, 
-                          splashColor: const Color.fromARGB(255, 102, 0, 255),
+                          splashColor: globalPurple,
                           child: Padding(
                             padding: EdgeInsets.all(width * 0.025),
                             child: Text('Sign In', style: GoogleFonts.nunito(fontSize: width * 0.06, color: Colors.white, fontWeight: FontWeight.bold))

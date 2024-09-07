@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/FriendElement.dart';
+import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'Pair.dart';
 
 class FriendsPageStrangers extends StatefulWidget{
 
@@ -55,7 +55,14 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
       canPop: false,
       onPopInvoked: (didPop){
         if(!didPop){
-
+          if(_textController.text.isNotEmpty){
+            _textController.text = '';
+          }
+          else{
+            widget.changePageHeader('Profile', {
+              'userId' : widget.userId
+            });
+          }
         }
       },
       child: Scaffold(
@@ -83,7 +90,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                       borderRadius: BorderRadius.all(Radius.circular(15)),
                       borderSide: BorderSide(width: 2.0),
                     ),
-                    focusColor: const Color.fromARGB(255, 30, 144, 255),
+                    focusColor: globalBlue,
                     label: Center(
                       child: Text(
                         'Nickname',
@@ -94,9 +101,9 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                   ),
                   
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: const Color.fromARGB(255, 102, 0, 255), fontWeight: FontWeight.bold),
+                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
                   onChanged: (value) async {
-                    if(value.isEmpty){
+                    if(mounted && value.isEmpty){
                       setState(() {
                         searchingMode = false;
                         listToDisplay = Future.value(allFriendsList);
@@ -174,30 +181,35 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
         continue;
       }
 
-      Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(friend.id).get()).data() as Map<String, dynamic>;
+      if((await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(friend.id).get()).exists){
+        i--;
+      }
+      else{
+        Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(friend.id).get()).data() as Map<String, dynamic>;
+
+        if(mounted){
+          setState(() {
+            allFriendsList.add(
+                FriendElement(
+                  userId: widget.userId, 
+                  friendId: friend.id,
+                  firebase: _firebase, 
+                  storage: _storage,
+                  friendData: friendData,
+                  changePageHeader: widget.changePageHeader,
+                  friendOrStranger : false
+                )
+              );
+            }
+          );
+        }
+      }
 
       if(mounted){
         setState(() {
-          allFriendsList.add(
-              FriendElement(
-                userId: widget.userId, 
-                friendId: friend.id,
-                firebase: _firebase, 
-                storage: _storage,
-                friendData: friendData,
-                changePageHeader: widget.changePageHeader,
-                friendOrStranger : false
-              )
-            );
-          }
-        );
+          hasCheckedForExistingFriends = true;
+        });
       }
-    }
-
-    if(mounted){
-      setState(() {
-        hasCheckedForExistingFriends = true;
-      });
     }
 
     if(!scrollListenerAdded){   // executed only once
@@ -254,6 +266,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
   @override
   void dispose(){
     _textController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 }
