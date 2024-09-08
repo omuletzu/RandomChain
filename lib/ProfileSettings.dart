@@ -1,6 +1,7 @@
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -86,6 +87,7 @@ class _ProfileSettings extends State<ProfileSettings> {
                         }
                         else{
                           Workmanager().cancelByUniqueName('1');
+                          OneSignal.Notifications.clearAll();
                         }
                       }
                     )

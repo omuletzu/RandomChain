@@ -223,8 +223,6 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                                   )
                                 ),
 
-                                const Spacer(),
-
                                 Padding(
                                   padding: EdgeInsets.all(width * 0.01),
                                   child: Material(

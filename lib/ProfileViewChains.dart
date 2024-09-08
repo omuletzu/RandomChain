@@ -233,7 +233,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
                         child: Text('This user has no ${categoryNameByIndex[categoryIndex]} chains in this category', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center))
                     )
               )
-              : const Expanded(
+              : const Center(
                   child: Center(
                     child: CircularProgressIndicator(),
                   )

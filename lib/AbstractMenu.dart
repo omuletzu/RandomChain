@@ -15,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ExplorePage.dart';
 import 'ProfilePage.dart';
@@ -54,9 +55,10 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   late Widget lastCurrentPage;
 
   String topImageAsset = 'assets/image/explore.png';
-  String topTitle = 'Explore';
-  String lastTopTile = 'Explore'; 
+  String currentPageDisplayedTitle = 'Explore';
+  String lastCurrentPageDisplayedTitle = 'Explore';
   String lastAssetsPath = '';
+  String assetPath = '';
   List<bool> lastPageBools = List.filled(5, false);
   Color topTitleColor = globalPurple;
 
@@ -109,15 +111,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     _animationOpacityIconUnchained.forward();
     _animationOpacityIconFriends.forward();
     _animationOpacityIconProfile.forward();
-
-    Workmanager().registerPeriodicTask(
-      '1', 
-      'listenerTask',
-      frequency: const Duration(minutes: 15),
-      inputData: {
-        'userId' : widget.phoneOrEmail
-      }
-    );
   }
 
   @override
@@ -140,12 +133,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                   children: [
                     Padding(
                       padding: EdgeInsets.all(width * 0.02),
-                      child: Image.asset(topImageAsset, fit: BoxFit.fill, width: width * 0.12, height: width * 0.12, color: globalTextBackground),
+                      child: Image.asset(topImageAsset, fit: BoxFit.fill, width: width * 0.1, height: width * 0.1, color: globalTextBackground),
                     ),
 
                     Padding(
                       padding: EdgeInsets.all(width * 0.02),
-                      child: Text(topTitle, style: GoogleFonts.nunito(fontSize: width * 0.05, color: topTitleColor, fontWeight: FontWeight.bold))
+                      child: Text(currentPageDisplayedTitle, style: GoogleFonts.nunito(fontSize: width * 0.05, color: topTitleColor, fontWeight: FontWeight.bold))
                     ),
 
                     Visibility(
@@ -497,8 +490,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                   )
                                 ),
 
-                                const Spacer(),
-
                                 Padding(
                                   padding: EdgeInsets.all(width * 0.01),
                                   child: Material(
@@ -545,11 +536,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
     _animationOpacity.reset();
     _animationOpacity.forward();
-
-    String assetPath = ' ';
-    Widget page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
     
+    String tempCurrentTitle = lastCurrentPageDisplayedTitle;
+    Widget page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
+
     if(title != 'Go Back'){
+      lastAssetsPath = assetPath;
       lastPageBools[0] = friendsPage;
       lastPageBools[1] = profilePage;
       lastPageBools[2] = unchainedPage;
@@ -562,6 +554,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
         setState(() {
+          tempCurrentTitle = 'Explore';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
@@ -587,6 +580,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/newchain.png';
         page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.phoneOrEmail, key: null);
         setState(() {
+          tempCurrentTitle = 'Unchained';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
@@ -612,6 +606,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Friends' :
         assetPath = 'assets/image/friends.png';
         setState(() {
+          tempCurrentTitle = 'Friends';
           topTitleColor = globalPurple;
           friendsPage = true;
           profilePage = false;
@@ -634,6 +629,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Strangers' :
         assetPath = 'assets/image/friends.png';
         setState(() {
+          tempCurrentTitle = 'New people';
           topTitleColor = globalPurple;
           friendsPage = true;
           profilePage = false;
@@ -656,6 +652,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile' :
         assetPath = 'assets/image/profile.png';
         setState(() {
+          tempCurrentTitle = 'Profile';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = true;
@@ -676,6 +673,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (friend)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
+          tempCurrentTitle = 'Profile';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
@@ -695,6 +693,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (chains)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
+          tempCurrentTitle = 'Profile (personal)';
           topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
@@ -708,8 +707,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         break;
 
       case 'Profile (liked chains)' :
-        assetPath = 'assets/image/profile.png';
+        assetPath = 'assets/image/star.png';
         setState(() {
+          tempCurrentTitle = 'Profile (liked)';
           topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
@@ -723,8 +723,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         break;
 
       case 'Profile (saved chains)' :
-        assetPath = 'assets/image/profile.png';
+        assetPath = 'assets/image/save.png';
         setState(() {
+          tempCurrentTitle = 'Profile (saved)';
           topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
@@ -738,8 +739,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         break;
 
       case 'Profile (edit profile)' :
-        assetPath = 'assets/image/profile.png';
+        assetPath = 'assets/image/info.png';
         setState(() {
+          tempCurrentTitle = 'Edit profile';
           topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;
@@ -753,6 +755,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Settings' :
         assetPath = 'assets/image/key.png';
+        tempCurrentTitle = 'Settings';
         setState(() {
           topTitleColor = globalPurple;
           friendsPage = false;
@@ -844,14 +847,13 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         break;
     }
 
-    lastTopTile = topTitle;
     lastCurrentPage = currentPage;
-    lastAssetsPath = assetPath;
+    lastCurrentPageDisplayedTitle = currentPageDisplayedTitle;
 
     if(mounted){
       setState(() {
+        currentPageDisplayedTitle = tempCurrentTitle;
         topImageAsset = assetPath;
-        topTitle = title;
         currentPage = page;
       });
     }
@@ -868,9 +870,27 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   Future<void> _setUserIdentifier() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setString('userId', widget.phoneOrEmail);
+
+    _checkIfWorkmanagerMustBeEnabled(sharedPreferences);
   }
 
   void updateUIFromSetting(){
     setState(() {});
+  }
+
+  void _checkIfWorkmanagerMustBeEnabled(SharedPreferences sharedPreferences){
+    if(sharedPreferences.getBool('notificationsEnabled') ?? true){
+      Workmanager().registerPeriodicTask(
+        '1', 
+        'listenerTask',
+        frequency: const Duration(minutes: 15),
+        inputData: {
+          'userId' : widget.phoneOrEmail
+        }
+      );
+    }
+    else{
+      OneSignal.Notifications.clearAll();
+    }
   }
 }

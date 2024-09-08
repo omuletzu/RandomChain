@@ -8,7 +8,6 @@ import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -50,6 +49,8 @@ class _ExplorePage extends State<ExplorePage>{
   bool searchFinished = false;
 
   int orderForCountryRandomness = 0;  // 0, 1 - same country, 2 - random country
+  List<String> allForeignCountryWithFinishedChains = [];
+  List<String> allCategoriesName = ['Story', 'Gossip', 'Chainllange'];
 
   Random random = Random();
 
@@ -87,7 +88,7 @@ class _ExplorePage extends State<ExplorePage>{
                   suffixIconColor: globalTextBackground,
                   label: Center(
                     child: Text(
-                      'Search chain',
+                      'Search tag',
                       style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -199,14 +200,25 @@ class _ExplorePage extends State<ExplorePage>{
 
     totalNumberOfChains = finishedStoryReference.docs.length + finishedGossipReference.docs.length + finishedChainllangeReference.docs.length;
 
-    if(finishedChainsCategory.isNotEmpty){
+    QuerySnapshot allCountryFinishedChainsSnapshot = await _firebase.collection('AllCountryFinishedChains').get();
+
+    for(DocumentSnapshot country in allCountryFinishedChainsSnapshot.docs){
+      allForeignCountryWithFinishedChains.add(country.id);
+    }
+
+    if(finishedChainsCategory.isNotEmpty || allForeignCountryWithFinishedChains.isNotEmpty){
+
+      await updateScrollChainData();
+      if(allChainsWidget.length >= totalNumberOfChains){
         updateScrollChainData();
-        if(mounted){
-          setState(() {
-            existingChains = true;
-          });
-        }
       }
+
+      if(mounted){
+        setState(() {
+          existingChains = true;
+        });
+      }
+    }
 
     if(mounted){
       setState(() {
@@ -267,66 +279,124 @@ class _ExplorePage extends State<ExplorePage>{
 
   Future<void> updateScrollChainData() async {
 
-    if(orderForCountryRandomness < 2){
-
-      if(allChainsWidget.length >= totalNumberOfChains){
-        return;
-      }
-
-      for(int i = 0; i < 5; i++){
-
-        int categoryIndex = random.nextInt(finishedChainsCategory.length);
-        int index = random.nextInt((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs.length);
-
-        if(allChainsWidget.length >= totalNumberOfChains){
-          break;
-        }
-        else{
-
-          if(!allChainsWidget.map((e) => e.second).contains((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id)){
-
-            allChainsWidget.add(
-              Pair(
-                first: UnchainedElement(
-                  userId: widget.exploreData!['userId'], 
-                  firebase: _firebase, 
-                  storage: _storage, 
-                  calledByExplore: true,
-                  chainIdAndCategoryName: Pair(
-                    first: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id, 
-                    second: (finishedChainsCategory[categoryIndex].second as String)
-                  ), 
-                  chainData: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].data() as Map<String, dynamic>, 
-                  changePageHeader: widget.changePageHeader!, 
-                  removeIndexFromWidgetList: () {}
-                ), 
-                second: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id
-              )
-            );
-          }
-          else{
-            i--;
-          }
-        }
-      }
+    if(allChainsWidget.length >= totalNumberOfChains){
+      _addDataFromDifferentCountry();
     }
-    // else{
-      
-    //   QuerySnapshot allUsers = await _firebase.collection('UserDetails').get();
+    else{
+      if(orderForCountryRandomness == 0){
+        _addDataFromSameCountry();
+      }
+      else{
+        _addDataFromDifferentCountry();
+      }
 
-    //   for(int i = 0; i < 5; i++){
-    //     int randomUserIndex = 
-    //   }
-    // }
-
-    orderForCountryRandomness = (orderForCountryRandomness + 1) % 3;
+      orderForCountryRandomness = (orderForCountryRandomness + 1) % 2;
+    }
 
     scrollController.addListener(() {
       if(scrollController.position.atEdge){
         if(scrollController.position.pixels != 0){
           updateScrollChainData();
+          print('ALOOOO');
         }
       }
     });
+  }
+
+  void _addDataFromSameCountry() async {
+
+    if(allChainsWidget.length >= totalNumberOfChains){
+      return;
+    }
+
+    for(int i = 0; i < 5; i++){
+
+      int categoryIndex = random.nextInt(finishedChainsCategory.length);
+      int index = random.nextInt((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs.length);
+
+      if(allChainsWidget.length >= totalNumberOfChains){
+        break;
+      }
+      else{
+
+        if(!allChainsWidget.map((e) => e.second).contains((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id)){
+
+          allChainsWidget.add(
+            Pair(
+              first: UnchainedElement(
+                userId: widget.exploreData!['userId'], 
+                firebase: _firebase, 
+                storage: _storage, 
+                calledByExplore: true,
+                chainIdAndCategoryName: Pair(
+                  first: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id, 
+                  second: (finishedChainsCategory[categoryIndex].second as String)
+                ), 
+                chainData: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].data() as Map<String, dynamic>, 
+                changePageHeader: widget.changePageHeader!, 
+                removeIndexFromWidgetList: () {}
+              ), 
+              second: (finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs[index].id
+            )
+          );
+        }
+        else{
+          i--;
+        }
+      }
+    }
+  }
+
+  void _addDataFromDifferentCountry() async {
+
+    List<Pair> tempList = [];
+
+    for(int i = 0; i < 5; i++){
+      int randomUserIndex = random.nextInt(allForeignCountryWithFinishedChains.length);
+      String countryName = allForeignCountryWithFinishedChains[randomUserIndex];
+
+      if(countryName == userNationality){
+        continue;
+      }
+
+      int randomCategoryNameIndex = random.nextInt(allCategoriesName.length);
+      QuerySnapshot randomForeignChains = await _firebase.collection('FinishedChains').doc(allCategoriesName[randomCategoryNameIndex]).collection(countryName).get();
+
+      while(randomForeignChains.docs.isEmpty){
+        randomCategoryNameIndex = (randomCategoryNameIndex + 1) % allCategoriesName.length;
+        randomForeignChains = await _firebase.collection('FinishedChains').doc(allCategoriesName[randomCategoryNameIndex]).collection(countryName).get();
+      }
+
+      int randomChainIndexFromFinalChainList = random.nextInt(randomForeignChains.docs.length);
+
+      if(!allChainsWidget.map((e) => e.second).contains(randomForeignChains.docs[randomChainIndexFromFinalChainList].id)){
+        if(!tempList.map((e) => e.second).contains(randomForeignChains.docs[randomChainIndexFromFinalChainList].id)){
+          tempList.add(
+            Pair(
+              first: UnchainedElement(
+                userId: widget.exploreData!['userId'], 
+                firebase: _firebase, 
+                storage: _storage, 
+                calledByExplore: true, 
+                chainIdAndCategoryName: Pair(
+                  first: randomForeignChains.docs[randomChainIndexFromFinalChainList].id, 
+                  second: allCategoriesName[randomCategoryNameIndex]
+                ), 
+                chainData: randomForeignChains.docs[randomChainIndexFromFinalChainList].data() as Map<String, dynamic>, 
+                changePageHeader: widget.changePageHeader!, 
+                removeIndexFromWidgetList: () {}
+              ), 
+              second: randomForeignChains.docs[randomChainIndexFromFinalChainList].id
+            )
+          );
+        }
+      }
+    }
+
+    if(mounted){
+      setState(() {
+        allChainsWidget.addAll(tempList);
+      });
+    }
   }
 }

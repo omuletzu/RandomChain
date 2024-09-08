@@ -265,7 +265,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                   child: FadeTransition(
                     opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
                           padding: EdgeInsets.all(widget.width * 0.025),
@@ -278,7 +278,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                                child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center, softWrap: true)
                               ),
 
                               Padding(
@@ -713,6 +713,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       });
       }
 
+      await widget.firebase.collection('AllCountryFinishedChains').doc(chainNationality).set({});
       await widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).set(chainMap);
       await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
     }

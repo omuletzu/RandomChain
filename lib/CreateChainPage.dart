@@ -121,7 +121,8 @@ class _CreateChain extends State<CreateChain>{
                   children: [
                     TextField(
                       controller: _themeController,
-                      maxLines: 1,
+                      maxLines: null,
+                      maxLength: 120,
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderRadius: const BorderRadius.all(Radius.circular(10)),

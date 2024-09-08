@@ -280,8 +280,6 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                         )
                                       ),
 
-                                      const Spacer(),
-
                                       Padding(
                                         padding: EdgeInsets.all(width * 0.01),
                                         child: Material(

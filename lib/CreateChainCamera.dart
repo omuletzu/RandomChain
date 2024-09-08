@@ -169,31 +169,33 @@ class CreateChainCamera extends StatefulWidget{
 
       int randomFinalUserIndex = random.nextInt(userRandomIndexes.length);
 
-      if(randomFinalUserIndex == 2 && allUserNotFromSameCountry.docs.isNotEmpty){
-        userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
-      }
-      else{
-        if(allUsersFromSameCountry.docs.length == 1){
-          randomFinalUserIndex = 2;
-
-          userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
-        }
-        else{
-          if(allUsersFromSameCountry.docs[randomFinalUserIndex].id == userId){
-            if(randomFinalUserIndex == 0){
-              if(userRandomIndexes[1] != -1){
-                randomFinalUserIndex = 1;
-              }
-            }
-            else{
-              if(userRandomIndexes[0] != -1){
-                randomFinalUserIndex = 0;
-              }
-            }
+      if(randomFinalUserIndex == 0 && userRandomIndexes[0] != -1){
+        if(allUserNotFromSameCountry.docs[userRandomIndexes[0]].id == userId){
+          if(userRandomIndexes[1] != -1){
+            userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[1]].id;
           }
-
-          userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[randomFinalUserIndex]].id;
+          else{
+            userRandomIndexes[0] = -1;
+          }
         }
+      }
+      else if(randomFinalUserIndex == 1 && userRandomIndexes[1] != -1){
+        if(allUserNotFromSameCountry.docs[userRandomIndexes[1]].id == userId){
+          if(userRandomIndexes[0] != -1){
+            randomFinalUserIndex = 0;
+            userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[0]].id;
+          }
+          else{
+            userRandomIndexes[1] = -1;
+          }
+        }
+      }
+      else if(randomFinalUserIndex == 2 && userRandomIndexes[2] != -1){
+        userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[2]].id;
+      }
+
+      if(userRandomIndexes[randomFinalUserIndex] == -1){
+        Fluttertoast.showToast(msg: 'Cannot forward chains', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
       }
     }
     else{
@@ -227,7 +229,9 @@ class CreateChainCamera extends StatefulWidget{
         chainMap!['contributions'].add([userId, phrase, finalPhotoStorageId]);
     }
 
-    sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality']);
+    if(userIdToSendChain != ''){
+      sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality']);
+    }
 
     DocumentReference userDetails = firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : userIdForExtend);
     int categoryTypeContributions = (await userDetails.get()).get('${categoryName}Contributions');
@@ -557,7 +561,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.075),
                     child: disableFirstPhraseForChallange 
-                      ? Text('Pick a theme that sets the stage for an engaging and competitive challenge. It should inspire participants to bring their best game', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center) 
+                      ? Text('Pick a theme that sets the stage for an engaging and competitive challenge. It should inspire participants to bring their best game', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center) 
                       : AnimatedContainer(
                       duration: const Duration(seconds: 2),
                       child: Column(
@@ -677,8 +681,6 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                                         )
                                       )
                                     ),
-
-                                    const Spacer(),
 
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),

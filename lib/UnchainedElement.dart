@@ -175,7 +175,6 @@ class _UnchainedElement extends State<UnchainedElement>{
 
   Future<void> _retreiveDataFromFirebase() async {
     
-    String chainId = widget.chainIdAndCategoryName.first as String;
     String categoryName = widget.chainIdAndCategoryName.second as String;
 
     if(categoryName == 'Story'){
@@ -203,7 +202,7 @@ class _UnchainedElement extends State<UnchainedElement>{
           lastPhotoStorageId = tuplaDecoded[2];
         }
         else{
-          if(tuplaDecoded.last.compareTo(lastPhotoStorageId!) > 0 || (lastPhotoStorageId == '-' && tuplaDecoded.last != '-')){
+          if(tuplaDecoded.last.compareTo(lastPhotoStorageId) > 0 || (lastPhotoStorageId == '-' && tuplaDecoded.last != '-')){
             lastPhotoStorageId = tuplaDecoded[2];
           }
         }
