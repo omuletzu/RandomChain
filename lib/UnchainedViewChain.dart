@@ -718,13 +718,25 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
     }
 
-    DocumentReference userDetails = widget.firebase.collection('UserDetails').doc(widget.userId);
-    int categoryTypeContributions = (await userDetails.get()).get('${widget.categoryName}Contributions');
-    int totalContributions = (await userDetails.get()).get('totalContributions');
+    DocumentSnapshot userDetails = await widget.firebase.collection('UserDetails').doc(widget.userId).get();
+    int categoryTypeContributions = userDetails.get('${widget.categoryName}Contributions');
+    int totalContributions = userDetails.get('totalContributions');
+    int totalPoints = userDetails.get('totalPoints');
 
-    userDetails.update({
+    if(widget.categoryName == 'Story'){
+      totalPoints += 5;
+    }
+    else if(widget.categoryName == 'Gossip'){
+      totalPoints += 3;
+    }
+    else if(widget.categoryName == 'Chainllange'){
+      totalPoints += 10;
+    }
+
+    widget.firebase.collection('UserDetails').doc(widget.userId).update({
       '${widget.categoryName}Contributions' : categoryTypeContributions + 1,
-      'totalContributions' : totalContributions + 1
+      'totalContributions' : totalContributions + 1,
+      'totalPoints' : totalPoints
     });
 
     widget.firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').doc(widget.chainId).delete(); 

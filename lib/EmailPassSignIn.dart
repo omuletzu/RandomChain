@@ -66,9 +66,11 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                     hintStyle: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),
                     suffixIcon: IconButton(
                       onPressed: () {
-                        setState(() {
-                          hidePass = !hidePass;
-                        });
+                        if(mounted){
+                          setState(() {
+                            hidePass = !hidePass;
+                          });
+                        }
                       }, 
                       icon: hidePass ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
                     )
@@ -130,9 +132,11 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                           borderRadius: const BorderRadius.all(Radius.circular(15)),
                           onTap: () async {
 
-                            setState(() {
-                              displayProgress = true;
-                            });
+                            if(mounted){
+                              setState(() {
+                                displayProgress = true;
+                              });
+                            }
 
                             try{
                               await widget.firebaseAuth.signInWithEmailAndPassword(email: _emailController.text.trim(), password: _passController.text);
@@ -153,9 +157,11 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                               }
                             }
                             finally{
-                              setState(() {
-                                displayProgress = false;
-                              });
+                              if(mounted){
+                                setState(() {
+                                  displayProgress = false;
+                                });
+                              }
                             }
                           }, 
                           splashColor: globalBlue,

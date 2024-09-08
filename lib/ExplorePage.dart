@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:country_picker/country_picker.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
@@ -179,7 +178,7 @@ class _ExplorePage extends State<ExplorePage>{
     if(widget.exploreData == null){
       return;
     }
-
+    
     userNationality = (await _firebase.collection('UserDetails').doc(widget.exploreData!['userId']).get()).get('countryName');
 
     QuerySnapshot finishedStoryReference = await _firebase.collection('FinishedChains').doc('Story').collection(userNationality).get();

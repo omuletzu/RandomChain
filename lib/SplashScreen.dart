@@ -36,7 +36,6 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
     );
 
     Timer(const Duration(seconds: 1, milliseconds: 750), () async { 
-      //await _animationAfterSplash.forward();
 
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 

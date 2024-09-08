@@ -1,9 +1,11 @@
 import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 class CreateChainDetails extends StatefulWidget {
@@ -115,10 +117,12 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
 
                               if(_tagController.text.trim().isNotEmpty && !tagList.contains(_tagController.text.trim())){
 
-                                setState(() {
-                                  tagList.add(_tagController.text.trim());
-                                  _tagController.text = '';
-                                });
+                                if(mounted){
+                                  setState(() {
+                                    tagList.add(_tagController.text.trim());
+                                    _tagController.text = '';
+                                  });
+                                }
 
                                 _animationControllerIcon.reset();
                                 await _animationControllerIcon.forward();
@@ -158,9 +162,11 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                           children: [
                             IconButton(
                               onPressed: () {
-                                setState(() {
-                                  tagList.removeAt(index);
-                                });
+                                if(mounted){
+                                   setState(() {
+                                    tagList.removeAt(index);
+                                  });
+                                }
                               }, 
                               icon: Image.asset('assets/image/x.png', width: width * 0.06, height: width * 0.06, color: globalTextBackground)
                             ),
@@ -281,8 +287,16 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
       ResolutionPreset.max,
     );
 
-    await _cameraController.initialize();
+    var permissionStatus = await Permission.camera.status;
 
+    if(!permissionStatus.isGranted){
+      if(!(await Permission.camera.request().isGranted)){
+        Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+        return;
+      }
+    }
+
+    await _cameraController.initialize();
     await _cameraController.setZoomLevel(1.5);
 
     widget.addData!['tagList'] = tagList;

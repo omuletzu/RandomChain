@@ -69,9 +69,11 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                     hintStyle: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),
                     suffixIcon: IconButton(
                       onPressed: () {
-                        setState(() {
-                          hidePass = !hidePass;
-                        });
+                        if(mounted){
+                          setState(() {
+                            hidePass = !hidePass;
+                          });
+                        }
                       }, 
                       icon: hidePass ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
                     )
@@ -90,9 +92,11 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                     hintStyle: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),
                     suffixIcon: IconButton(
                       onPressed: () {
-                        setState(() {
-                          hideConfPass = !hideConfPass;
-                        });
+                        if(mounted){
+                          setState(() {
+                            hideConfPass = !hideConfPass;
+                          });
+                        }
                       }, 
                       icon: hideConfPass ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
                     )
@@ -154,9 +158,11 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                           borderRadius: const BorderRadius.all(Radius.circular(15)),
                           onTap: () async {
 
-                            setState(() {
-                              displayProgress = true;
-                            });
+                            if(mounted){
+                              setState(() {
+                                displayProgress = true;
+                              });
+                            }
 
                             if(_emailController.text.isNotEmpty && _passController.text.isNotEmpty && _confPassController.text.isNotEmpty && _passController.text == _confPassController.text){
 
@@ -186,9 +192,11 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                                 }
                               }
                               finally{
-                                setState(() {
-                                  displayProgress = false;
-                                });
+                                if(mounted){
+                                  setState(() {
+                                    displayProgress = false;
+                                  });
+                                }
                               }
                             }
                             else{
@@ -196,9 +204,11 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                                 Fluttertoast.showToast(msg: 'Passwords don\'t match', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                               }
 
-                              setState(() {
-                                displayProgress = false;
-                              });
+                              if(mounted){
+                                setState(() {
+                                  displayProgress = false;
+                                });
+                              }
                             }
 
                           }, 
