@@ -25,8 +25,8 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
   late AnimationController _controllerStory;
   late Animation<Color?> _animationColorStory;
 
-  late AnimationController _controllerGossip;
-  late Animation<Color?> _animationColorGossip;
+  late AnimationController _controllerRandom;
+  late Animation<Color?> _animationColorRandom;
 
   late AnimationController _controllerChainllange;
   late Animation<Color?> _animationColorChainllange;
@@ -38,21 +38,21 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
   late Color currentColor;
   late Color lastColor;
 
-  bool storySelected = true;
-  bool gossipSelected = false;
+  bool storySelected = false;
+  bool randomSelected = true;
   bool chainllangeSelected = false;
-  int lastCategorySelected = 0;
+  int lastCategorySelected = 1;
 
-  int index = 0;
+  int index = 1;
 
   @override
   void initState(){
     super.initState();
 
-    currentTitle = getTitle(0);
-    currentDesc = getDesc(0);
-    currentColor = getColor(0);
-    lastColor = getColor(0);
+    currentTitle = getTitle(1);
+    currentDesc = getDesc(1);
+    currentColor = getColor(1);
+    lastColor = getColor(1);
 
     _controllerStory = AnimationController(
       duration: const Duration(seconds: 1),
@@ -64,15 +64,15 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
       end: globalPurple
     ).animate(_controllerStory);
 
-    _controllerGossip = AnimationController(
+    _controllerRandom = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    _animationColorGossip = ColorTween(
+    _animationColorRandom = ColorTween(
       begin: globalTextBackground,
       end: globalBlue
-    ).animate(_controllerGossip);
+    ).animate(_controllerRandom);
 
     _controllerChainllange = AnimationController(
       duration: const Duration(seconds: 1),
@@ -101,7 +101,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
     _animationControllerSlideLeft.forward();
     _animationControllerSlideUp.forward();
-    _controllerStory.forward();
+    _controllerRandom.forward();
 
     timer = Timer(const Duration(seconds: 1, milliseconds: 250), () { 
       setState(() {
@@ -165,14 +165,14 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                   Padding(
                     padding: EdgeInsets.all(width * 0.05),
                     child: AnimatedBuilder(
-                      animation: _animationColorGossip, 
+                      animation: _animationColorRandom, 
                       builder: (context, child){
                         return IconButton(
                           onPressed: () {
                             index = 1;
                             updateUI(index);
                           }, 
-                          icon: Image.asset('assets/image/gossip.png', width: width * 0.1, height: width * 0.1, color: gossipSelected ? _animationColorGossip.value : globalTextBackground)
+                          icon: Image.asset('assets/image/random.png', width: width * 0.1, height: width * 0.1, color: randomSelected ? _animationColorRandom.value : globalTextBackground)
                         );
                       }
                     )
@@ -260,7 +260,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
                         }
 
                         if(index == 1){
-                          widget.changePageHeader('New chain (gossip)', {
+                          widget.changePageHeader('New chain (random)', {
                             'categoryType' : 1,
                             'baseCategoryColor' : globalBlue,
                             'splashColor' : globalPurple,
@@ -298,7 +298,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
   String getTitle(int index){
 
     if(index == 1){
-      return 'GOSSIP CHAIN';
+      return 'RANDOM CHAIN';
     }
 
     if(index == 2){
@@ -310,7 +310,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
 
   String getDesc(int index){
     if(index == 1){
-      return 'Gossip time! Someone kicks off a topic and everyone else jump in with their thoughts and responses';
+      return 'It\'s random time! Sent a random thought to someone';
     }
 
     if(index == 2){
@@ -331,7 +331,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     }
 
     if(lastCategorySelected == 1){
-      _controllerGossip.reverse();
+      _controllerRandom.reverse();
     }
 
     if(lastCategorySelected == 2){
@@ -343,7 +343,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     }
 
     if(index == 1){
-      _controllerGossip.forward();
+      _controllerRandom.forward();
     }
 
     if(index == 2){
@@ -375,7 +375,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
           storySelected = value;
           break;
         case 1:
-          gossipSelected = value;
+          randomSelected = value;
           break;
         default:
           chainllangeSelected = value;
@@ -400,7 +400,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
     _animationControllerSlideRight.dispose();
     _animationControllerSlideUp.dispose();
     _controllerStory.dispose();
-    _controllerGossip.dispose();
+    _controllerRandom.dispose();
     _controllerChainllange.dispose();
     timer.cancel();
     super.dispose();

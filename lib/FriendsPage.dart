@@ -8,13 +8,17 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class FriendsPage extends StatefulWidget{
 
+  final Key key;
   final String userId;
   final void Function(String, Map<String, dynamic>?) changePageHeader;
+  final bool isThisRequests;
 
   FriendsPage({
+    required this.key,
     required this.userId,
     required this.changePageHeader,
-  });
+    required this.isThisRequests
+  }) : super(key: key);
 
   @override
   _FriendsPage createState() => _FriendsPage();
@@ -35,6 +39,9 @@ class _FriendsPage extends State<FriendsPage>{
 
   List<FriendElement> allFriendsList = List.empty(growable: true);
   Future<List<FriendElement>>? listToDisplay;
+
+  int numberOfResults = 0;
+  String userNickname = '';
 
   @override
   void initState() {
@@ -59,9 +66,7 @@ class _FriendsPage extends State<FriendsPage>{
             _textController.text = '';
           }
           else{
-            widget.changePageHeader('Profile', {
-              'userId' : widget.userId
-            });
+            widget.changePageHeader('Go Back', null);
           }
         }
       },
@@ -71,52 +76,55 @@ class _FriendsPage extends State<FriendsPage>{
         body: Column(
           children: [
 
-            Padding(
-              padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075, top: width * 0.025, bottom: width * 0.025),
-              child: AnimatedContainer(
-                duration: const Duration(seconds: 2),
-                child: TextField(
-                  controller: _textController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      borderSide: BorderSide(width: 2.0),
-                    ),
-                    focusColor: globalBlue,
-                    suffixIcon: const Icon(Icons.search),
-                    suffixIconColor: globalTextBackground,
-                    label: Center(
-                      child: Text(
-                        'Nickname',
-                        style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+            Visibility(
+              visible: !widget.isThisRequests,
+              child: Padding(
+                padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075, top: width * 0.025, bottom: width * 0.025),
+                child: AnimatedContainer(
+                  duration: const Duration(seconds: 2),
+                  child: TextField(
+                    controller: _textController,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderSide: BorderSide(width: 2.0),
                       ),
+                      focusColor: globalBlue,
+                      suffixIcon: const Icon(Icons.search),
+                      suffixIconColor: globalTextBackground,
+                      label: Center(
+                        child: Text(
+                          'Nickname',
+                          style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: width * 0.01)
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: width * 0.01)
-                  ),
-                  
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
-                  onChanged: (value) async {
-                    if(mounted && value.isEmpty){
-                      setState(() {
-                        searchingMode = false;
-                        listToDisplay = Future.value(allFriendsList);
-                      });
-                    }
-                    else{
-                      listToDisplay = _searchByNickname(value.toLowerCase().trim());
-                    }
-                  },
-                )
-              ),
+                    
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
+                    onChanged: (value) async {
+                      if(mounted && value.isEmpty){
+                        setState(() {
+                          searchingMode = false;
+                          listToDisplay = Future.value(allFriendsList);
+                        });
+                      }
+                      else{
+                        listToDisplay = _searchByNickname(value.toLowerCase().trim());
+                      }
+                    },
+                  )
+                ),
+              )
             ),
 
             Align(
               alignment: Alignment.center,
                 child: Padding(
                 padding: EdgeInsets.all(width * 0.05),
-                child: Text('Here you can search your friends', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                child: Text(widget.isThisRequests ? 'Check your friend requests ($numberOfResults)' : 'Here you can see your friends ($numberOfResults)', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
               )
             ),
 
@@ -135,15 +143,9 @@ class _FriendsPage extends State<FriendsPage>{
 
                   if(!snapshot.hasData || snapshot.data!.isEmpty){
 
-                    if(searchingMode){
-                      return Center(
-                        child: Text('No friends found with this nickname', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                      );
-                    }
-
                     if(hasCheckedForExistingFriends){
                       return Center(
-                        child: Text('You have no friends :(\nTry adding someone', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                        child: Text(widget.isThisRequests ? 'You have no friend requests' : 'You have no friends :(\nTry adding someone', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                       );
                     }
 
@@ -174,7 +176,18 @@ class _FriendsPage extends State<FriendsPage>{
 
   Future<List<FriendElement>> retreiveFriendsFirebase() async {
   
-    QuerySnapshot peopleToSearchDetails = await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').get(const GetOptions(source: Source.server));
+    DocumentSnapshot userData = await _firebase.collection('UserDetails').doc(widget.userId).get();
+    numberOfResults = userData.get('friendsCount');
+    userNickname = userData.get('nickname');
+
+    QuerySnapshot peopleToSearchDetails;
+
+    if(widget.isThisRequests){
+      peopleToSearchDetails = await _firebase.collection('UserDetails').doc(widget.userId).collection('FriendRequests').get(const GetOptions(source: Source.server));
+    }
+    else{
+      peopleToSearchDetails = await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').get(const GetOptions(source: Source.server));
+    }
 
     for(int i = 0; i < 9 && index < peopleToSearchDetails.docs.length; i++, index++){
 
@@ -192,7 +205,10 @@ class _FriendsPage extends State<FriendsPage>{
                 storage: _storage,
                 friendData: friendData,
                 changePageHeader: widget.changePageHeader,
-                friendOrStranger : true
+                friendOrStranger : true,
+                isThisRequests : widget.isThisRequests,
+                userNickname : userNickname,
+                increaseFriendCount: increaseFriendCount
               )
             );
           }
@@ -202,17 +218,12 @@ class _FriendsPage extends State<FriendsPage>{
 
     if(mounted){
       setState(() {
+        numberOfResults = peopleToSearchDetails.docs.length;
         hasCheckedForExistingFriends = true;
       });
     }
 
     return allFriendsList;
-  }
-
-  void scrollListenerFunction(){
-    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
-      retreiveFriendsFirebase();
-    }
   }
 
   Future<List<FriendElement>> _searchByNickname(String filterNickname) async {
@@ -235,9 +246,12 @@ class _FriendsPage extends State<FriendsPage>{
             friendId: friend.id, 
             storage: _storage, 
             firebase: _firebase, 
-            friendData: friendData, 
+            friendData: friendData,
+            userNickname: '',
+            increaseFriendCount: () {},
             changePageHeader: widget.changePageHeader,
             friendOrStranger: true, 
+            isThisRequests: widget.isThisRequests,
           )
         );
       }
@@ -252,8 +266,23 @@ class _FriendsPage extends State<FriendsPage>{
     return tempListToDisplay;
   }
 
+  void increaseFriendCount() async {
+    numberOfResults++;
+  }
+
+  void scrollListenerFunction(){
+    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
+      retreiveFriendsFirebase();
+    }
+  }
+
   @override
   void dispose(){
+
+    _firebase.collection('UserDetails').doc(widget.userId).update({
+      'friendsCount' : numberOfResults
+    });
+
     _textController.dispose();
     scrollController.removeListener(scrollListenerFunction);
     scrollController.dispose();

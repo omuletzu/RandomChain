@@ -62,7 +62,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
           }
           
           if(widget.addData!['categoryType'] == 1){
-            widget.changePageHeader('New chain (gossip details)', widget.addData);
+            widget.changePageHeader('New chain (random details)', widget.addData);
           }
 
           if(widget.addData!['categoryType'] == 2){

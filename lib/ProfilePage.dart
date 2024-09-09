@@ -65,7 +65,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
       onPopInvoked: (didPop) {
         if(!didPop){
           if(!widget.isThisUser){
-            widget.changePageHeader('Friends', null);
+            widget.changePageHeader('Go Back', null);
           }
         }
       },

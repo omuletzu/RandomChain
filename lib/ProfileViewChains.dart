@@ -33,20 +33,20 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
   late AnimationController _controllerStory;
   late Animation<Color?> _animationColorStory;
 
-  late AnimationController _controllerGossip;
-  late Animation<Color?> _animationColorGossip;
+  late AnimationController _controllerRandom;
+  late Animation<Color?> _animationColorRandom;
 
   late AnimationController _controllerChainllange;
   late Animation<Color?> _animationColorChainllange;
 
   late Color currentColor;
 
-  bool storySelected = true;
-  bool gossipSelected = false;
+  bool storySelected = false;
+  bool randomSelected = true;
   bool chainllangeSelected = false;
-  int lastCategorySelected = 0;
+  int lastCategorySelected = 1;
 
-  List<String> categoryNameByIndex = List.from({'Story', 'Gossip', 'Chainllange'});
+  List<String> categoryNameByIndex = List.from({'Story', 'Random', 'Chainllange'});
 
   List<List<Widget>> allCategoryChains = [[], [], []];
   List<bool> hasCheckedCategory = [false, false, false];
@@ -82,15 +82,15 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
       end: globalPurple,
     ).animate(_controllerStory);
 
-    _controllerGossip = AnimationController(
+    _controllerRandom = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    _animationColorGossip = ColorTween(
+    _animationColorRandom = ColorTween(
       begin: globalTextBackground,
       end: globalBlue,
-    ).animate(_controllerGossip);
+    ).animate(_controllerRandom);
 
     _controllerChainllange = AnimationController(
       duration: const Duration(seconds: 1),
@@ -102,7 +102,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
       end: globalGreen,
     ).animate(_controllerChainllange);
 
-    _controllerStory.forward();
+    _controllerRandom.forward();
   }
 
   @override
@@ -134,7 +134,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory, storySelected),
-                  _buildCategoryIcon(width, 1, 'assets/image/gossip.png', _animationColorGossip, gossipSelected),
+                  _buildCategoryIcon(width, 1, 'assets/image/random.png', _animationColorRandom, randomSelected),
                   _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange, chainllangeSelected),
                 ],
               ),
@@ -148,7 +148,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
             ),
 
             _buildChainList(0, width, storySelected),
-            _buildChainList(1, width, gossipSelected),
+            _buildChainList(1, width, randomSelected),
             _buildChainList(2, width, chainllangeSelected),
           ],
         ),
@@ -274,7 +274,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     }
 
     if(lastCategorySelected == 1){
-      _controllerGossip.reverse();
+      _controllerRandom.reverse();
     }
 
     if(lastCategorySelected == 2){
@@ -288,7 +288,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     }
 
     if(index == 1){
-      _controllerGossip.forward();
+      _controllerRandom.forward();
     }
 
     if(index == 2){
@@ -320,7 +320,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
           storySelected = value;
           break;
         case 1:
-          gossipSelected = value;
+          randomSelected = value;
           break;
         default:
           chainllangeSelected = value;
@@ -332,7 +332,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
       case 0:
         return storySelected ? _animationColorStory.value : null;
       case 1:
-        return gossipSelected ? _animationColorGossip.value : null;
+        return randomSelected ? _animationColorRandom.value : null;
       case 2:
         return chainllangeSelected ? _animationColorChainllange.value : null;
       default:
@@ -357,7 +357,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     _animationControllerSlideLeft.dispose();
     _animationControllerSlideRight.dispose();
     _controllerStory.dispose();
-    _controllerGossip.dispose();
+    _controllerRandom.dispose();
     _controllerChainllange.dispose();
     super.dispose();
   }

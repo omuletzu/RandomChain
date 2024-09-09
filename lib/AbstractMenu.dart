@@ -358,7 +358,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         endDrawer: Builder(
           builder: (context) {
             return Drawer(
-              backgroundColor: globalDrawerBackground,
+              backgroundColor: globalDrawerBackground.withOpacity(0.85),
               child: ListView(
                 children: [
 
@@ -397,6 +397,23 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                           'userId' : widget.phoneOrEmail
                         });
 
+                        Scaffold.of(context).closeEndDrawer();
+                      },
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05, top: width * 0.025, bottom: width * 0.025),
+                    child: ListTile(
+                      leading: Image.asset('assets/image/profile.png', width: width * 0.075, height: width * 0.075, color: globalPurple),
+                      trailing: const Icon(Icons.arrow_right),
+                      splashColor: globalPurple.withOpacity(0.1),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15))
+                      ),
+                      title: Text('Friend requests', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                      onTap: () {
+                        changePageHeader('Friend requests', null);
                         Scaffold.of(context).closeEndDrawer();
                       },
                     ),
@@ -522,7 +539,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     ),
                   ),
 
-                  Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.025, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.025, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                 ]
               )
             );
@@ -615,15 +632,13 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           explorePage = false;
         });
 
-        if(lastCurrentPage is FriendsPage || lastCurrentPage is FriendsPageStrangers){
-          page = lastCurrentPage;
-        }
-        else{
-          page = FriendsPage(
-            userId: addData!['userId'],
-            changePageHeader: changePageHeader,
-          );
-        }
+        page = FriendsPage(
+          userId: addData!['userId'],
+          changePageHeader: changePageHeader,
+          isThisRequests: false,
+          key: UniqueKey()
+        );
+
         break;
 
       case 'Strangers' :
@@ -638,15 +653,32 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           explorePage = false;
         });
 
-        if(lastCurrentPage is FriendsPage || lastCurrentPage is FriendsPageStrangers){
-          page = lastCurrentPage;
-        }
-        else{
-          page = FriendsPageStrangers(
-            userId: addData!['userId'],
-            changePageHeader: changePageHeader,
-          );
-        }
+        page = FriendsPageStrangers(
+          userId: addData!['userId'],
+          changePageHeader: changePageHeader,
+        );
+
+        break;
+
+      case 'Friend requests' :
+        assetPath = 'assets/image/friends.png';
+        setState(() {
+          tempCurrentTitle = 'Friend requests';
+          topTitleColor = globalPurple;
+          friendsPage = true;
+          profilePage = false;
+          unchainedPage = false;
+          unchainedPageRefresh = false;
+          explorePage = false;
+        });
+
+        page = FriendsPage(
+          userId: widget.phoneOrEmail,
+          changePageHeader: changePageHeader,
+          isThisRequests: true,
+          key: UniqueKey()
+        );
+        
         break;
 
       case 'Profile' :
@@ -796,8 +828,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/book.png';
         page = CreateChainDetails(changePageHeader: changePageHeader, addData: addData);
 
-      case 'New chain (gossip)' :
-        assetPath = 'assets/image/gossip.png';
+      case 'New chain (random)' :
+        assetPath = 'assets/image/random.png';
         addData!['categoryType'] = 1;
         page = CreateChain(changePageHeader: changePageHeader, addData: addData);
 
@@ -805,12 +837,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           topTitleColor = globalBlue;
         });
 
-      case 'New chain (gossip details)' :
-        assetPath = 'assets/image/gossip.png';
+      case 'New chain (random details)' :
+        assetPath = 'assets/image/random.png';
         page = CreateChainTagsPage(changePageHeader: changePageHeader, addData: addData);
 
-      case 'New chain (gossip tags)' :
-        assetPath = 'assets/image/gossip.png';
+      case 'New chain (random tags)' :
+        assetPath = 'assets/image/random.png';
         page = CreateChainDetails(changePageHeader: changePageHeader, addData: addData);
 
       case 'New chain (challange)' :

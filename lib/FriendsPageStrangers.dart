@@ -59,9 +59,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
             _textController.text = '';
           }
           else{
-            widget.changePageHeader('Profile', {
-              'userId' : widget.userId
-            });
+            widget.changePageHeader('Go Back', null);
           }
         }
       },
@@ -200,7 +198,10 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                   storage: _storage,
                   friendData: friendData,
                   changePageHeader: widget.changePageHeader,
-                  friendOrStranger : false
+                  friendOrStranger : false,
+                  isThisRequests: false,
+                  userNickname: '',
+                  increaseFriendCount: () {},
                 )
               );
             }
@@ -217,12 +218,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
 
     if(!scrollListenerAdded){   // executed only once
 
-      scrollController.addListener(() {
-        if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
-          retreiveFriendsFirebase();
-        }
-      });
-
+      scrollController.addListener(scrollListenerFunction);
       scrollListenerAdded = true;
     }
 
@@ -248,6 +244,9 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
           friendData: friendData, 
           changePageHeader: widget.changePageHeader,
           friendOrStranger: false, 
+          isThisRequests: false,
+          userNickname: '',
+          increaseFriendCount: () {},
         )
       );
     }
@@ -266,9 +265,16 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
     return tempListToDisplay;
   }
 
+  void scrollListenerFunction(){
+    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
+      retreiveFriendsFirebase();
+    }
+  }
+
   @override
   void dispose(){
     _textController.dispose();
+    scrollController.removeListener(scrollListenerFunction);
     scrollController.dispose();
     super.dispose();
   }

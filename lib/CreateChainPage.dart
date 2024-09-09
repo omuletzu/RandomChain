@@ -37,7 +37,7 @@ class _CreateChain extends State<CreateChain>{
       }
       else{
         if(widget.addData!['categoryType'] == 1){
-          themeDescription = 'Set the stage for juicy conversations by picking a theme or question to spark the gossip';
+          themeDescription = 'Be as random as you want to';
         }
         else{
           themeDescription = 'Set a wild theme to spark quirky, daring, or downright hilarious challenges';
@@ -130,7 +130,8 @@ class _CreateChain extends State<CreateChain>{
                         ),
                         label: Center(
                           child: Text(
-                            'Theme of the chain',
+                            (widget.addData!['categoryType'] == 0) ? 'Theme of the chain'
+                              : (widget.addData!['categoryType'] == 1) ? 'Random thought' : 'Chainllange theme',
                             style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),
                           ),
                         )
@@ -188,7 +189,7 @@ class _CreateChain extends State<CreateChain>{
                         }
                         
                         if(widget.addData!['categoryType'] == 1){
-                          widget.changePageHeader('New chain (gossip details)', widget.addData);
+                          widget.changePageHeader('New chain (random details)', widget.addData);
                         }
 
                         if(widget.addData!['categoryType'] == 2){

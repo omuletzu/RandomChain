@@ -197,7 +197,7 @@ class _AditionalData extends State<AditionalData>{
                       'countryEmoji' : countryEmoji,
                       'avatarPath' : '-',
                       'StoryContributions' : 0,
-                      'GossipContributions' : 0,
+                      'RandomContributions' : 0,
                       'ChainllangeContributions' : 0,
                       'totalContributions' : 0,
                       'totalPoints' : 0,

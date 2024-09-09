@@ -133,17 +133,23 @@ class _PhoneAuth extends State<PhoneAuth>{
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
                   onTap: () async {
 
-                    setState(() {
-                      displayProgress = true;
-                    });
-                    
-                    if(codeSent){
+                    FocusScope.of(context).unfocus();
 
+                    if(mounted){
                       setState(() {
                         displayProgress = true;
                       });
+                    }
+                    
+                    if(codeSent){
 
-                      if(_codeController.text.isEmpty){
+                      if(mounted){
+                        setState(() {
+                          displayProgress = true;
+                        });
+                      }
+
+                      if(mounted && _codeController.text.isEmpty){
                         Fluttertoast.showToast(msg: 'Empty SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                         setState(() {
                           displayProgress = false;
@@ -185,9 +191,11 @@ class _PhoneAuth extends State<PhoneAuth>{
                         print(e);
                       }
                       finally{
-                        setState(() {
-                          displayProgress = false;
-                        });
+                        if(mounted){
+                          setState(() {
+                            displayProgress = false;
+                          });
+                        }
                       }
                     }
                     else{
@@ -227,17 +235,22 @@ class _PhoneAuth extends State<PhoneAuth>{
       }, 
       codeSent: (verificationId, forceResendingToken) => {
 
-        setState(() {
-          displayProgress = false;
-        }),
+        if(mounted){
+          setState(() {
+            displayProgress = false;
+            this.verificationId = verificationId;
+            codeSent = true;
+          })
+        },
 
         Fluttertoast.showToast(msg: 'SMS Code sent', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue),
-        setState(() {
-          this.verificationId = verificationId;
-          codeSent = true;
-        })
       }, 
       codeAutoRetrievalTimeout: (verificationId){
+
+        if(FirebaseAuth.instance.currentUser != null){
+          return;
+        }
+
         this.verificationId = verificationId;
         sendSmsMessage();
       }

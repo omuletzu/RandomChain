@@ -179,9 +179,9 @@ class _UnchainedElement extends State<UnchainedElement>{
 
     if(categoryName == 'Story'){
       categoryColor = globalPurple;
-    }else if(categoryName == 'Gossip'){
+    }else if(categoryName == 'Random'){
       categoryColor = globalBlue;
-      titleCategoryIconAssetPath = 'assets/image/gossip.png';
+      titleCategoryIconAssetPath = 'assets/image/random.png';
     }else if(categoryName == "Chainllange"){
       categoryColor = globalGreen;
       titleCategoryIconAssetPath = 'assets/image/challange.png';

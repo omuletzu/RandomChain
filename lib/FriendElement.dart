@@ -16,6 +16,9 @@ class FriendElement extends StatefulWidget{
   final String userId;
   final String friendId;
   final bool friendOrStranger;
+  final bool isThisRequests;
+  final String userNickname;
+  final void Function() increaseFriendCount;
   final Map<String, dynamic>? friendData;
   final FirebaseFirestore firebase;
   final FirebaseStorage storage;
@@ -24,6 +27,9 @@ class FriendElement extends StatefulWidget{
     required this.friendId,
     required this.firebase, 
     required this.friendOrStranger,
+    required this.isThisRequests,
+    required this.userNickname,
+    required this.increaseFriendCount,
     required this.storage,  
     required this.friendData,
     required this.changePageHeader}
@@ -40,10 +46,9 @@ class _FriendElement extends State<FriendElement>{
   bool containerImageLoaded = false;
   bool hasImage = false;
   bool friendAddedOrNot = false;
+  late Image pfpImage;
 
   String friendNickname = '';
-
-  List<List<String>> contributors = List.empty(growable: true);
 
   @override 
   void initState() {
@@ -90,26 +95,7 @@ class _FriendElement extends State<FriendElement>{
                     padding: EdgeInsets.all(width * 0.025),
                     child: ClipOval(
                       child: hasImage 
-                        ? Image.network(
-                          containerImageUrl,
-                          width: width * 0.15,
-                          height: width * 0.15,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if(loadingProgress == null){
-                              return child;
-                            }
-                            else{
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            print('$error\n$stackTrace');
-                            return Icon(Icons.error, size: width * 0.025);
-                          },
-                        )
+                        ? pfpImage
                       : Image.asset('assets/image/profile.png', width: width * 0.15, height: width * 0.15)
                     )
                   ),
@@ -117,6 +103,20 @@ class _FriendElement extends State<FriendElement>{
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+
+                      Visibility(
+                        visible: widget.isThisRequests && !friendAddedOrNot,
+                        child: IconButton(
+                          onPressed: () async {
+                            setState(() {
+                              friendAddedOrNot = true;
+                              Fluttertoast.showToast(msg: 'Added ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                            });
+                          }, 
+                          icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
+                        )
+                      ),
+
                       Visibility(
                         visible: !widget.friendOrStranger,
                         child: !friendAddedOrNot 
@@ -141,7 +141,70 @@ class _FriendElement extends State<FriendElement>{
 
                       IconButton(
                         onPressed: () {
-                          print(widget.friendOrStranger);
+                          showDialog(
+                            context: context, 
+                            builder: (context){
+                              return AlertDialog(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ClipOval(
+                                      child: pfpImage
+                                    )
+                                  ],
+                                ),
+                                actionsAlignment: MainAxisAlignment.center,
+                                content: Text('${widget.friendData!['nickname']}', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                                actions: [
+                                  Padding(
+                                    padding: EdgeInsets.all(width * 0.01),
+                                    child: Material(
+                                      color: globalPurple,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(15))
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                        onTap: () async {
+                                          widget.firebase.collection('UserDetails').doc(widget.userId).collection('BlockedUsers').doc(widget.friendId).set({});
+                                          widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).delete();
+                                          widget.firebase.collection('UserDetails').doc(widget.friendId).collection('Friends').doc(widget.userId).delete();
+                                          Navigator.of(context).pop();
+                                          Fluttertoast.showToast(msg: '${widget.friendData!['nickname']} blocked', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                        }, 
+                                        splashColor: globalBlue,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(width * 0.025),
+                                          child: Text('Block', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                                        )
+                                      )
+                                    )
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.all(width * 0.01),
+                                    child: Material(
+                                      color: globalPurple,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(15))
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                        onTap: () async {
+                                          showBlockDialog(widget.friendData!['nickname'], width);
+                                        }, 
+                                        splashColor: globalBlue,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(width * 0.025),
+                                          child: Text('Report', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              );
+                            }
+                          );
                         }, 
                         icon: Image.asset('assets/image/details.png', width: width * 0.05, height: width * 0.05, color: globalTextBackground)
                       )
@@ -180,6 +243,27 @@ class _FriendElement extends State<FriendElement>{
       friendNickname = widget.friendData!['nickname'];
     }
 
+    pfpImage = Image.network(
+      containerImageUrl,
+      width: globalWidth * 0.15,
+      height: globalWidth * 0.15,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if(loadingProgress == null){
+          return child;
+        }
+        else{
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+      errorBuilder: (context, error, stackTrace) {
+        print('$error\n$stackTrace');
+        return Icon(Icons.error, size: globalWidth * 0.025);
+      },
+    );
+
     if(mounted){
       setState(() {
         friendDetailsLoaded = true;
@@ -203,15 +287,113 @@ class _FriendElement extends State<FriendElement>{
   }
 
   void _addFriend() async {
-    await widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).set({
-      'nickname' : widget.friendData!['nickname']
-    });
 
-    int currentFriendsCount = (await widget.firebase.collection('UserDetails').doc(widget.userId).get()).get('friendsCount');
+    if(widget.isThisRequests){
 
-    await widget.firebase.collection('UserDetails').doc(widget.userId).update({
-      'friendsCount' : currentFriendsCount + 1
-    });
+      widget.increaseFriendCount();
+
+      widget.firebase.collection('UserDetails').doc(widget.friendId).update({
+        'friendsCount' : widget.friendData!['friendsCount']
+      });
+
+      widget.firebase.collection('UserDetails').doc(widget.userId).collection('FriendRequests').doc(widget.friendId).delete();
+
+      widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).set({});
+
+      widget.firebase.collection('UserDetails').doc(widget.friendId).collection('Friends').doc(widget.userId).set({});
+    }
+    else{
+
+      widget.firebase.collection('UserDetails').doc(widget.friendId).collection('FriendRequests').doc(widget.userId).set({});
+    }
+  }
+
+  void showBlockDialog(String username, double width){
+
+    TextEditingController _reportController = TextEditingController();
+
+    showDialog(
+      context: context, 
+      builder: (context){
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Report $username', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          content: Padding(
+            padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075),
+            child: AnimatedContainer(
+              decoration: BoxDecoration(
+                border: Border.all(color: globalPurple, width: 2.0),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+              ),
+              duration: const Duration(seconds: 1),
+                child: Padding(
+                  padding: EdgeInsets.all(width * 0.015),
+                  child: TextField(
+                  controller: _reportController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    label: Center(
+                      child: Text(
+                        'Reason',
+                        style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+                      ),
+                    )
+                  ),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
+                ),
+              )
+            ),
+          ),
+          actions: [
+            Padding(
+              padding: EdgeInsets.all(width * 0.01),
+              child: Material(
+                color: globalPurple,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(15))
+                ),
+                child: InkWell(
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  onTap: () async {
+
+                    if(_reportController.text.isEmpty){
+                      Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      return;
+                    }
+
+                    if((await widget.firebase.collection('ReportedUsers').doc(widget.friendId).get()).exists){
+                      widget.firebase.collection('ReportedUsers').doc(widget.friendId).update({
+                        widget.userId : _reportController.text.trim()
+                      });
+                    }
+                    else{
+                      widget.firebase.collection('ReportedUsers').doc(widget.friendId).set({
+                        widget.userId : _reportController.text.trim()
+                      });
+                    }
+                    
+                    Navigator.of(context).pop();
+                    Fluttertoast.showToast(msg: '$username reported', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                  }, 
+                  splashColor: globalBlue,
+                  child: Padding(
+                    padding: EdgeInsets.all(width * 0.025),
+                    child: Text('Report', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                  )
+                )
+              )
+            )
+          ]
+        );
+      }
+    );
   }
 
   @override

@@ -66,7 +66,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
             }
             
             if(widget.addData!['categoryType'] == 1){
-              widget.changePageHeader('New chain (gossip)', widget.addData);
+              widget.changePageHeader('New chain (random)', widget.addData);
             }
 
             if(widget.addData!['categoryType'] == 2){
@@ -338,7 +338,7 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                           }
                           
                           if(widget.addData!['categoryType'] == 1){
-                            widget.changePageHeader('New chain (gossip tags)', widget.addData);
+                            widget.changePageHeader('New chain (random tags)', widget.addData);
                           }
 
                           if(widget.addData!['categoryType'] == 2){

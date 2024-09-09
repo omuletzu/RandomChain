@@ -29,30 +29,14 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
     super.initState();
 
     _checkForDarkMode();
-
+    
     _animationAfterSplash = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1)
     );
 
     Timer(const Duration(seconds: 1, milliseconds: 750), () async { 
-
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-      FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
-      if(firebaseAuth.currentUser != null){
-        if(firebaseAuth.currentUser?.phoneNumber != null){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.phoneNumber ?? ' ')));
-        }
-        else{
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.email ?? ' ')));
-        }
-      }
-      else{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Auth(width: widget.width)));
-      }
-      
+      _checkForAlreadyLogged();
     });
   }
 
@@ -87,7 +71,7 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
                   position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.5)).animate(CurvedAnimation(parent: _animationAfterSplash, curve: Curves.easeIn)),
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.075),
-                    child: Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   )
                 )
               ],
@@ -118,6 +102,27 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
         globalDrawerBackground = Colors.grey[200]!;
       });
     }
+  }
+
+  void _checkForAlreadyLogged() async 
+  {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+    if(firebaseAuth.currentUser != null){
+      if(firebaseAuth.currentUser?.phoneNumber != null){
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.phoneNumber ?? ' ')));
+      }
+      else{
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.email ?? ' ')));
+      }
+    }
+    else{
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Auth(width: widget.width)));
+    }
+
+    globalWidth = MediaQuery.of(context).size.width;
   }
 
   @override

@@ -49,12 +49,17 @@ class _ExplorePage extends State<ExplorePage>{
 
   int orderForCountryRandomness = 0;  // 0, 1 - same country, 2 - random country
   List<String> allForeignCountryWithFinishedChains = [];
-  List<String> allCategoriesName = ['Story', 'Gossip', 'Chainllange'];
+  List<String> allCategoriesName = ['Story', 'Random', 'Chainllange'];
 
   Random random = Random();
 
   @override
   void initState() {
+
+    if((widget.exploreData!['userId'] as String).isEmpty){
+      return;
+    }
+
     retreiveDataFromFirebase();
     super.initState();
   }
@@ -182,22 +187,22 @@ class _ExplorePage extends State<ExplorePage>{
     userNationality = (await _firebase.collection('UserDetails').doc(widget.exploreData!['userId']).get()).get('countryName');
 
     QuerySnapshot finishedStoryReference = await _firebase.collection('FinishedChains').doc('Story').collection(userNationality).get();
-    QuerySnapshot finishedGossipReference = await _firebase.collection('FinishedChains').doc('Gossip').collection(userNationality).get();
+    QuerySnapshot finishedrandomReference = await _firebase.collection('FinishedChains').doc('Random').collection(userNationality).get();
     QuerySnapshot finishedChainllangeReference = await _firebase.collection('FinishedChains').doc('Chainllange').collection(userNationality).get();
 
     if(finishedStoryReference.docs.isNotEmpty){
       finishedChainsCategory.add(Pair(first: finishedStoryReference, second: 'Story'));
     }
 
-    if(finishedGossipReference.docs.isNotEmpty){
-      finishedChainsCategory.add(Pair(first: finishedGossipReference, second: 'Gossip'));
+    if(finishedrandomReference.docs.isNotEmpty){
+      finishedChainsCategory.add(Pair(first: finishedrandomReference, second: 'Random'));
     }
 
     if(finishedChainllangeReference.docs.isNotEmpty){
       finishedChainsCategory.add(Pair(first: finishedChainllangeReference, second: 'Chainllange'));
     }
 
-    totalNumberOfChains = finishedStoryReference.docs.length + finishedGossipReference.docs.length + finishedChainllangeReference.docs.length;
+    totalNumberOfChains = finishedStoryReference.docs.length + finishedrandomReference.docs.length + finishedChainllangeReference.docs.length;
 
     QuerySnapshot allCountryFinishedChainsSnapshot = await _firebase.collection('AllCountryFinishedChains').get();
 

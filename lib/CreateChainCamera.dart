@@ -39,6 +39,7 @@ class CreateChainCamera extends StatefulWidget{
     required bool photoSkipped,
     required String chainIdentifier,
     required String categoryName,
+    required bool chainSkipped,
     required String? photoPath,
     required bool mounted,
     required BuildContext context,
@@ -95,13 +96,8 @@ class CreateChainCamera extends StatefulWidget{
 
         updateGlobalTagList(addData['tagList'], chainIdentifier, categoryName, userNationality, firebase);
 
+        List<List<String>> listToStoreOnFirestore = List.empty(growable: true);
         String firstPhrase = ' ';
-        if(disableFirstPhraseForChallange){
-          firstPhrase = theme;
-        }
-        else{
-          firstPhrase = title;
-        }
 
         String finalPhotoStorageId = '-';
 
@@ -109,8 +105,13 @@ class CreateChainCamera extends StatefulWidget{
           finalPhotoStorageId = 'uploads/$chainIdentifier/${addData['chainPieces']}_$userId';
         }
 
-        List<List<String>> listToStoreOnFirestore = List.empty(growable: true);
-        listToStoreOnFirestore.add([userId, firstPhrase, finalPhotoStorageId]);
+        if(disableFirstPhraseForChallange){
+          firstPhrase = theme;
+        }
+        else{
+          firstPhrase = title;
+          listToStoreOnFirestore.add([userId, firstPhrase, finalPhotoStorageId]);
+        }
 
         chainMap = {
           'random' : addData['randomOrFriends'],
@@ -202,6 +203,10 @@ class CreateChainCamera extends StatefulWidget{
       
       allFriends ??= await firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : chainMap!['userIdForFriendList']).collection('Friends').get();
 
+      if(allFriends.docs.isEmpty){
+        return Future.value(false);
+      }
+
       int randomFriendIndex = random.nextInt(allFriends.docs.length);
 
       while((chainMap!['contributions'] as String).contains(allFriends.docs[randomFriendIndex].id)){
@@ -226,21 +231,34 @@ class CreateChainCamera extends StatefulWidget{
           finalPhotoStorageId = 'uploads/$chainIdentifier/${addData['chainPieces']}_$userId';
         }
 
-        chainMap!['contributions'].add([userId, phrase, finalPhotoStorageId]);
+        if(chainMap!['contributions'] == '[]'){
+          List<List<String>> tempContributorsList = List.empty(growable: true);
+          if(!chainSkipped){
+            tempContributorsList.add([userId, phrase, finalPhotoStorageId]);
+          }
+
+          chainMap['contributions'] = tempContributorsList;
+        }
+        else{
+          chainMap['contributions'].add([userId, phrase, finalPhotoStorageId]);
+        }
     }
 
     if(userIdToSendChain != ''){
       sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality']);
     }
 
-    DocumentReference userDetails = firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : userIdForExtend);
-    int categoryTypeContributions = (await userDetails.get()).get('${categoryName}Contributions');
-    int totalContributions = (await userDetails.get()).get('totalContributions');
+    if(!chainSkipped){
 
-    userDetails.update({
-      '${categoryName}Contributions' : categoryTypeContributions + 1,
-      'totalContributions' : totalContributions + 1
-    });
+      DocumentReference userDetails = firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : userIdForExtend);
+      int categoryTypeContributions = (await userDetails.get()).get('${categoryName}Contributions');
+      int totalContributions = (await userDetails.get()).get('totalContributions');
+
+      userDetails.update({
+        '${categoryName}Contributions' : categoryTypeContributions + 1,
+        'totalContributions' : totalContributions + 1
+      });
+    }
 
     if(mounted){
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -296,7 +314,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
 
   bool checkForDoubleTapForPhoto = false;
 
-  bool disableFirstPhraseForChallange = false;
+  bool disableFirstPhraseForChallangeAndRandom = false;
 
   late final String categoryIconPath;
   late final String categoryFirstPhraseDescription;
@@ -326,24 +344,18 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
     }
 
     if(widget.addData!['categoryType'] == 1){
-      categoryName = 'Gossip';
-      categoryIconPath = 'assets/image/gossip.png';
-      
-      if(widget.isUserCreatingNewChain){
-        categoryFirstPhraseDescription = 'Break the ice and be the first to say something about this. If you want you can skip this';
-        categoryTextFieldDescription = 'What would be the first idea?';
-      }
-      else{
-        categoryFirstPhraseDescription = '';
+      categoryName = 'Random';
+      categoryIconPath = 'assets/image/random.png';
+      categoryFirstPhraseDescription = '';
+      disableFirstPhraseForChallangeAndRandom = true;
       categoryTextFieldDescription = '';
-      }
     }
 
     if(widget.addData!['categoryType'] == 2){
       categoryName = 'Chainllange';
       categoryIconPath = 'assets/image/challange.png';
       categoryFirstPhraseDescription = '';
-      disableFirstPhraseForChallange = true;
+      disableFirstPhraseForChallangeAndRandom = true;
       categoryTextFieldDescription = '';
     }
 
@@ -543,7 +555,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                             border: InputBorder.none,
                             label: Center(
                               child: Text(
-                                'Theme of the chain',
+                                (widget.addData!['categoryType'] == 1) ? 'Random chain' : 'Chainllange theme',
                                 style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.grey, fontWeight: FontWeight.bold),
                               ),
                             )
@@ -560,8 +572,10 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                   visible: photoTaken,
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.075),
-                    child: disableFirstPhraseForChallange 
-                      ? Text('Pick a theme that sets the stage for an engaging and competitive challenge. It should inspire participants to bring their best game', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center) 
+                    child: disableFirstPhraseForChallangeAndRandom
+                      ? (widget.addData!['categoryType'] == 2)
+                        ? Text('Pick a theme that sets the stage for an engaging and competitive challenge. It should inspire participants to bring their best game', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center) 
+                        : Text('Be as random as you want to and don\'t forget to add a spark', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center) 
                       : AnimatedContainer(
                       duration: const Duration(seconds: 2),
                       child: Column(
@@ -610,7 +624,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                           borderRadius: const BorderRadius.all(Radius.circular(15)),
                           onTap: () async {
 
-                            if(!disableFirstPhraseForChallange && _textController.text.isEmpty){
+                            if(!disableFirstPhraseForChallangeAndRandom && _textController.text.isEmpty){
                               Fluttertoast.showToast(msg: 'Empty first phrase', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
                               return;
                             }
@@ -652,7 +666,8 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                                               storage: _storage,
                                               addData: widget.addData!,
                                               chainMap: null,
-                                              disableFirstPhraseForChallange: disableFirstPhraseForChallange,
+                                              disableFirstPhraseForChallange: disableFirstPhraseForChallangeAndRandom,
+                                              chainSkipped: false,
                                               theme: _themeController.text.trim(),
                                               title: _textController.text.trim(),
                                               photoSkipped: photoSkipped,
@@ -751,9 +766,36 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
   }
 
   List<Widget> getIconList(double width){
+
+    List<Widget> widgetsForNumberOfContributors = [
+      IconButton(
+        onPressed: () {
+          if(widget.addData!['chainPieces'] < 20){
+            setState(() {
+              widget.addData!['chainPieces']++;
+            });
+          }
+        }, 
+        icon: Icon(Icons.arrow_drop_up, size: width * 0.08, color: globalTextBackground)
+      ),
+
+      Text(widget.addData!['chainPieces'].toString(), style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold)),
+
+      IconButton(
+        onPressed: () {
+          if(widget.addData!['chainPieces'] > 1){
+            setState(() {
+              widget.addData!['chainPieces']--;
+            });
+          }
+        }, 
+        icon: Icon(Icons.arrow_drop_down, size: width * 0.08, color: globalTextBackground)
+      )
+    ];
+
     return [
       Padding(
-        padding: EdgeInsets.all(width * 0.05),
+        padding: EdgeInsets.only(top: width * 0.05, bottom: width * 0.05, left: width * 0.025, right: width * 0.025),
         child: IconButton(
           onPressed: () {
             if(mounted){
@@ -767,7 +809,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
       ),
 
       Padding(
-        padding: EdgeInsets.all(width * 0.05),
+        padding: EdgeInsets.only(top: width * 0.05, bottom: width * 0.05, left: width * 0.025, right: width * 0.025),
         child: IconButton(
           onPressed: () {
             if(mounted){
@@ -781,13 +823,10 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
       ),
       
       Padding(
-        padding: EdgeInsets.all(width * 0.05),
-        child: TextButton(
-          onPressed: () {
-            //
-          }, 
-          child: Text(widget.addData!['chainPieces'].toString(), style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold))
-        )
+        padding: EdgeInsets.only(top: width * 0.05, bottom: width * 0.05, left: width * 0.025, right: width * 0.025),
+        child: photoSkipped 
+          ? Column(children: widgetsForNumberOfContributors)
+          : Row(children: widgetsForNumberOfContributors.reversed.toList())
       )
     ];
   }

@@ -6,6 +6,7 @@ import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:camera/camera.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,11 +55,15 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
   late final Map<String, String> allChainContrib;
   late final List<String> allPhotoIds;
+
   final List<Widget> allWidgetContrib = List.empty(growable: true);
 
+  late List<String> usernameList;
   late List<bool> usernameLoaded;
   late List<bool> pfpLoaded;
   late List<bool> containerImageUrlLoaded;
+  late List<Widget> rowOfChains;
+  late List<bool> pieceOfChainReported;
 
   String buttonText = 'EXTEND';
   String extendTextCopy = '';
@@ -69,6 +74,8 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
   int likesNumber = 0;
   bool liked = false;
   bool saved = false;
+
+  bool holdingDownSendButton = false;
 
   late List<String> usersCountryFlag;
 
@@ -82,15 +89,54 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     _animationControllerSlideUp4 = AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _animationControllerSlideDown = AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _animationControllerButtonFade = AnimationController(vsync: this, duration: const Duration(seconds: 1));
-    
-    _animationControllerSlideUp1.forward().then((value) => _animationControllerSlideUp2.forward());
 
+    usernameList = List.filled(widget.contributors.length, '');
     usernameLoaded = List.filled(widget.contributors.length, false);
     pfpLoaded = List.filled(widget.contributors.length, false);
     containerImageUrlLoaded = List.filled(widget.contributors.length + 1, false);
     usersCountryFlag = List.filled(widget.contributors.length, Country.worldWide.flagEmoji);
+    pieceOfChainReported = List.filled(widget.contributors.length, false);
 
     bool oneOrTwoTilesContainer = true;
+
+    rowOfChains = [
+      Container(
+        width: oneOrTwoTilesContainer ? widget.width / 2 : widget.width,
+        height: widget.width * 0.1,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage('assets/image/linkChain.png'),
+            fit: BoxFit.contain,
+            colorFilter: ColorFilter.mode(
+              widget.categoryColor, 
+              BlendMode.srcIn
+            )
+          )
+        ),
+      ),
+
+      Visibility(
+        visible: oneOrTwoTilesContainer,
+        child: Container(
+          width: widget.width / 2,
+          height: widget.width * 0.1,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: const AssetImage('assets/image/linkChain.png'),
+              fit: BoxFit.contain,
+              colorFilter: ColorFilter.mode(
+                widget.categoryColor, 
+                BlendMode.srcIn
+              )
+            )
+          ),
+        )
+      )
+    ];
+
+    oneOrTwoTilesContainer = !oneOrTwoTilesContainer;
+
+    _animationControllerSlideUp1.forward().then((value) => _animationControllerSlideUp2.forward());
 
     int index = 0;
 
@@ -98,81 +144,58 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       index = widget.contributors.length - 1;
     }
 
-    allWidgetContrib.add(
-      SizedBox(height: widget.width * 0.05, width: widget.width)
-    );
+    if(widget.contributors.isNotEmpty){
+      
+      allWidgetContrib.add(
+        Row(
+          children: rowOfChains,
+        )
+      );
 
-    for(index; index < widget.contributors.length; index++){
+      for(index; index < widget.contributors.length; index++){
 
-      List<String> contributor = widget.contributors[index];  // 0 - uid, 1 - phrase, 2 - ref
-    
-      bool hasImage = true;
+        List<String> contributor = widget.contributors[index];  // 0 - uid, 1 - phrase, 2 - ref
+      
+        bool hasImage = true;
 
-      if(contributor[2] == '-'){
-        hasImage = false;
-      }
-      else{
-        _retreiveContainerImage(contributor[2], index);
-      }
+        if(contributor[2] == '-'){
+          hasImage = false;
+        }
+        else{
+          _retreiveContainerImage(contributor[2], index);
+        }
 
-      double widgetTopPadding = 0;
-      double widgetBottomPadding = 0;
+        double widgetTopPadding = 0;
+        double widgetBottomPadding = 0;
 
-      if(index == 0){
-        widgetTopPadding = widget.width * 0.05;
+        allWidgetContrib.add(
+          _createWidgetContrib(index, contributor, hasImage, widgetTopPadding, widgetBottomPadding)
+        );
+
+        if(index < widget.contributors.length - 1){
+          allWidgetContrib.add(
+            Row(
+              children: rowOfChains
+            )
+          );
+        }
+
+        oneOrTwoTilesContainer = !oneOrTwoTilesContainer;
       }
 
       allWidgetContrib.add(
-        _createWidgetContrib(index, contributor, hasImage, widgetTopPadding, widgetBottomPadding)
+        SizedBox(height: widget.width * (0.05 + 0.32), width: widget.width)
       );
-
-      if(index < widget.contributors.length - 1){
-        allWidgetContrib.add(
-          Row(
-            children: [
-              Container(
-                width: oneOrTwoTilesContainer ? widget.width / 2 : widget.width,
-                height: widget.width * 0.1,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: const AssetImage('assets/image/linkChain.png'),
-                    fit: BoxFit.contain,
-                    colorFilter: ColorFilter.mode(
-                      widget.categoryColor, 
-                      BlendMode.srcIn
-                    )
-                  )
-                ),
-              ),
-
-              Visibility(
-                visible: oneOrTwoTilesContainer,
-                child: Container(
-                  width: widget.width / 2,
-                  height: widget.width * 0.1,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: const AssetImage('assets/image/linkChain.png'),
-                      fit: BoxFit.contain,
-                      colorFilter: ColorFilter.mode(
-                        widget.categoryColor, 
-                        BlendMode.srcIn
-                      )
-                    )
-                  ),
-                )
-              )
-            ],
-          )
-        );
-      }
-
-      oneOrTwoTilesContainer = !oneOrTwoTilesContainer;
     }
+    else{
 
-    allWidgetContrib.add(
-      SizedBox(height: widget.width * (0.05 + 0.32), width: widget.width)
-    );
+      allWidgetContrib.add(
+        Padding(
+          padding: EdgeInsets.all(widget.width * 0.05),
+          child: Text('You\'ve been chosen to start this chain\nPress EXTEND from below', style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+        )
+      );
+    }
 
     _checkForLiked();
     _checkForSaved();
@@ -272,20 +295,22 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           child: Image.asset(widget.categoryAssetPath, fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12, color: globalTextBackground),
                         ),
 
-                        Padding(
-                          padding: EdgeInsets.all(widget.width * 0.025),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center, softWrap: true)
-                              ),
+                        Flexible(
+                          child: Padding(
+                            padding: EdgeInsets.all(widget.width * 0.025),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(widget.width * 0.01),
+                                  child: Text(widget.chainMap['title'], style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: widget.categoryColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center, softWrap: true)
+                                ),
 
-                              Padding(
-                                padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                              )
-                            ],
+                                Padding(
+                                  padding: EdgeInsets.all(widget.width * 0.01),
+                                  child: Text(widget.chainMap['theme'], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: null)
+                                )
+                              ],
+                            )
                           )
                         ),
                       ],
@@ -503,7 +528,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                                   'categoryType' : 0
                                                 };
                                               }
-                                              else if(widget.categoryName == 'Gossip'){
+                                              else if(widget.categoryName == 'Random'){
                                                 addData = {
                                                   'categoryType' : 1
                                                 };
@@ -554,25 +579,44 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     )
                                   ),
 
-                                  Visibility(
-                                    visible: alreadyExtended,
-                                    child: FadeTransition(
-                                      opacity:Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerButtonFade, curve: Curves.easeOut)),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(widget.width * 0.0),
-                                        child: !chainSentForUpload ? IconButton(
-                                          onPressed: () {
+                                  ClipOval(
+                                    child: InkWell(
+                                      customBorder: const CircleBorder(),
+                                      onTapDown: (details) {
+                                        setState(() {
+                                          holdingDownSendButton = true;
+                                        });
+                                      },
+                                      onTapUp: (details) {
+                                        setState(() {
+                                          holdingDownSendButton = false;
+                                        });
+                                      },
+                                      onTapCancel: () {
+                                        setState(() {
+                                          holdingDownSendButton = false;
+                                        });
+                                      },
+                                      onLongPress: () {
+                                        if(_textController.text.trim().isEmpty){
+                                          Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+                                          return;
+                                        }
 
-                                            if(_textController.text.trim().isEmpty){
-                                              Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
-                                              return;
-                                            }
-
-                                            _animationControllerSlideDown.forward();
-                                            uploadExtendData(false);
-                                          }, 
-                                          icon: Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12, color: globalTextBackground)
-                                        ) : CircularProgressIndicator(color: widget.categoryColor)
+                                        _animationControllerSlideDown.forward();
+                                        uploadExtendData(false);
+                                      },
+                                      child: Visibility(
+                                        visible: alreadyExtended,
+                                        child: FadeTransition(
+                                          opacity:Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerButtonFade, curve: Curves.easeOut)),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(widget.width * 0.0),
+                                            child: !chainSentForUpload 
+                                              ? Image.asset('assets/image/rightarrow.png', fit: BoxFit.fill, width: widget.width * 0.12, height: widget.width * 0.12, color: holdingDownSendButton ? widget.categoryColor : globalTextBackground)
+                                              : CircularProgressIndicator(color: widget.categoryColor)
+                                          )
+                                        )
                                       )
                                     )
                                   ),
@@ -629,7 +673,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
   void uploadExtendData(bool extendingSkipped) async {
     if(extendingSkipped){
-      callStaticSentMethod();
+      callStaticSentMethod(extendingSkipped);
       Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
     }
     else{
@@ -660,7 +704,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
           'remainingOfContrib' : widget.chainMap['remainingOfContrib']
         }); 
 
-        callStaticSentMethod();
+        callStaticSentMethod(extendingSkipped);
         Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
       }
       catch(e){
@@ -669,19 +713,20 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     }
   }
 
-  void callStaticSentMethod() async {
+  void callStaticSentMethod(bool extendingSkipped) async {
     String chainNationality = '';
     Map<String, dynamic> chainMap = (await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).get()).data() as Map<String, dynamic>;
 
     chainNationality = chainMap['chainNationality'];
 
-    if(widget.chainMap['remainingOfContrib'] > 0){
+    if(widget.chainMap['remainingOfContrib'] > 0 || extendingSkipped){
       CreateChainCamera.uploadData(
         firebase: widget.firebase, 
         storage: widget.storage, 
         addData: {'randomOrFriends' : chainMap['random']},
         chainMap: chainMap, 
         disableFirstPhraseForChallange: false, 
+        chainSkipped: extendingSkipped,
         theme: '', 
         title: '', 
         photoSkipped: false, 
@@ -718,28 +763,30 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
     }
 
-    DocumentSnapshot userDetails = await widget.firebase.collection('UserDetails').doc(widget.userId).get();
-    int categoryTypeContributions = userDetails.get('${widget.categoryName}Contributions');
-    int totalContributions = userDetails.get('totalContributions');
-    int totalPoints = userDetails.get('totalPoints');
-
-    if(widget.categoryName == 'Story'){
-      totalPoints += 5;
-    }
-    else if(widget.categoryName == 'Gossip'){
-      totalPoints += 3;
-    }
-    else if(widget.categoryName == 'Chainllange'){
-      totalPoints += 10;
-    }
-
-    widget.firebase.collection('UserDetails').doc(widget.userId).update({
-      '${widget.categoryName}Contributions' : categoryTypeContributions + 1,
-      'totalContributions' : totalContributions + 1,
-      'totalPoints' : totalPoints
-    });
-
     widget.firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').doc(widget.chainId).delete(); 
+
+    if(!extendingSkipped){
+      DocumentSnapshot userDetails = await widget.firebase.collection('UserDetails').doc(widget.userId).get();
+      int categoryTypeContributions = userDetails.get('${widget.categoryName}Contributions');
+      int totalContributions = userDetails.get('totalContributions');
+      int totalPoints = userDetails.get('totalPoints');
+
+      if(widget.categoryName == 'Story'){
+        totalPoints += 5;
+      }
+      else if(widget.categoryName == 'Random'){
+        totalPoints += 3;
+      }
+      else if(widget.categoryName == 'Chainllange'){
+        totalPoints += 10;
+      }
+
+      widget.firebase.collection('UserDetails').doc(widget.userId).update({
+        '${widget.categoryName}Contributions' : categoryTypeContributions + 1,
+        'totalContributions' : totalContributions + 1,
+        'totalPoints' : totalPoints
+      });
+    }
 
     if(mounted){
       Navigator.of(context).pop();
@@ -752,49 +799,23 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
       extendTextCopy = _textController.text;
 
-      if(alreadyExtended){
-        allWidgetContrib.remove(allWidgetContrib.last);
-        allWidgetContrib.remove(allWidgetContrib.last);
-      }
-      else{
+      if(!alreadyExtended) {
+
+        allWidgetContrib.removeLast();
+
         alreadyExtended = true;
         buttonText = 'RETAKE';
         _animationControllerButtonFade.forward();
 
-        allWidgetContrib.last = 
+        allWidgetContrib.add( 
           Row(
-            children: [
-              Container(
-                width: widget.width / 2,
-                height: widget.width * 0.1,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: const AssetImage('assets/image/linkChain.png'),
-                    fit: BoxFit.contain,
-                    colorFilter: ColorFilter.mode(
-                      widget.categoryColor, 
-                      BlendMode.srcIn
-                    )
-                  )
-                ),
-              ),
-
-              Container(
-                width: widget.width / 2,
-                height: widget.width * 0.1,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: const AssetImage('assets/image/linkChain.png'),
-                    fit: BoxFit.contain,
-                    colorFilter: ColorFilter.mode(
-                      widget.categoryColor, 
-                      BlendMode.srcIn
-                    )
-                  )
-                ),
-              )
-            ],
-          );
+            children: rowOfChains
+          )
+        );
+      }
+      else{
+        allWidgetContrib.removeLast();
+        allWidgetContrib.removeLast();
       }
 
       allWidgetContrib.add(
@@ -842,6 +863,8 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                       
                           String username = snapshot.data!['username']!;
                           String pfpUrl = snapshot.data!['pfp']!;
+
+                          usernameList[index] = username;
 
                           bool hasPfp = false;
                           if(pfpUrl != '-'){
@@ -975,13 +998,105 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                     padding: EdgeInsets.all(widget.width * 0.01),
                     child: TextButton(
                       onPressed: () {
-                        //report logic
+                        if(!mounted){
+                          return;
+                        }
+
+                        setState(() {
+                          pieceOfChainReported[index] = true;
+                          
+                          TextEditingController _reportController = TextEditingController();
+
+                          showDialog(
+                            context: context, 
+                            builder: (context){
+                              return AlertDialog(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Report ${usernameList[index]}', style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                                  ],
+                                ),
+                                actionsAlignment: MainAxisAlignment.center,
+                                content: Padding(
+                                  padding: EdgeInsets.only(left: widget.width * 0.075, right: widget.width * 0.075),
+                                  child: AnimatedContainer(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: globalPurple, width: 2.0),
+                                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                    ),
+                                    duration: const Duration(seconds: 1),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(widget.width * 0.015),
+                                        child: TextField(
+                                        controller: _reportController,
+                                        maxLines: null,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          label: Center(
+                                            child: Text(
+                                              'Reason',
+                                              style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+                                            ),
+                                          )
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
+                                      ),
+                                    )
+                                  ),
+                                ),
+                                actions: [
+                                  Padding(
+                                    padding: EdgeInsets.all(widget.width * 0.01),
+                                    child: Material(
+                                      color: globalPurple,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(15))
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                        onTap: () async {
+
+                                          if(_reportController.text.isEmpty){
+                                            Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                            return;
+                                          }
+
+                                          if((await widget.firebase.collection('ReportedChains').doc(widget.chainId).get()).exists){
+                                            widget.firebase.collection('ReportedChains').doc(widget.chainId).update({
+                                              widget.userId : _reportController.text.trim()
+                                            });
+                                          }
+                                          else{
+                                            widget.firebase.collection('ReportedChains').doc(widget.chainId).set({
+                                              widget.userId : _reportController.text.trim()
+                                            });
+                                          }
+                                          
+                                          Navigator.of(context).pop();
+
+                                          Fluttertoast.showToast(msg: '${usernameList[index]} reported', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                        }, 
+                                        splashColor: globalBlue,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(widget.width * 0.025),
+                                          child: Text('Report', style: GoogleFonts.nunito(fontSize: widget.width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              );
+                            }
+                          );
+                        });
                       }, 
                       child: Text('Report', style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold))
                     ),
                   ),
 
-                  const Spacer(),
+                  const Spacer()
                 ],
               )
             ],
