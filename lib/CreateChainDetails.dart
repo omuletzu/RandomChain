@@ -301,19 +301,21 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
 
     widget.addData!['tagList'] = tagList;
 
-    if(mounted){
-      if(hasTags_forPoppingAlert){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateChainCamera(cameraList: cameraList, camera: camera, cameraBackground: CameraPreview(_cameraController), cameraController: _cameraController, addData: widget.addData, changePageHeader: widget.changePageHeader, isUserCreatingNewChain: true, callBackAfterPhoto: null)));
+    if(hasTags_forPoppingAlert){
+        if(mounted){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateChainCamera(cameraList: cameraList, camera: camera, cameraBackground: CameraPreview(_cameraController), cameraController: _cameraController, addData: widget.addData, changePageHeader: widget.changePageHeader, isUserCreatingNewChain: true, callBackAfterPhoto: null)));
+        }
       }
       else{
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CreateChainCamera(cameraList: cameraList, camera: camera, cameraBackground: CameraPreview(_cameraController), cameraController: _cameraController, addData: widget.addData, changePageHeader: widget.changePageHeader, isUserCreatingNewChain: true, callBackAfterPhoto: null)));
+        if(mounted){
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => CreateChainCamera(cameraList: cameraList, camera: camera, cameraBackground: CameraPreview(_cameraController), cameraController: _cameraController, addData: widget.addData, changePageHeader: widget.changePageHeader, isUserCreatingNewChain: true, callBackAfterPhoto: null)));
+        }
       }
-    }
   }
 
   @override
   void dispose(){
-    super.dispose();
     _animationControllerIcon.dispose();
+    super.dispose();
   }
 }

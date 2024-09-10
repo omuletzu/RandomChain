@@ -46,6 +46,8 @@ class _ExplorePage extends State<ExplorePage>{
   bool searchingMode = false;
   bool searchingHasElements = false;
   bool searchFinished = false;
+  
+  bool scrollListenerAdded = false;
 
   int orderForCountryRandomness = 0;  // 0, 1 - same country, 2 - random country
   List<String> allForeignCountryWithFinishedChains = [];
@@ -297,14 +299,21 @@ class _ExplorePage extends State<ExplorePage>{
       orderForCountryRandomness = (orderForCountryRandomness + 1) % 2;
     }
 
-    scrollController.addListener(() {
-      if(scrollController.position.atEdge){
-        if(scrollController.position.pixels != 0){
-          updateScrollChainData();
-          print('ALOOOO');
-        }
+    if(!scrollListenerAdded){
+      scrollController.addListener(() {
+        _scrollListenerFunction();
+      });
+
+      scrollListenerAdded = true;
+    }
+  }
+
+  void _scrollListenerFunction(){
+    if(scrollController.position.atEdge){
+      if(scrollController.position.pixels != 0){
+        updateScrollChainData();
       }
-    });
+    }
   }
 
   void _addDataFromSameCountry() async {
@@ -402,5 +411,11 @@ class _ExplorePage extends State<ExplorePage>{
         allChainsWidget.addAll(tempList);
       });
     }
+  }
+
+  @override
+  void dispose(){
+    scrollController.removeListener(_scrollListenerFunction);
+    super.dispose();
   }
 }

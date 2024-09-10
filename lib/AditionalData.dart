@@ -187,8 +187,6 @@ class _AditionalData extends State<AditionalData>{
                       return;
                     }
 
-                    Timestamp timestamp = Timestamp.now();
-
                     widget.firebaseFirestore.collection('UserDetails').doc(widget.phoneOrEmail).set({
                       'nickname' : _nicknameController.text.trim(),
                       'nicknameLowercase': _nicknameController.text.toLowerCase().trim(),
@@ -201,7 +199,7 @@ class _AditionalData extends State<AditionalData>{
                       'ChainllangeContributions' : 0,
                       'totalContributions' : 0,
                       'totalPoints' : 0,
-                      'accountSince' : timestamp,
+                      'accountSince' : Timestamp.now(),
                       'friendsCount' : 0,
                     });
 

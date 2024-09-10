@@ -491,6 +491,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                       onTap: () async {
                                         await FirebaseAuth.instance.signOut();
                                         await GoogleSignIn().signOut();
+                                        Workmanager().cancelByUniqueName('1');
+                                        OneSignal.User.pushSubscription.optOut();
 
                                         if(mounted){
                                           Navigator.of(context).popUntil((route) => route.isFirst);
@@ -903,15 +905,16 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setString('userId', widget.phoneOrEmail);
 
-    _checkIfWorkmanagerMustBeEnabled(sharedPreferences);
+    _checkIfWorkmanagerMustBeEnabled(sharedPreferences, widget.phoneOrEmail);
   }
 
   void updateUIFromSetting(){
     setState(() {});
   }
 
-  void _checkIfWorkmanagerMustBeEnabled(SharedPreferences sharedPreferences){
-    if(sharedPreferences.getBool('notificationsEnabled') ?? true){
+  void _checkIfWorkmanagerMustBeEnabled(SharedPreferences sharedPreferences, String userId){
+
+    if(sharedPreferences.getBool('notificationsEnabled${widget.phoneOrEmail}') ?? true){
       Workmanager().registerPeriodicTask(
         '1', 
         'listenerTask',
@@ -920,9 +923,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           'userId' : widget.phoneOrEmail
         }
       );
-    }
-    else{
-      OneSignal.Notifications.clearAll();
+
+      OneSignal.User.pushSubscription.optIn();
     }
   }
 }

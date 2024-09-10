@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/SendUploadData.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -338,6 +339,16 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                     ),
 
                     Align(
+                      child: Visibility(
+                        visible: chainSentForUpload,
+                        child: Padding(
+                          padding: EdgeInsets.all(widget.width * 0.05),
+                          child: CircularProgressIndicator(color: widget.categoryColor),
+                        )
+                      )
+                    ),
+
+                    Align(
                       alignment: Alignment.bottomCenter,
                       child: Visibility(
                         visible: widget.calledByExplore,
@@ -359,7 +370,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                     position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -421,7 +432,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                       position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -497,7 +508,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                       position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -597,6 +608,9 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           holdingDownSendButton = false;
                                         });
                                       },
+                                      onTap: () {
+                                        Fluttertoast.showToast(msg: 'To send hold button longer', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+                                      },
                                       onLongPress: () {
                                         if(_textController.text.trim().isEmpty){
                                           Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
@@ -625,7 +639,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                       position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.all(widget.width * 0.05),
+                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -720,11 +734,15 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     chainNationality = chainMap['chainNationality'];
 
     if(widget.chainMap['remainingOfContrib'] > 0 || extendingSkipped){
-      CreateChainCamera.uploadData(
+      SendUploadData.uploadData(
         firebase: widget.firebase, 
         storage: widget.storage, 
-        addData: {'randomOrFriends' : chainMap['random']},
+        addData: {
+          'userId' : widget.userId,
+          'randomOrFriends' : chainMap['random']
+        },
         chainMap: chainMap, 
+        contributorsList: widget.contributors,
         disableFirstPhraseForChallange: false, 
         chainSkipped: extendingSkipped,
         theme: '', 
@@ -737,13 +755,11 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         context: context, 
         changePageHeader: widget.changePageHeader, 
         newChainOrExtend: false, 
-        userIdForExtend: widget.userId, 
-        userNationalityForExtend: chainNationality
       );
     }
     else{
 
-      await widget.firebase.collection('UserDetails').doc(widget.userId).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
+      widget.firebase.collection('UserDetails').doc(chainMap['userIdForFriendList']).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
         'categoryName' : widget.categoryName, 
         'chainNationality' : chainMap['chainNationality']
       });
@@ -752,15 +768,15 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
         String contributorId = contributor[0];
         
-        await widget.firebase.collection('UserDetails').doc(contributorId).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
+        widget.firebase.collection('UserDetails').doc(contributorId).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
         'categoryName' : widget.categoryName, 
         'chainNationality' : chainMap['chainNationality']
       });
       }
 
-      await widget.firebase.collection('AllCountryFinishedChains').doc(chainNationality).set({});
-      await widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).set(chainMap);
-      await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
+      widget.firebase.collection('AllCountryFinishedChains').doc(chainNationality).set({});
+      widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).set(chainMap);
+      widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
     }
 
     widget.firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').doc(widget.chainId).delete(); 
@@ -772,13 +788,13 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       int totalPoints = userDetails.get('totalPoints');
 
       if(widget.categoryName == 'Story'){
-        totalPoints += 5;
+        totalPoints += 2;
       }
       else if(widget.categoryName == 'Random'){
-        totalPoints += 3;
+        totalPoints += 1;
       }
       else if(widget.categoryName == 'Chainllange'){
-        totalPoints += 10;
+        totalPoints += 4;
       }
 
       widget.firebase.collection('UserDetails').doc(widget.userId).update({

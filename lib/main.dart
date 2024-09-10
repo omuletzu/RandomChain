@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/SendUploadData.dart';
 import 'package:doom_chain/SplashScreen.dart';
 import 'package:doom_chain/firebase_options.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,14 +20,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  OneSignal.initialize('d6b98b33-6d45-4d2e-bd3a-94ede2822050');
-  OneSignal.Notifications.requestPermission(true);
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true
+  );
 
   await Workmanager().initialize(
     callBackDipatcher,
     isInDebugMode: false
   );
+
+  OneSignal.initialize('d6b98b33-6d45-4d2e-bd3a-94ede2822050');
+  OneSignal.Notifications.requestPermission(true);
+  OneSignal.User.pushSubscription.optOut();
 
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
@@ -43,7 +50,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    
     final double width = MediaQuery.of(context).size.width;
 
     return MaterialApp(
@@ -66,13 +73,16 @@ void callBackDipatcher(){
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
       }
 
+      FirebaseFirestore _firebase = FirebaseFirestore.instance;
+      FirebaseStorage _storage = FirebaseStorage.instance;
+
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
       int lastNumberOfStory = sharedPreferences.getInt('lastNumberOfStory') ?? 0;
       int lastNumberOfrandom = sharedPreferences.getInt('lastNumberOfrandom') ?? 0;
       int lastNumberOfChainllange = sharedPreferences.getInt('lastNumberOfChainllange') ?? 0;
 
-      QuerySnapshot pendingChains = await FirebaseFirestore.instance.collection('UserDetails').doc(inputData!['userId']).collection('PendingPersonalChains').get();
+      QuerySnapshot pendingChains = await _firebase.collection('UserDetails').doc(inputData!['userId']).collection('PendingPersonalChains').get();
 
       Map<String, int> updatedNumberOfStory = {
         'Story' : 0,
@@ -105,7 +115,7 @@ void callBackDipatcher(){
       sharedPreferences.setInt('lastNumberOfrandom', updatedNumberOfStory['random']!);
       sharedPreferences.setInt('lastNumberOfChainllange', updatedNumberOfStory['Chainllange']!);
 
-      QuerySnapshot pendingFriends = await FirebaseFirestore.instance.collection('UserDetails').doc(inputData['userId']).collection('FriendRequests').get();
+      QuerySnapshot pendingFriends = await _firebase.collection('UserDetails').doc(inputData['userId']).collection('FriendRequests').get();
 
       int lastNumberOfPendingFriends = sharedPreferences.getInt('lastNumberOfPendingFriends') ?? 0;
 
@@ -153,6 +163,42 @@ void callBackDipatcher(){
           );
         }
       }
+
+      DateTime timestamp = Timestamp.now().toDate();
+
+      for(DocumentSnapshot pendingChain in pendingChains.docs){
+        DateTime timeDifference = pendingChain.get('receivedTime').toDate();
+        int differenceInHours = timestamp.difference(timeDifference).inHours;
+
+        if(differenceInHours >= 2){
+          SendUploadData.uploadData(
+            firebase: _firebase, 
+            storage: _storage, 
+            addData: {
+              'userId' : inputData['userId'],
+              'randomOrFriends' : pendingChain['random']
+            }, 
+            chainMap: pendingChain.data() as Map<String, dynamic>, 
+            disableFirstPhraseForChallange: false, 
+            contributorsList: null,
+            theme: '', 
+            title: '', 
+            photoSkipped: false, 
+            chainIdentifier: pendingChain.id, 
+            categoryName: pendingChain.get('categoryName'), 
+            chainSkipped: true, 
+            photoPath: null, 
+            mounted: false, 
+            context: null, 
+            changePageHeader: null, 
+            newChainOrExtend: false
+          );
+
+          _firebase.collection('UserDetails').doc(inputData['userId']).collection('PendingPersonalChains').doc(pendingChain.id).delete();
+        }
+      }
+
+      _firebase.terminate();
     }
     
      return Future.value(true);

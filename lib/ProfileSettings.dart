@@ -84,10 +84,11 @@ class _ProfileSettings extends State<ProfileSettings> {
                               'userId' : widget.userId
                             }
                           );
+                          OneSignal.User.pushSubscription.optIn();
                         }
                         else{
                           Workmanager().cancelByUniqueName('1');
-                          OneSignal.Notifications.clearAll();
+                          OneSignal.User.pushSubscription.optOut();
                         }
                       }
                     )

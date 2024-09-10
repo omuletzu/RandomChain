@@ -40,6 +40,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
   int totalPoints = 0;
   int totalContributions = 0;
   int totalFriends = 0;
+  int userRank = 1;
   DateFormat format = DateFormat("dd-MM-yyyy");
   late DateTime accountSince;
 
@@ -82,7 +83,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Image.asset('assets/image/roundchain.png', width: width * 0.5, height: width * 0.5, color: Colors.grey),
+                        Image.asset('assets/image/roundchain.png', width: width * 0.5, height: width * 0.5, color: dataRetreived ? _getProfileChainColor() : Colors.grey),
 
                         ClipOval(
                           child: dataRetreived 
@@ -118,7 +119,7 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
 
                 Align(
                   alignment: Alignment.center,
-                  child: Text(userDataRetreived ? profileInfo['nickname'] : '', style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  child: Text(userDataRetreived ? '${profileInfo['nickname']} | Rank $userRank' : '', style: GoogleFonts.nunito(fontSize: width * 0.05, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                 )
               ],
             ),
@@ -272,6 +273,43 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
         dataRetreived = true;
       });
     }
+  }
+
+  Color _getProfileChainColor(){
+    double normalizedPoints = (totalPoints % 100).clamp(50, 100) / 100;
+    Color secondColor;
+
+    if(totalPoints < 100){
+      secondColor = globalRank1;
+      userRank = 1;
+    }else if(totalPoints < 200){
+      secondColor = globalRank2;
+      userRank = 2;
+    }else if(totalPoints < 300){
+      secondColor = globalRank3;
+      userRank = 3;
+    }else if(totalPoints < 400){
+      secondColor = globalRank4;
+      userRank = 4;
+    }else if(totalPoints < 500){
+      secondColor = globalRank5;
+      userRank = 5;
+    }else if(totalPoints < 600){
+      secondColor = globalRank6;
+      userRank = 6;
+    }else if(totalPoints < 700){
+      secondColor = globalRank7;
+      userRank = 7;
+    }else{
+      secondColor = globalRank8;
+      userRank = 8;
+
+      if(totalPoints > 899){
+        normalizedPoints = 1;
+      }
+    }
+
+    return Color.lerp(Colors.grey[200], secondColor, normalizedPoints) ?? Colors.grey;
   }
 
   @override
