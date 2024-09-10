@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilePage extends StatefulWidget{
 
@@ -88,25 +89,14 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
                         ClipOval(
                           child: dataRetreived 
                             ? (hasProfileImage
-                              ? Image.network(
-                                  profileImageUrl,
-                                  width: width * 0.2,
-                                  height: width * 0.2,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if(loadingProgress == null){
-                                      return child;
-                                    }
-                                    else{
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    print('$error\n$stackTrace');
-                                    return Icon(Icons.error, size: width * 0.025);
-                                  },
+
+                              ? CachedNetworkImage(
+                                imageUrl: profileImageUrl,
+                                width: width * 0.2,
+                                height: width * 0.2,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => Icon(Icons.error, size: width * 0.25)
                               )
                               : Image.asset('assets/image/profile.png', width: width * 0.25, height: width * 0.25, color: globalTextBackground)
                             )

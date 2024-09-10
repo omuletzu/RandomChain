@@ -53,7 +53,7 @@ class SendUploadData{
         if(addData['randomOrFriends']){
 
           if(addData['chainPieces'] > allUserNotFromSameCountry.docs.length && addData['chainPieces'] > allUsersFromSameCountry.docs.length){
-            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
             return Future.value(false);
           }
         }
@@ -61,7 +61,7 @@ class SendUploadData{
           allFriends = await firebase.collection('UserDetails').doc(newChainOrExtend ? addData['userId'] : chainMap!['userIdForFriendList']).collection('Friends').get();
 
           if(addData['chainPieces'] > allFriends.docs.length){
-            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+            Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
             return Future.value(false);
           }
         }
@@ -151,6 +151,7 @@ class SendUploadData{
       if(randomFinalUserIndex == 0 && userRandomIndexes[0] != -1){
         if(allUsersFromSameCountry.docs[userRandomIndexes[0]].id == userId){
           if(userRandomIndexes[1] != -1){
+            randomFinalUserIndex = 1;
             userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[1]].id;
           }
           else{
@@ -166,16 +167,21 @@ class SendUploadData{
             userIdToSendChain = allUsersFromSameCountry.docs[userRandomIndexes[0]].id;
           }
           else{
-            userRandomIndexes[1] = -1;
+            randomFinalUserIndex = 2;
+            userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[2]].id;
           }
         }
       }
       else if(randomFinalUserIndex == 2 && userRandomIndexes[2] != -1){
         userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[2]].id;
       }
+      else if(randomFinalUserIndex == 1 && userRandomIndexes[1] == -1){
+        randomFinalUserIndex = 2;
+        userIdToSendChain = allUserNotFromSameCountry.docs[userRandomIndexes[2]].id;
+      }
 
       if(userRandomIndexes[randomFinalUserIndex] == -1){
-        Fluttertoast.showToast(msg: 'Please retry', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+        Fluttertoast.showToast(msg: 'Please retry', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
         return Future.value(false);
       }
     }
@@ -218,7 +224,7 @@ class SendUploadData{
     }
 
     if(userIdToSendChain != ''){
-      sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriend'] : chainMap['randomOrFriend']);
+      sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriends'] : chainMap['randomOrFriend']);
     }
 
     if(!chainSkipped){
@@ -241,7 +247,7 @@ class SendUploadData{
     }
 
     if(newChainOrExtend){
-      Fluttertoast.showToast(msg: 'Chain sent', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+      Fluttertoast.showToast(msg: 'Chain sent', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
     }
 
     return Future.value(true);

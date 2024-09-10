@@ -217,7 +217,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
     }
 
     if(!scrollListenerAdded){   // executed only once
-
+    
       scrollController.addListener(scrollListenerFunction);
       scrollListenerAdded = true;
     }
@@ -274,7 +274,10 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
   @override
   void dispose(){
     _textController.dispose();
-    scrollController.removeListener(scrollListenerFunction);
+    if(scrollListenerAdded){
+      scrollController.removeListener(scrollListenerFunction);
+      scrollListenerAdded = false;
+    }
     scrollController.dispose();
     super.dispose();
   }

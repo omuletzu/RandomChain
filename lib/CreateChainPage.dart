@@ -165,12 +165,12 @@ class _CreateChain extends State<CreateChain>{
                       onTap: () async {
 
                         if(_titleController.text.trim().isEmpty && isStoryCategory){
-                          Fluttertoast.showToast(msg: 'Empty title', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                          Fluttertoast.showToast(msg: 'Empty title', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                           return;
                         }
 
                         if(_themeController.text.trim().isEmpty){
-                          Fluttertoast.showToast(msg: 'Empty theme', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                          Fluttertoast.showToast(msg: 'Empty theme', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                           return;
                         }
 

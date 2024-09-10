@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:camera/camera.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -688,7 +688,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
   void uploadExtendData(bool extendingSkipped) async {
     if(extendingSkipped){
       callStaticSentMethod(extendingSkipped);
-      Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+      Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
     }
     else{
       try{
@@ -719,7 +719,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         }); 
 
         callStaticSentMethod(extendingSkipped);
-        Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+        Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
       }
       catch(e){
         print(e);
@@ -893,19 +893,14 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                 padding: EdgeInsets.all(widget.width * 0.01),
                                 child: ClipOval(
                                   child: hasPfp 
-                                    ? Image.network(
-                                        pfpUrl, 
-                                        width: widget.width * 0.075, 
-                                        height: widget.width * 0.075,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (context, child, loadingProgress) {
-                                          if(loadingProgress == null){
-                                            return child;
-                                          }
-                                          
-                                          return CircularProgressIndicator(color: widget.categoryColor);
-                                        },
-                                      )
+                                    ? CachedNetworkImage(
+                                      imageUrl: pfpUrl,
+                                      width: widget.width * 0.075, 
+                                      height: widget.width * 0.075,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => CircularProgressIndicator(color: widget.categoryColor),
+                                      errorWidget: (context, url, error) => Icon(Icons.error, size: widget.width * 0.25)
+                                    )
                                     : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075, color: globalTextBackground)
                                 )
                               ),
@@ -962,17 +957,12 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                       future: _retreiveContainerImage(contributor[2], index), 
                       builder: (context, snapshot){
                         if(snapshot.hasData){
-                          return hasImage ? Image.network(
-                              snapshot.data!, 
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                                  else{
-                                    return CircularProgressIndicator(color: widget.categoryColor);
-                                  }
-                                }
+                          return hasImage 
+                            ? CachedNetworkImage(
+                              imageUrl: snapshot.data!,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => CircularProgressIndicator(color: widget.categoryColor),
+                              errorWidget: (context, url, error) => Icon(Icons.error, size: widget.width * 0.25)
                             )
                             : Image.asset('assets/image.logo.png', color: globalTextBackground);
                         }
@@ -1075,7 +1065,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                         onTap: () async {
 
                                           if(_reportController.text.isEmpty){
-                                            Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                            Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                             return;
                                           }
 
@@ -1092,7 +1082,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           
                                           Navigator.of(context).pop();
 
-                                          Fluttertoast.showToast(msg: '${usernameList[index]} reported', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                          Fluttertoast.showToast(msg: '${usernameList[index]} reported', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                         }, 
                                         splashColor: globalBlue,
                                         child: Padding(

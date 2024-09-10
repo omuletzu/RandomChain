@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
@@ -119,17 +120,11 @@ class _UnchainedElement extends State<UnchainedElement>{
                       child: ClipRRect(
                         borderRadius: const BorderRadius.all(Radius.circular(15)),
                         child: containerImageLoaded 
-                        ? Image.network(
-                            containerImageUrl, 
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if(loadingProgress == null){
-                                return child;
-                              }
-                              else{
-                                return CircularProgressIndicator(color: categoryColor);
-                              }
-                            },
+                        ? CachedNetworkImage(
+                          imageUrl: containerImageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => CircularProgressIndicator(color: categoryColor),
+                          errorWidget: (context, url, error) => Icon(Icons.error, size: width * 0.25)
                         )
                         : CircularProgressIndicator(color: categoryColor)
                       )

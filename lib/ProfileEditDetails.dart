@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:doom_chain/GlobalColors.dart';
@@ -83,7 +84,15 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                               child: ClipOval(
                                 child: notPickedImage ?
                                 (
-                                  hasOriginalAvatar ? Image.network(originalAvatar, height: width * 0.25, width: width * 0.25, fit: BoxFit.cover)
+                                  hasOriginalAvatar 
+                                    ? CachedNetworkImage(
+                                      imageUrl: originalAvatar,
+                                      width: width * 0.25,
+                                      height: width * 0.25,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) => Icon(Icons.error, size: width * 0.25)
+                                    )
                                     : Image.asset('assets/image/profile.png', height: width * 0.25, width: width * 0.25, color: globalTextBackground)
                                 )
                                 : Image.file(imagePicked!, height: width * 0.25, width: width * 0.25, fit: BoxFit.cover)
@@ -217,7 +226,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                             onTap: () async {
 
                               if(_nicknameController.text.isEmpty){
-                                Fluttertoast.showToast(msg: 'Empty nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                Fluttertoast.showToast(msg: 'Empty nickname', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                 return;
                               }
 

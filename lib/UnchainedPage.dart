@@ -1,7 +1,6 @@
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
-import 'package:doom_chain/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -25,6 +24,10 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   final FirebaseFirestore firebase = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
+  final ScrollController scrollController = ScrollController();
+  late QuerySnapshot allUnchained;
+
+  bool scrollListenerAdded = false;
   bool existingUnchained = false;
   bool hasCheckedForExistingUnchained = false;
   late String userNationality;
@@ -37,7 +40,6 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
   @override 
   void initState(){
     super.initState();
-
     _fetchFirebaseUnchained();
   }
 
@@ -79,6 +81,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
               )
               : Expanded(
                 child: SingleChildScrollView(
+                  controller: scrollController,
                   child: StaggeredGrid.count(
                   crossAxisCount: 2,
                   children: allUnchainedWidget
@@ -90,11 +93,6 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
                   child: CircularProgressIndicator(),
                 ),
               ),
-
-          // Divider(
-          //   height: 1,
-          //   color: Colors.grey[200],
-          // ),
 
           Padding(
               padding: EdgeInsets.only(top: width * 0.05, left: width * 0.2, right: width * 0.2),
@@ -131,7 +129,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   Future<void> _fetchFirebaseUnchained() async {
 
-    QuerySnapshot allUnchained = await firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').get();
+    allUnchained = await firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').get();
 
     if(allUnchained.docs.isNotEmpty && mounted){
       setState(() {
@@ -141,36 +139,66 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
       allUnchained.docs.shuffle();
 
-      for(int index = 0; index < allUnchained.docs.length; index++){
-
-        DocumentSnapshot unchained = allUnchained.docs[index];
-
-        Map<String, dynamic> dataMap = unchained.data() as Map<String, dynamic>;
-
-        UnchainedElement widgetToBeAdded = UnchainedElement(userId: widget.userId, 
-          firebase: firebase, 
-          storage: storage, 
-          calledByExplore: false,
-          chainIdAndCategoryName: Pair(first: unchained.id, second: dataMap['categoryName']), 
-          chainData: (await firebase.collection('PendingChains').doc(dataMap['categoryName']).collection(dataMap['chainNationality']).doc(unchained.id).get()).data() as Map<String, dynamic>, 
-          changePageHeader: widget.changePageHeader,
-          removeIndexFromWidgetList: () {}
-        );
-
-        widgetToBeAdded.removeIndexFromWidgetList = () {
-          setState(() {
-            allUnchainedWidget.clear();
-            _fetchFirebaseUnchained();
-          });
-        };
-
-        allUnchainedWidget.add(widgetToBeAdded);
-      }
+      updateScrollChainData();
     }
 
     if(mounted){
       setState(() {
         hasCheckedForExistingUnchained = true;
+      });
+    }
+  }
+
+  Future<void> updateScrollChainData() async {
+    
+    _addUnchainedData();
+
+    if(!scrollListenerAdded){
+      scrollController.addListener(() {
+        _scrollListenerFunction();
+      });
+
+      scrollListenerAdded = true;
+    }
+  }
+
+  void _scrollListenerFunction(){
+
+    if(scrollController.position.pixels >= scrollController.position.maxScrollExtent){
+      updateScrollChainData();
+    }
+  }
+
+  Future<void> _addUnchainedData() async {
+
+    if(allUnchainedWidget.length >= totalNumberOfUnchained){
+      return;
+    }
+
+    List<UnchainedElement> tempList = [];
+
+    for(int i = 0, index = 0; i < 9 && index < allUnchained.docs.length; i++, index++){
+
+      DocumentSnapshot unchained = allUnchained.docs[index];
+
+      Map<String, dynamic> dataMap = unchained.data() as Map<String, dynamic>;
+
+      UnchainedElement widgetToBeAdded = UnchainedElement(userId: widget.userId, 
+        firebase: firebase, 
+        storage: storage, 
+        calledByExplore: false,
+        chainIdAndCategoryName: Pair(first: unchained.id, second: dataMap['categoryName']), 
+        chainData: (await firebase.collection('PendingChains').doc(dataMap['categoryName']).collection(dataMap['chainNationality']).doc(unchained.id).get()).data() as Map<String, dynamic>, 
+        changePageHeader: widget.changePageHeader,
+        removeIndexFromWidgetList: () {}
+      );
+
+      tempList.add(widgetToBeAdded);
+    }
+
+    if(mounted){
+      setState(() {
+        allUnchainedWidget.addAll(tempList);
       });
     }
   }

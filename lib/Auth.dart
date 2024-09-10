@@ -29,7 +29,7 @@ class Auth extends StatefulWidget{
       GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
 
       if(googleSignInAccount == null){
-        Fluttertoast.showToast(msg: 'Please retry', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+        Fluttertoast.showToast(msg: 'Please retry', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
         return;
       }
 
@@ -59,7 +59,7 @@ class Auth extends StatefulWidget{
     }
     catch(e){
       print(e);
-      Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+      Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
     }
   }
 }

@@ -145,15 +145,15 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                             on FirebaseAuthException catch(e){
                               switch(e.code){
                                 case 'invalid-email' : 
-                                  Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                  Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                   break;
 
                                 case 'wrong-password' : 
-                                  Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                  Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                   break; 
 
                                 default : 
-                                  Fluttertoast.showToast(msg: 'Invalid sign in', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                  Fluttertoast.showToast(msg: 'Invalid sign in', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                               }
                             }
                             finally{

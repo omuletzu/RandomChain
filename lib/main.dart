@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:doom_chain/SplashScreen.dart';
@@ -14,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() async {
 
@@ -39,6 +39,8 @@ void main() async {
       systemNavigationBarColor: Colors.black
     )
   );
+
+  sqfliteFfiInit();
 
   runApp(const MyApp());
 }
@@ -197,8 +199,6 @@ void callBackDipatcher(){
           _firebase.collection('UserDetails').doc(inputData['userId']).collection('PendingPersonalChains').doc(pendingChain.id).delete();
         }
       }
-
-      _firebase.terminate();
     }
     
      return Future.value(true);

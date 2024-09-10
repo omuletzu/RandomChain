@@ -150,7 +150,7 @@ class _PhoneAuth extends State<PhoneAuth>{
                       }
 
                       if(mounted && _codeController.text.isEmpty){
-                        Fluttertoast.showToast(msg: 'Empty SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                        Fluttertoast.showToast(msg: 'Empty SMS code', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                         setState(() {
                           displayProgress = false;
                         });
@@ -179,13 +179,13 @@ class _PhoneAuth extends State<PhoneAuth>{
                       on FirebaseAuthException catch(e){
                         switch(e.code){
                           case 'invalid-verification-code' : 
-                            Fluttertoast.showToast(msg: 'Invalid SMS code', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                            Fluttertoast.showToast(msg: 'Invalid SMS code', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                             break;
                           case 'session-expired' : 
-                            Fluttertoast.showToast(msg: 'Session expired. SMS sent again', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                            Fluttertoast.showToast(msg: 'Session expired. SMS sent again', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                             break;
                           default :
-                            Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                            Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                         }
                         
                         print(e);
@@ -228,7 +228,7 @@ class _PhoneAuth extends State<PhoneAuth>{
       }, 
       verificationFailed: (FirebaseAuthException e) {
         if(e.code == 'invalid-phone-number'){
-          Fluttertoast.showToast(msg: 'Invalid phone number', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+          Fluttertoast.showToast(msg: 'Invalid phone number', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
         }
 
         print(e);
@@ -243,7 +243,7 @@ class _PhoneAuth extends State<PhoneAuth>{
           })
         },
 
-        Fluttertoast.showToast(msg: 'SMS Code sent', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue),
+        Fluttertoast.showToast(msg: 'SMS Code sent', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue),
       }, 
       codeAutoRetrievalTimeout: (verificationId){
 

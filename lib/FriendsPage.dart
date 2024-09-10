@@ -284,7 +284,10 @@ class _FriendsPage extends State<FriendsPage>{
     });
 
     _textController.dispose();
-    scrollController.removeListener(scrollListenerFunction);
+    if(scrollListenerAdded){
+      scrollController.removeListener(scrollListenerFunction);
+      scrollListenerAdded = false;
+    }
     scrollController.dispose();
     super.dispose();
   }

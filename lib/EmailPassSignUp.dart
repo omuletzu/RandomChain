@@ -176,19 +176,19 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                               on FirebaseAuthException catch(e){
                                 switch(e.code){
                                   case 'email-already-in-use' : 
-                                    Fluttertoast.showToast(msg: 'Email already in use', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                    Fluttertoast.showToast(msg: 'Email already in use', toastLength: Toast.LENGTH_SHORT, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                                     break;
 
                                   case 'invalid-email' :
-                                    Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                    Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_SHORT, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                                     break;
 
                                   case 'weak-password' :
-                                    Fluttertoast.showToast(msg: 'Too weak password', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                    Fluttertoast.showToast(msg: 'Too weak password', toastLength: Toast.LENGTH_SHORT, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                                     break;
 
                                   default : 
-                                    Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                    Fluttertoast.showToast(msg: 'Error', toastLength: Toast.LENGTH_SHORT, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                                 }
                               }
                               finally{
@@ -201,7 +201,7 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
                             }
                             else{
                               if(_passController.text.trim() != _confPassController.text.trim()){
-                                Fluttertoast.showToast(msg: 'Passwords don\'t match', toastLength: Toast.LENGTH_LONG, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
+                                Fluttertoast.showToast(msg: 'Passwords don\'t match', toastLength: Toast.LENGTH_SHORT, backgroundColor: const Color.fromARGB(255, 30, 144, 255));
                               }
 
                               if(mounted){

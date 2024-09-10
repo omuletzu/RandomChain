@@ -13,9 +13,11 @@ import 'package:doom_chain/ProfileViewChains.dart';
 import 'package:doom_chain/UnchainedPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ExplorePage.dart';
 import 'ProfilePage.dart';
@@ -69,15 +71,19 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   bool explorePage = true;
   bool unchainedPageRefresh = false;
 
+  bool displayProgressBool = false;
+
   @override
   void initState(){
     super.initState();
 
     _setUserIdentifier();
-
+    
     currentPage = ExplorePage(exploreData: {
       'userId' : widget.phoneOrEmail
-    }, changePageHeader: changePageHeader, key: null);
+      }, changePageHeader: changePageHeader, 
+      displayProgress: displayProgress,
+      key: null);
 
     lastCurrentPage = currentPage;
 
@@ -226,6 +232,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     Visibility(
                       visible: explorePage,
                       child: const Spacer()
+                    ),
+
+                    Visibility(
+                      visible: displayProgressBool,
+                      child: const CircularProgressIndicator(),
                     ),
 
                     Visibility(
@@ -557,7 +568,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     _animationOpacity.forward();
     
     String tempCurrentTitle = lastCurrentPageDisplayedTitle;
-    Widget page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
+    Widget page;
 
     if(title != 'Go Back'){
       lastAssetsPath = assetPath;
@@ -571,7 +582,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     switch(title){
       case 'Explore' :
         assetPath = 'assets/image/explore.png';
-        page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
+        page = ExplorePage(
+          exploreData: {'userId' : widget.phoneOrEmail}, 
+          changePageHeader: changePageHeader, 
+          displayProgress: displayProgress,
+          key: null
+        );
         setState(() {
           tempCurrentTitle = 'Explore';
           topTitleColor = globalPurple;
@@ -585,7 +601,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Explore (refresh)' :
         assetPath = 'assets/image/explore.png';
-        page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: UniqueKey());
+        page = ExplorePage(
+          exploreData: {'userId' : widget.phoneOrEmail}, 
+          changePageHeader: changePageHeader, 
+          displayProgress: displayProgress,
+          key: UniqueKey()
+        );
         setState(() {
           topTitleColor = globalPurple;
           friendsPage = false;
@@ -877,7 +898,12 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       default :
         assetPath = 'assets/image/explore.png';
-        page = ExplorePage(exploreData: {'userId' : widget.phoneOrEmail}, changePageHeader: changePageHeader, key: null);
+        page = ExplorePage(
+          exploreData: {'userId' : widget.phoneOrEmail}, 
+          changePageHeader: changePageHeader, 
+          displayProgress: displayProgress,
+          key: null
+        );
         break;
     }
 
@@ -910,6 +936,14 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
   void updateUIFromSetting(){
     setState(() {});
+  }
+
+  void displayProgress(bool display){
+    if(mounted){
+      setState(() {
+        displayProgressBool = display;
+      });
+    }
   }
 
   void _checkIfWorkmanagerMustBeEnabled(SharedPreferences sharedPreferences, String userId){

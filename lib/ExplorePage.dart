@@ -15,11 +15,13 @@ class ExplorePage extends StatefulWidget{
   final Map<String, dynamic>? exploreData;
   final void Function(String, Map<String, dynamic>?)? changePageHeader;
   final Key? key;
+  final void Function(bool)? displayProgress;
 
   ExplorePage({
     required this.exploreData,
     required this.changePageHeader,
-    required this.key
+    required this.key,
+    required this.displayProgress
   }) : super(key: key);
 
   @override
@@ -48,6 +50,7 @@ class _ExplorePage extends State<ExplorePage>{
   bool searchFinished = false;
   
   bool scrollListenerAdded = false;
+  ScrollPhysics? scrollPhysics;
 
   int orderForCountryRandomness = 0;  // 0, 1 - same country, 2 - random country
   List<String> allForeignCountryWithFinishedChains = [];
@@ -57,13 +60,13 @@ class _ExplorePage extends State<ExplorePage>{
 
   @override
   void initState() {
+    super.initState();
 
     if((widget.exploreData!['userId'] as String).isEmpty){
       return;
     }
 
     retreiveDataFromFirebase();
-    super.initState();
   }
 
   @override
@@ -141,6 +144,7 @@ class _ExplorePage extends State<ExplorePage>{
               : Expanded(
                 child: SingleChildScrollView(
                   controller: scrollController,
+                  physics: scrollPhysics,
                   child: StaggeredGrid.count(
                   crossAxisCount: 2,
                   children: allChainsWidget.map((e) => e.first as Widget).toList()
@@ -213,22 +217,27 @@ class _ExplorePage extends State<ExplorePage>{
     }
 
     if(finishedChainsCategory.isNotEmpty || allForeignCountryWithFinishedChains.isNotEmpty){
-
+     
       await updateScrollChainData();
       if(allChainsWidget.length >= totalNumberOfChains){
         updateScrollChainData();
       }
 
       if(mounted){
-        setState(() {
-          existingChains = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          setState(() {
+            existingChains = true;
+          });
         });
+        
       }
     }
 
     if(mounted){
-      setState(() {
-        hasCheckedForExistingChains = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          hasCheckedForExistingChains = true;
+        });
       });
     }
   }
@@ -236,9 +245,11 @@ class _ExplorePage extends State<ExplorePage>{
   void _searchByTag(String tagToSearch) async {
 
     if(mounted){
-      setState(() {
-        searchFinished = false;
-        searchingHasElements = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          searchFinished = false;
+          searchingHasElements = false;
+        });
       });
     }
 
@@ -268,23 +279,27 @@ class _ExplorePage extends State<ExplorePage>{
       };
       
       if(mounted){
-        setState(() {
-          searchingHasElements = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          setState(() {
+            searchingHasElements = true;
+          });
         });
       }
     }
 
     if(mounted){
-      setState(() {
-        searchFinished = true;
-        searchingResults.addAll(tempSearchingResults);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          searchFinished = true;
+          searchingResults.addAll(tempSearchingResults);
+        });
       });
     }
   }
 
 
   Future<void> updateScrollChainData() async {
-
+    
     if(allChainsWidget.length >= totalNumberOfChains){
       _addDataFromDifferentCountry();
     }
@@ -309,20 +324,24 @@ class _ExplorePage extends State<ExplorePage>{
   }
 
   void _scrollListenerFunction(){
-    if(scrollController.position.atEdge){
-      if(scrollController.position.pixels != 0){
-        updateScrollChainData();
-      }
+
+    if(scrollController.position.pixels >= scrollController.position.maxScrollExtent){
+
+      updateScrollChainData();
     }
   }
 
-  void _addDataFromSameCountry() async {
+  void _addDataFromSameCountry() {
 
     if(allChainsWidget.length >= totalNumberOfChains){
       return;
     }
 
-    for(int i = 0; i < 5; i++){
+    if(widget.displayProgress != null){
+      widget.displayProgress!(true);
+    }
+
+    for(int i = 0; i < 9; i++){
 
       int categoryIndex = random.nextInt(finishedChainsCategory.length);
       int index = random.nextInt((finishedChainsCategory[categoryIndex].first as QuerySnapshot).docs.length);
@@ -358,13 +377,21 @@ class _ExplorePage extends State<ExplorePage>{
         }
       }
     }
+
+    if(widget.displayProgress != null){
+      widget.displayProgress!(false);
+    }
   }
 
   void _addDataFromDifferentCountry() async {
 
+    if(widget.displayProgress != null){
+      widget.displayProgress!(true);
+    }
+
     List<Pair> tempList = [];
 
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 9; i++){
       int randomUserIndex = random.nextInt(allForeignCountryWithFinishedChains.length);
       String countryName = allForeignCountryWithFinishedChains[randomUserIndex];
 
@@ -407,9 +434,15 @@ class _ExplorePage extends State<ExplorePage>{
     }
 
     if(mounted){
-      setState(() {
-        allChainsWidget.addAll(tempList);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          allChainsWidget.addAll(tempList);
+        });
       });
+    }
+
+    if(widget.displayProgress != null){
+      widget.displayProgress!(false);
     }
   }
 

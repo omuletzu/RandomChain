@@ -357,7 +357,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                           onTap: () async {
 
                             if(!disableFirstPhraseForChallangeAndRandom && _textController.text.isEmpty){
-                              Fluttertoast.showToast(msg: 'Empty first phrase', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                              Fluttertoast.showToast(msg: 'Empty first phrase', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                               return;
                             }
 

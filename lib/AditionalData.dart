@@ -163,27 +163,27 @@ class _AditionalData extends State<AditionalData>{
                   onTap: () async {
                     
                     if(dateTimeText == 'DD / MM / YYYY'){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(dateTime == null){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(DateTime.now().year - (dateTime?.year ?? 0) < 10){
-                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Invalid birthdate', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(_nicknameController.text.isEmpty){
-                      Fluttertoast.showToast(msg: 'Invalid nickname', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Invalid nickname', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 
                     if(countryName == '-'){
-                      Fluttertoast.showToast(msg: 'Invalid country', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Invalid country', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 

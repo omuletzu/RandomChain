@@ -291,7 +291,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
 
     if(!permissionStatus.isGranted){
       if(!(await Permission.camera.request().isGranted)){
-        Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+        Fluttertoast.showToast(msg: 'Not enough users', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
         return;
       }
     }

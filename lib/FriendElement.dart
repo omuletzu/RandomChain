@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/GlobalColors.dart';
 import 'package:doom_chain/Pair.dart';
@@ -46,7 +47,7 @@ class _FriendElement extends State<FriendElement>{
   bool containerImageLoaded = false;
   bool hasImage = false;
   bool friendAddedOrNot = false;
-  late Image pfpImage;
+  late CachedNetworkImage pfpImage;
 
   String friendNickname = '';
 
@@ -110,7 +111,7 @@ class _FriendElement extends State<FriendElement>{
                           onPressed: () async {
                             setState(() {
                               friendAddedOrNot = true;
-                              Fluttertoast.showToast(msg: 'Added ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                              Fluttertoast.showToast(msg: 'Added ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                             });
                           }, 
                           icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
@@ -124,7 +125,7 @@ class _FriendElement extends State<FriendElement>{
                               onPressed: () async {
                                 setState(() {
                                   friendAddedOrNot = true;
-                                  Fluttertoast.showToast(msg: 'Sent request to ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                  Fluttertoast.showToast(msg: 'Sent request to ${widget.friendData!['nickname']}', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                 });
                               }, 
                               icon: Image.asset('assets/image/add.png', width: width * 0.075, height: width * 0.075, color: globalTextBackground)
@@ -170,7 +171,7 @@ class _FriendElement extends State<FriendElement>{
                                           widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).delete();
                                           widget.firebase.collection('UserDetails').doc(widget.friendId).collection('Friends').doc(widget.userId).delete();
                                           Navigator.of(context).pop();
-                                          Fluttertoast.showToast(msg: '${widget.friendData!['nickname']} blocked', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                                          Fluttertoast.showToast(msg: '${widget.friendData!['nickname']} blocked', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                         }, 
                                         splashColor: globalBlue,
                                         child: Padding(
@@ -243,25 +244,13 @@ class _FriendElement extends State<FriendElement>{
       friendNickname = widget.friendData!['nickname'];
     }
 
-    pfpImage = Image.network(
-      containerImageUrl,
+    pfpImage = CachedNetworkImage(
+      imageUrl: containerImageUrl,
       width: globalWidth * 0.15,
       height: globalWidth * 0.15,
       fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if(loadingProgress == null){
-          return child;
-        }
-        else{
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-      errorBuilder: (context, error, stackTrace) {
-        print('$error\n$stackTrace');
-        return Icon(Icons.error, size: globalWidth * 0.025);
-      },
+      placeholder: (context, url) => const CircularProgressIndicator(),
+      errorWidget: (context, url, error) => Icon(Icons.error, size: globalWidth * 0.25)
     );
 
     if(mounted){
@@ -364,7 +353,7 @@ class _FriendElement extends State<FriendElement>{
                   onTap: () async {
 
                     if(_reportController.text.isEmpty){
-                      Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                      Fluttertoast.showToast(msg: 'Empty reason', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                       return;
                     }
 
@@ -380,7 +369,7 @@ class _FriendElement extends State<FriendElement>{
                     }
                     
                     Navigator.of(context).pop();
-                    Fluttertoast.showToast(msg: '$username reported', toastLength: Toast.LENGTH_LONG, backgroundColor: globalBlue);
+                    Fluttertoast.showToast(msg: '$username reported', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                   }, 
                   splashColor: globalBlue,
                   child: Padding(
