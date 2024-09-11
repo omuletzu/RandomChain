@@ -804,22 +804,27 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       int categoryTypeContributions = userDetails.get('${widget.categoryName}Contributions');
       int totalContributions = userDetails.get('totalContributions');
       int totalPoints = userDetails.get('totalPoints');
+      int pointsAdded = 0;
 
       if(widget.categoryName == 'Story'){
-        totalPoints += 2;
+        pointsAdded = 2;
       }
       else if(widget.categoryName == 'Random'){
-        totalPoints += 1;
+        pointsAdded = 1;
       }
       else if(widget.categoryName == 'Chainllange'){
-        totalPoints += 4;
+        pointsAdded = 4;
       }
+
+      totalPoints += pointsAdded;
 
       widget.firebase.collection('UserDetails').doc(widget.userId).update({
         '${widget.categoryName}Contributions' : categoryTypeContributions + 1,
         'totalContributions' : totalContributions + 1,
         'totalPoints' : totalPoints
       });
+
+      Fluttertoast.showToast(msg: '+ $pointsAdded points', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
     }
 
     if(mounted){
