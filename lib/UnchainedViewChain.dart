@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/CreateChainCamera.dart';
 import 'package:doom_chain/GlobalValues.dart';
-import 'package:doom_chain/ProfilePage.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +103,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     rowOfChains = [
       Container(
         width: oneOrTwoTilesContainer ? widget.width / 2 : widget.width,
-        height: widget.width * 0.1,
+        height: widget.width * 0.075,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: const AssetImage('assets/image/linkChain.png'),
@@ -121,7 +120,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         visible: oneOrTwoTilesContainer,
         child: Container(
           width: widget.width / 2,
-          height: widget.width * 0.1,
+          height: widget.width * 0.075,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: const AssetImage('assets/image/linkChain.png'),
@@ -142,11 +141,18 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
     int index = 0;
 
-    if(!widget.chainMap['allPieces'] && !widget.calledByExplore){
-      index = widget.contributors.length - 1;
+    if(widget.categoryName != 'Story' && widget.contributors.length == 1){
+      index = 1;
+    }
+    else{
+      if(!widget.calledByExplore && !widget.chainMap['allPieces']){
+        index = widget.contributors.length - 1;
+      }else if(widget.categoryName != 'Story'){
+        index = 1;
+      }
     }
 
-    if(widget.contributors.isNotEmpty){
+    if(widget.contributors.length > 1 && widget.categoryName != 'Story'){
       
       allWidgetContrib.add(
         Row(
@@ -740,6 +746,11 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
     chainNationality = chainMap['chainNationality'];
 
+    bool disableFirstPhraseForChallange = false;
+    if(widget.categoryName != 'Story'){
+      disableFirstPhraseForChallange = true;
+    }
+
     if(widget.chainMap['remainingOfContrib'] > 0 || extendingSkipped){
       SendUploadData.uploadData(
         firebase: widget.firebase, 
@@ -750,7 +761,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         },
         chainMap: chainMap, 
         contributorsList: widget.contributors,
-        disableFirstPhraseForChallange: false, 
+        disableFirstPhraseForChallange: disableFirstPhraseForChallange, 
         chainSkipped: extendingSkipped,
         theme: '', 
         title: '', 

@@ -88,8 +88,9 @@ class SendUploadData{
         }
         else{
           firstPhrase = title;
-          contributorsList.add([userId, firstPhrase, finalPhotoStorageId]);
         }
+
+        contributorsList.add([userId, firstPhrase, finalPhotoStorageId]);
 
         chainMap = {
           'random' : addData['randomOrFriends'],
@@ -202,28 +203,7 @@ class SendUploadData{
       userIdToSendChain = allFriends.docs[randomFriendIndex].id;
     }
 
-    if(!newChainOrExtend){
-      String phrase = ' ';
-        if(disableFirstPhraseForChallange){
-          phrase = theme;
-        }
-        else{
-          phrase = title;
-        }
-
-        String finalPhotoStorageId = '-';
-
-        if(!photoSkipped){
-          finalPhotoStorageId = 'uploads/$chainIdentifier/${addData['chainPieces']}_$userId';
-        }
-
-        if(!chainSkipped){
-          contributorsList?.add([userId, phrase, finalPhotoStorageId]);
-          chainMap!['contributions'] = jsonEncode(contributorsList);
-        }
-    }
-
-    if(userIdToSendChain != ''){
+    if(userIdToSendChain.isNotEmpty){
       sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriends'] : chainMap['random']);
     }
 

@@ -97,7 +97,7 @@ void callBackDipatcher(){
 
         DateTime timeDifference = pendingChain.get('receivedTime').toDate();
 
-        if(timestamp.difference(timeDifference).inMinutes >= 30){
+        if(timestamp.difference(timeDifference).inHours >= 2){
 
           SendUploadData.uploadData(
             firebase: _firebase, 

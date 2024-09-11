@@ -904,10 +904,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         );
         break;
     }
-
-    print(assetPath);
-    print(lastAssetsPath);
-
+    
     lastCurrentPage = currentPage;
     lastCurrentPageDisplayedTitle = currentPageDisplayedTitle;
 

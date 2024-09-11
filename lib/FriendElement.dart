@@ -293,6 +293,10 @@ class _FriendElement extends State<FriendElement>{
     }
     else{
 
+      if((await widget.firebase.collection('UserDetails').doc(widget.friendId).collection('BlockedUsers').doc(widget.userId).get()).exists){
+        return;
+      }
+
       widget.firebase.collection('UserDetails').doc(widget.friendId).collection('FriendRequests').doc(widget.userId).set({});
     }
   }
