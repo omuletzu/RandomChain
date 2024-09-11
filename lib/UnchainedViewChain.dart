@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/CreateChainCamera.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
+import 'package:doom_chain/ProfilePage.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
   late AnimationController _animationControllerSlideUp4;
   late AnimationController _animationControllerSlideDown;
   late AnimationController _animationControllerButtonFade;
-  final ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController(initialScrollOffset: chainViewScrollOffset ?? 0.0);
   final TextEditingController _textController = TextEditingController();
 
   late final Map<String, String> allChainContrib;
@@ -198,6 +199,11 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
       );
     }
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(chainViewScrollOffset ?? 0.0);
+      chainViewScrollOffset = null;
+    });
+
     _checkForLiked();
     _checkForSaved();
   }
@@ -234,6 +240,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                         child: InkWell(
                           borderRadius: const BorderRadius.all(Radius.circular(15)),
                           onTap: () async {
+                            widget.changePageHeader('Go Back', null);
                             Navigator.of(context).popUntil((route) => route.isFirst);
                           }, 
                           splashColor: globalBlue,
@@ -289,7 +296,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                   child: FadeTransition(
                     opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
                           padding: EdgeInsets.all(widget.width * 0.025),
@@ -370,7 +377,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                     position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp1, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
+                                        padding: EdgeInsets.only(top: widget.width * 0.05, bottom: widget.width * 0.05, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -432,7 +439,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                     child: SlideTransition(
                                       position: Tween<Offset>(begin: const Offset(0.0, 2.0), end: const Offset(0.0, 0.0)).animate(CurvedAnimation(parent: _animationControllerSlideUp2, curve: Curves.easeOut)),
                                       child: Padding(
-                                        padding: EdgeInsets.only(top: widget.width * 0.075, bottom: widget.width * 0.075, left: widget.width * 0.05, right: widget.width * 0.045),
+                                        padding: EdgeInsets.only(top: widget.width * 0.05, bottom: widget.width * 0.05, left: widget.width * 0.05, right: widget.width * 0.045),
                                         child: Material(
                                           color: widget.categoryColor,
                                           shape: const RoundedRectangleBorder(
@@ -516,7 +523,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           ),
                                           child: InkWell(
                                             borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                            onTap: () async {
+                                            onLongPress: () async {
                                               final List<CameraDescription> cameraList;
                                               final CameraDescription camera;
                                               CameraController _cameraController;
@@ -647,7 +654,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           ),
                                           child: InkWell(
                                             borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                            onTap: () async {
+                                            onLongPress: () async {
                                               uploadExtendData(true);
                                             }, 
                                             splashColor: Colors.grey,
@@ -887,28 +894,41 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                             hasPfp = true;
                           }
 
-                          return Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(widget.width * 0.01),
-                                child: ClipOval(
-                                  child: hasPfp 
-                                    ? CachedNetworkImage(
-                                      imageUrl: pfpUrl,
-                                      width: widget.width * 0.075, 
-                                      height: widget.width * 0.075,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => CircularProgressIndicator(color: widget.categoryColor),
-                                      errorWidget: (context, url, error) => Icon(Icons.error, size: widget.width * 0.25)
-                                    )
-                                    : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075, color: globalTextBackground)
+                          return InkWell(
+                            onTap: () {
+
+                              fromProfileToChainView = true;
+                              chainViewScrollOffset = scrollController.offset;
+
+                              widget.changePageHeader('Profile (friend)', {
+                                'userId' : contributor[0]
+                              });
+
+                              Navigator.of(context).pop();
+                            },
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(widget.width * 0.01),
+                                  child: ClipOval(
+                                    child: hasPfp 
+                                      ? CachedNetworkImage(
+                                        imageUrl: pfpUrl,
+                                        width: widget.width * 0.075, 
+                                        height: widget.width * 0.075,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => CircularProgressIndicator(color: widget.categoryColor),
+                                        errorWidget: (context, url, error) => Icon(Icons.error, size: widget.width * 0.25)
+                                      )
+                                      : Image.asset('assets/image/profile.png', width: widget.width * 0.075, height: widget.width * 0.075, color: globalTextBackground)
+                                  )
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(widget.width * 0.01),
+                                  child: Text(username, style: GoogleFonts.nunito(color: globalTextBackground, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
                                 )
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(widget.width * 0.01),
-                                child: Text(username, style: GoogleFonts.nunito(color: globalTextBackground, fontSize: widget.width * 0.04, fontWeight: FontWeight.bold))
-                              )
-                            ],
+                              ],
+                            )
                           );
                         }
                         
@@ -1229,8 +1249,6 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         likesNumber = tempLikesNumber;
       });
     }
-
-    print(likesNumber);
 
     DocumentSnapshot checkDocument = await widget.firebase.collection('UserDetails').doc(widget.userId).collection('LikedChains${widget.categoryName}').doc(widget.chainId).get();
 

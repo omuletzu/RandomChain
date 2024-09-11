@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -224,7 +224,7 @@ class SendUploadData{
     }
 
     if(userIdToSendChain != ''){
-      sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriends'] : chainMap['randomOrFriend']);
+      sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriends'] : chainMap['random']);
     }
 
     if(!chainSkipped){

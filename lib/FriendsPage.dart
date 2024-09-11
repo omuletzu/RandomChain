@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/FriendElement.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

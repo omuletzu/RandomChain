@@ -6,18 +6,16 @@ import 'package:doom_chain/CreateChainCategory.dart';
 import 'package:doom_chain/CreateChainDetails.dart';
 import 'package:doom_chain/CreateChainPage.dart';
 import 'package:doom_chain/CreateChainTagsPage.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/ProfileEditDetails.dart';
 import 'package:doom_chain/ProfileSettings.dart';
 import 'package:doom_chain/ProfileViewChains.dart';
 import 'package:doom_chain/UnchainedPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ExplorePage.dart';
 import 'ProfilePage.dart';
@@ -59,8 +57,8 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   String topImageAsset = 'assets/image/explore.png';
   String currentPageDisplayedTitle = 'Explore';
   String lastCurrentPageDisplayedTitle = 'Explore';
-  String lastAssetsPath = '';
-  String assetPath = '';
+  String lastAssetsPath = 'assets/image/explore.png';
+  String assetPath = 'assets/image/explore.png';
   List<bool> lastPageBools = List.filled(5, false);
   Color topTitleColor = globalPurple;
 
@@ -552,7 +550,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     ),
                   ),
 
-                  Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.025, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  Text('©Copyright omuletzu\nRandomChain', style: GoogleFonts.nunito(fontSize: width * 0.025, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                 ]
               )
             );
@@ -907,6 +905,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         break;
     }
 
+    print(assetPath);
+    print(lastAssetsPath);
+
     lastCurrentPage = currentPage;
     lastCurrentPageDisplayedTitle = currentPageDisplayedTitle;
 
@@ -953,6 +954,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         '1', 
         'listenerTask',
         frequency: const Duration(minutes: 15),
+        existingWorkPolicy: ExistingWorkPolicy.replace,
         inputData: {
           'userId' : widget.phoneOrEmail
         }

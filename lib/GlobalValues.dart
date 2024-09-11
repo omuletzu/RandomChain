@@ -16,3 +16,7 @@ Color globalRank5 = const Color.fromARGB(255, 68, 186, 202);
 Color globalRank6 = const Color.fromARGB(255, 214, 39, 53);
 Color globalRank7 = const Color.fromARGB(255, 50, 163, 109);
 Color globalRank8 = globalPurple;
+
+bool fromProfileToChainView = false;
+Widget? chainViewToPushInNavigator;
+double? chainViewScrollOffset;

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/EmailPassSignUp.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/PhoneAuth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

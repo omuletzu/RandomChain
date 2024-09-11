@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:doom_chain/AbstractMenu.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -71,7 +71,7 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
                   position: Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 2.5)).animate(CurvedAnimation(parent: _animationAfterSplash, curve: Curves.easeIn)),
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.075),
-                    child: Text('©Copyright omuletzu\nDumbChain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    child: Text('©Copyright omuletzu\nRandomChain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey[800], fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   )
                 )
               ],

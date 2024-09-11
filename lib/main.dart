@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:doom_chain/SplashScreen.dart';
 import 'package:doom_chain/firebase_options.dart';
@@ -77,6 +77,7 @@ void callBackDipatcher(){
 
       FirebaseFirestore _firebase = FirebaseFirestore.instance;
       FirebaseStorage _storage = FirebaseStorage.instance;
+      DateTime timestamp = Timestamp.now().toDate();
 
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
@@ -92,9 +93,41 @@ void callBackDipatcher(){
         'Chainllange' : 0
       };
 
-      for(DocumentSnapshot document in pendingChains.docs){
-        String categoryName = document.get('categoryName') as String;
-        updatedNumberOfStory[categoryName] = updatedNumberOfStory[categoryName]! + 1;
+      for(DocumentSnapshot pendingChain in pendingChains.docs){
+
+        DateTime timeDifference = pendingChain.get('receivedTime').toDate();
+
+        if(timestamp.difference(timeDifference).inMinutes >= 30){
+
+          SendUploadData.uploadData(
+            firebase: _firebase, 
+            storage: _storage, 
+            addData: {
+              'userId' : inputData['userId'],
+              'randomOrFriends' : pendingChain['randomOrFriend']
+            }, 
+            chainMap: pendingChain.data() as Map<String, dynamic>, 
+            disableFirstPhraseForChallange: false, 
+            contributorsList: null,
+            theme: '', 
+            title: '', 
+            photoSkipped: false, 
+            chainIdentifier: pendingChain.id, 
+            categoryName: pendingChain.get('categoryName'), 
+            chainSkipped: true, 
+            photoPath: null, 
+            mounted: false, 
+            context: null, 
+            changePageHeader: null, 
+            newChainOrExtend: false
+          );
+
+          _firebase.collection('UserDetails').doc(inputData['userId']).collection('PendingPersonalChains').doc(pendingChain.id).delete();
+        }
+        else{
+          String categoryName = pendingChain.get('categoryName') as String;
+          updatedNumberOfStory[categoryName] = updatedNumberOfStory[categoryName]! + 1;
+        }
       }
 
       updatedNumberOfStory['Story'] = updatedNumberOfStory['Story']! - lastNumberOfStory;
@@ -163,40 +196,6 @@ void callBackDipatcher(){
             '${updatedNumberOfStory['Story']} Story | ${updatedNumberOfStory['random']} random | ${updatedNumberOfStory['Chainllange']} Chainllange',
             notificationDetails
           );
-        }
-      }
-
-      DateTime timestamp = Timestamp.now().toDate();
-
-      for(DocumentSnapshot pendingChain in pendingChains.docs){
-        DateTime timeDifference = pendingChain.get('receivedTime').toDate();
-        int differenceInHours = timestamp.difference(timeDifference).inHours;
-
-        if(differenceInHours >= 2){
-          SendUploadData.uploadData(
-            firebase: _firebase, 
-            storage: _storage, 
-            addData: {
-              'userId' : inputData['userId'],
-              'randomOrFriends' : pendingChain['random']
-            }, 
-            chainMap: pendingChain.data() as Map<String, dynamic>, 
-            disableFirstPhraseForChallange: false, 
-            contributorsList: null,
-            theme: '', 
-            title: '', 
-            photoSkipped: false, 
-            chainIdentifier: pendingChain.id, 
-            categoryName: pendingChain.get('categoryName'), 
-            chainSkipped: true, 
-            photoPath: null, 
-            mounted: false, 
-            context: null, 
-            changePageHeader: null, 
-            newChainOrExtend: false
-          );
-
-          _firebase.collection('UserDetails').doc(inputData['userId']).collection('PendingPersonalChains').doc(pendingChain.id).delete();
         }
       }
     }

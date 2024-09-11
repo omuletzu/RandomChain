@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -66,9 +66,16 @@ class _ProfilePage extends State<ProfilePage> with SingleTickerProviderStateMixi
       canPop: widget.isThisUser,
       onPopInvoked: (didPop) {
         if(!didPop){
+
           if(!widget.isThisUser){
             widget.changePageHeader('Go Back', null);
           }
+
+          if(fromProfileToChainView){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => chainViewToPushInNavigator!));
+          }
+
+          fromProfileToChainView = false;
         }
       },
       child: Scaffold(

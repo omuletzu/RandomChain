@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/PhoneAuth.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -161,7 +161,7 @@ class _Auth extends State<Auth> with TickerProviderStateMixin{
               child: Padding(
                 padding: EdgeInsets.all(width * 0.05),
                 child: Center(
-                  child: Text('DumbChain', style: GoogleFonts.nunito(fontSize: width * 0.12, color: Colors.black87, fontWeight: FontWeight.bold)),
+                  child: Text('RandomChain', style: GoogleFonts.nunito(fontSize: width * 0.1, color: Colors.black87, fontWeight: FontWeight.bold)),
                 ),
               )
             ),

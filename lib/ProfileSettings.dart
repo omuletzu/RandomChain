@@ -1,4 +1,4 @@
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -80,6 +80,7 @@ class _ProfileSettings extends State<ProfileSettings> {
                             '1', 
                             'listenerTask',
                             frequency: const Duration(minutes: 15),
+                            existingWorkPolicy: ExistingWorkPolicy.replace,
                             inputData: {
                               'userId' : widget.userId
                             }

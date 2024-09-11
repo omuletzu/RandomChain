@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:firebase_storage/firebase_storage.dart';

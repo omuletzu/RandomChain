@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:doom_chain/AbstractMenu.dart';
-import 'package:doom_chain/GlobalColors.dart';
+import 'package:doom_chain/GlobalValues.dart';
 import 'package:doom_chain/SendUploadData.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
