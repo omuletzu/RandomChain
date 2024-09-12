@@ -205,6 +205,8 @@ class _ExplorePage extends State<ExplorePage>{
     if(widget.exploreData == null){
       return;
     }
+
+    print(widget.exploreData!['userId']);
     
     userNationality = (await _firebase.collection('UserDetails').doc(widget.exploreData!['userId']).get()).get('countryName');
 

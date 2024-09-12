@@ -25,9 +25,9 @@ import 'package:workmanager/workmanager.dart';
 
 class AbstractMenu extends StatefulWidget{
 
-  final String phoneOrEmail;
+  final String uid;
 
-  AbstractMenu({required this.phoneOrEmail});
+  AbstractMenu({required this.uid});
 
   @override
   _AbstractMenu createState() => _AbstractMenu();
@@ -78,7 +78,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
     _setUserIdentifier();
     
     currentPage = ExplorePage(exploreData: {
-      'userId' : widget.phoneOrEmail
+      'userId' : widget.uid
       }, changePageHeader: changePageHeader, 
       displayProgress: displayProgress,
       key: null);
@@ -161,7 +161,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                             });
                             
                             changePageHeader('Friends', {
-                              'userId' : widget.phoneOrEmail
+                              'userId' : widget.uid
                             });
                           }, 
                           icon: Image.asset('assets/image/list.png', width: width * 0.1, height: width * 0.1, color: globalPurple)
@@ -179,7 +179,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                               lastFriendsButtonMode = true;
                             });
                             changePageHeader('Strangers', {
-                              'userId' : widget.phoneOrEmail
+                              'userId' : widget.uid
                             });
                           }, 
                           icon: Image.asset('assets/image/addfriends.png', width: width * 0.1, height: width * 0.1, color: globalPurple)
@@ -329,7 +329,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 child: IconButton(
                                   onPressed: () {
                                     changePageHeader('Friends', {
-                                      'userId' : widget.phoneOrEmail
+                                      'userId' : widget.uid
                                     });
                                     animateOpacity(_animationOpacityIconFriends);
                                   }, 
@@ -345,7 +345,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                 child: IconButton(
                                   onPressed: () {
                                     changePageHeader('Profile', {
-                                      'userId' : widget.phoneOrEmail
+                                      'userId' : widget.uid
                                     });
                                     animateOpacity(_animationOpacityIconProfile);
                                   }, 
@@ -383,7 +383,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                       title: Text('Liked Chains', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       onTap: () {
                         changePageHeader('Profile (liked chains)', {
-                          'userId' : widget.phoneOrEmail
+                          'userId' : widget.uid
                         });
 
                         Scaffold.of(context).closeEndDrawer();
@@ -403,7 +403,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                       title: Text('Saved Chains', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                       onTap: () {
                         changePageHeader('Profile (saved chains)', {
-                          'userId' : widget.phoneOrEmail
+                          'userId' : widget.uid
                         });
 
                         Scaffold.of(context).closeEndDrawer();
@@ -498,6 +498,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                                     child: InkWell(
                                       borderRadius: const BorderRadius.all(Radius.circular(15)),
                                       onTap: () async {
+                                        await FirebaseAuth.instance.currentUser!.reload();
                                         await FirebaseAuth.instance.signOut();
                                         await GoogleSignIn().signOut();
                                         Workmanager().cancelByUniqueName('1');
@@ -581,7 +582,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Explore' :
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(
-          exploreData: {'userId' : widget.phoneOrEmail}, 
+          exploreData: {'userId' : widget.uid}, 
           changePageHeader: changePageHeader, 
           displayProgress: displayProgress,
           key: null
@@ -600,7 +601,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Explore (refresh)' :
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(
-          exploreData: {'userId' : widget.phoneOrEmail}, 
+          exploreData: {'userId' : widget.uid}, 
           changePageHeader: changePageHeader, 
           displayProgress: displayProgress,
           key: UniqueKey()
@@ -616,7 +617,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Unchained' :
         assetPath = 'assets/image/newchain.png';
-        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.phoneOrEmail, key: null);
+        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: null);
         setState(() {
           tempCurrentTitle = 'Unchained';
           topTitleColor = globalPurple;
@@ -630,7 +631,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Unchained (refresh)' :
         assetPath = 'assets/image/newchain.png';
-        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.phoneOrEmail, key: UniqueKey());
+        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: UniqueKey());
         setState(() {
           topTitleColor = globalPurple;
           friendsPage = false;
@@ -694,7 +695,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         });
 
         page = FriendsPage(
-          userId: widget.phoneOrEmail,
+          userId: widget.uid,
           changePageHeader: changePageHeader,
           isThisRequests: true,
           key: UniqueKey()
@@ -717,7 +718,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = ProfilePage(
           changePageHeader: changePageHeader,
           userIdToDisplay: addData!['userId'],
-          originalUserId: widget.phoneOrEmail,
+          originalUserId: widget.uid,
           isThisUser: true,
           key: UniqueKey());
 
@@ -737,7 +738,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         page = ProfilePage(
           changePageHeader: changePageHeader,
           userIdToDisplay: addData!['userId'],
-          originalUserId: widget.phoneOrEmail,
+          originalUserId: widget.uid,
           isThisUser: false,
           key: null);
 
@@ -803,7 +804,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
         page = ProfileEditDetails(
           changePageHeader: changePageHeader, 
-          userId: widget.phoneOrEmail
+          userId: widget.uid
         );
 
       case 'Settings' :
@@ -818,7 +819,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
         page = ProfileSettings(
           changePageHeader: changePageHeader, 
-          userId: widget.phoneOrEmail,
+          userId: widget.uid,
           updateUIFromSetting: updateUIFromSetting,
         );
         break;
@@ -834,7 +835,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'New chain (category)' :
         assetPath = 'assets/image/create.png';
-        page = CreateChainCategory(changePageHeader: changePageHeader, userId: widget.phoneOrEmail);
+        page = CreateChainCategory(changePageHeader: changePageHeader, userId: widget.uid);
 
         setState(() {
           topTitleColor = globalPurple;
@@ -897,7 +898,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       default :
         assetPath = 'assets/image/explore.png';
         page = ExplorePage(
-          exploreData: {'userId' : widget.phoneOrEmail}, 
+          exploreData: {'userId' : widget.uid}, 
           changePageHeader: changePageHeader, 
           displayProgress: displayProgress,
           key: null
@@ -927,9 +928,9 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
   Future<void> _setUserIdentifier() async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.setString('userId', widget.phoneOrEmail);
+    await sharedPreferences.setString('userId', widget.uid);
 
-    _checkIfWorkmanagerMustBeEnabled(sharedPreferences, widget.phoneOrEmail);
+    _checkIfWorkmanagerMustBeEnabled(sharedPreferences, widget.uid);
   }
 
   void updateUIFromSetting(){
@@ -946,14 +947,14 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
   void _checkIfWorkmanagerMustBeEnabled(SharedPreferences sharedPreferences, String userId){
 
-    if(sharedPreferences.getBool('notificationsEnabled${widget.phoneOrEmail}') ?? true){
+    if(sharedPreferences.getBool('notificationsEnabled${widget.uid}') ?? true){
       Workmanager().registerPeriodicTask(
         '1', 
         'listenerTask',
         frequency: const Duration(minutes: 15),
         existingWorkPolicy: ExistingWorkPolicy.replace,
         inputData: {
-          'userId' : widget.phoneOrEmail
+          'userId' : widget.uid
         }
       );
 

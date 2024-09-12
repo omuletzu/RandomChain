@@ -167,13 +167,13 @@ class _PhoneAuth extends State<PhoneAuth>{
 
                         if(documentSnapshot.exists){
                           await widget.firebaseAuth.signInWithCredential(credentials);
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: finalPhoneNumber.trim())));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: finalPhoneNumber.trim())));
                         }
                         else{
                           SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                           sharedPreferences.setBool('lastAuthPhone', true);
                           UserCredential userCredential = await widget.firebaseAuth.signInWithCredential(credentials);
-                          widget.currentAuthRefresh(AditionalData(firebaseAuth: widget.firebaseAuth, width: width, firebaseFirestore: widget.firebaseFirestore, phoneOrEmail: finalPhoneNumber.trim(), currentAuthRefresh: widget.currentAuthRefresh, credentials: credentials, userCredential: userCredential));
+                          widget.currentAuthRefresh(AditionalData(firebaseAuth: widget.firebaseAuth, width: width, firebaseFirestore: widget.firebaseFirestore, currentAuthRefresh: widget.currentAuthRefresh, credentials: credentials, userCredential: userCredential));
                         }
                       }
                       on FirebaseAuthException catch(e){

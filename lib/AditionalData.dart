@@ -15,13 +15,12 @@ class AditionalData extends StatefulWidget{
 
   final PhoneAuthCredential? credentials;
   final UserCredential? userCredential;
-  final String phoneOrEmail;
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
   final double width;
   final void Function(Widget) currentAuthRefresh;
 
-  AditionalData({required this.firebaseAuth, required this.width, required this.firebaseFirestore, required this.phoneOrEmail, required this.currentAuthRefresh, required this.credentials, required this.userCredential});
+  AditionalData({required this.firebaseAuth, required this.width, required this.firebaseFirestore, required this.currentAuthRefresh, required this.credentials, required this.userCredential});
 
   @override
   _AditionalData createState() => _AditionalData();
@@ -187,7 +186,7 @@ class _AditionalData extends State<AditionalData>{
                       return;
                     }
 
-                    widget.firebaseFirestore.collection('UserDetails').doc(widget.phoneOrEmail).set({
+                    widget.firebaseFirestore.collection('UserDetails').doc(widget.userCredential!.user!.uid).set({
                       'nickname' : _nicknameController.text.trim(),
                       'nicknameLowercase': _nicknameController.text.toLowerCase().trim(),
                       'birthdate' : dateTimeText,
@@ -203,7 +202,7 @@ class _AditionalData extends State<AditionalData>{
                       'friendsCount' : 0,
                     });
 
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: widget.phoneOrEmail)));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: widget.userCredential!.user!.uid)));
 
                   }, 
                   splashColor: globalBlue,

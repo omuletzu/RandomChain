@@ -171,7 +171,7 @@ class _EmailPassSignUp extends State<EmailPassSignUp>{
 
                                 SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                                 sharedPreferences.setBool('lastAuthPhone', false);
-                                widget.currentAuthRefresh(AditionalData(firebaseAuth: widget.firebaseAuth, width: width, firebaseFirestore: widget.firebaseFirestore, phoneOrEmail: _emailController.text.trim(), currentAuthRefresh: widget.currentAuthRefresh, credentials: null, userCredential: userCredential));
+                                widget.currentAuthRefresh(AditionalData(firebaseAuth: widget.firebaseAuth, width: width, firebaseFirestore: widget.firebaseFirestore, currentAuthRefresh: widget.currentAuthRefresh, credentials: null, userCredential: userCredential));
                               }
                               on FirebaseAuthException catch(e){
                                 switch(e.code){

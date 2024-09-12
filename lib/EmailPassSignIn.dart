@@ -140,7 +140,7 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
 
                             try{
                               await widget.firebaseAuth.signInWithEmailAndPassword(email: _emailController.text.trim(), password: _passController.text);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: _emailController.text.trim())));
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: _emailController.text.trim())));
                             }
                             on FirebaseAuthException catch(e){
                               switch(e.code){

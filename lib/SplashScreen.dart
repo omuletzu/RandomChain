@@ -104,17 +104,12 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
     }
   }
 
-  void _checkForAlreadyLogged() async 
-  {
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  void _checkForAlreadyLogged() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
 
-    if(firebaseAuth.currentUser != null){
-      if(firebaseAuth.currentUser?.phoneNumber != null){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.phoneNumber ?? ' ')));
-      }
-      else{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: firebaseAuth.currentUser?.email ?? ' ')));
-      }
+    if(currentUser != null){
+      await currentUser.reload();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: currentUser.uid)));
     }
     else{
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Auth(width: widget.width)));

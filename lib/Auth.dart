@@ -46,14 +46,14 @@ class Auth extends StatefulWidget{
 
       if(documentSnapshot.exists){
         if(userCredential.user?.phoneNumber != null){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: userCredential.user?.phoneNumber ?? ' ')));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user?.phoneNumber ?? ' ')));
         }
         else{
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(phoneOrEmail: userCredential.user?.email ?? ' ')));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user?.email ?? ' ')));
         }
       }
       else{
-        currentAuthRefresh(AditionalData(firebaseAuth: firebaseAuth, width: width, firebaseFirestore: firebaseFirestore, phoneOrEmail: userCredential.user!.email!, currentAuthRefresh: currentAuthRefresh, credentials: null, userCredential: userCredential));
+        currentAuthRefresh(AditionalData(firebaseAuth: firebaseAuth, width: width, firebaseFirestore: firebaseFirestore, currentAuthRefresh: currentAuthRefresh, credentials: null, userCredential: userCredential));
       }
       
     }
