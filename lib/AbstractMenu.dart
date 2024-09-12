@@ -210,6 +210,11 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     ),
 
                     Visibility(
+                      visible: displayProgressBool,
+                      child: const CircularProgressIndicator(),
+                    ),
+
+                    Visibility(
                       visible: unchainedPageRefresh,
                       child: const Spacer()
                     ),
@@ -230,11 +235,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                     Visibility(
                       visible: explorePage,
                       child: const Spacer()
-                    ),
-
-                    Visibility(
-                      visible: displayProgressBool,
-                      child: const CircularProgressIndicator(),
                     ),
 
                     Visibility(
