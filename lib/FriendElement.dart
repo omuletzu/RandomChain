@@ -286,6 +286,7 @@ class _FriendElement extends State<FriendElement>{
       });
 
       widget.firebase.collection('UserDetails').doc(widget.userId).collection('FriendRequests').doc(widget.friendId).delete();
+      widget.firebase.collection('UserDetails').doc(widget.friendId).collection('FriendRequests').doc(widget.userId).delete();
 
       widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).set({});
 

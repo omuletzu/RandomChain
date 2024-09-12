@@ -74,113 +74,129 @@ class _ExplorePage extends State<ExplorePage>{
 
     final double width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      backgroundColor: globalBackground,
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          
-          Padding(
-            padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075, top: width * 0.025, bottom: width * 0.025),
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 2),
-              child: TextField(
-                controller: _textController,
-                maxLines: null,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    borderSide: BorderSide(width: 2.0),
-                  ),
-                  focusColor: globalBlue,
-                  suffixIcon: const Icon(Icons.search),
-                  suffixIconColor: globalTextBackground,
-                  label: Center(
-                    child: Text(
-                      'Search tag',
-                      style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if(!didPop){
+          if(_textController.text.isNotEmpty){
+            _textController.text = '';
+            setState(() {
+              searchingMode = false;
+            });
+          }
+          else{
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: globalBackground,
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          children: [
+            
+            Padding(
+              padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075, top: width * 0.025, bottom: width * 0.025),
+              child: AnimatedContainer(
+                duration: const Duration(seconds: 2),
+                child: TextField(
+                  controller: _textController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      borderSide: BorderSide(width: 2.0),
                     ),
+                    focusColor: globalBlue,
+                    suffixIcon: const Icon(Icons.search),
+                    suffixIconColor: globalTextBackground,
+                    label: Center(
+                      child: Text(
+                        'Search tag',
+                        style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: width * 0.01)
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: width * 0.01)
-                ),
-                
-                textAlign: TextAlign.center,
-                style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
-                onChanged: (value) {
-                  if(mounted){
-                    if(value.isEmpty){
-                      setState(() {
-                        searchingMode = false;
-                      });
+                  
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalPurple, fontWeight: FontWeight.bold),
+                  onChanged: (value) {
+                    if(mounted){
+                      if(value.isEmpty){
+                        setState(() {
+                          searchingMode = false;
+                        });
+                      }
+                      else{
+                        setState(() {
+                          _searchByTag(value.toLowerCase().trim());
+                          searchingMode = true;
+                        });
+                      }
                     }
-                    else{
-                      setState(() {
-                        _searchByTag(value.toLowerCase().trim());
-                        searchingMode = true;
-                      });
-                    }
-                  }
-                },
-              )
-            ),
-          ),
-
-          Padding(
-            padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
-            child: Divider(
-              height: 1,
-              color: globalDrawerBackground,
-            ),
-          ),
-
-          !searchingMode 
-            ? hasCheckedForExistingChains ?
-            (!existingChains 
-              ? Expanded(
-                child: Center(
-                  child: Text('There are no chains at the moment :(\nTry creating a chain yourself', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                ),
-              )
-              : Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  physics: scrollPhysics,
-                  child: StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  children: allChainsWidget.map((e) => e.first as Widget).toList()
+                  },
                 )
+              ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
+              child: Divider(
+                height: 1,
+                color: globalDrawerBackground,
+              ),
+            ),
+
+            !searchingMode 
+              ? hasCheckedForExistingChains ?
+              (!existingChains 
+                ? Expanded(
+                  child: Center(
+                    child: Text('There are no chains at the moment :(\nTry creating a chain yourself', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  ),
                 )
-              ))
-            : const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-          : searchFinished ?
-            (
-              searchingHasElements ?
-                Expanded(
+                : Expanded(
                   child: SingleChildScrollView(
                     controller: scrollController,
+                    physics: scrollPhysics,
                     child: StaggeredGrid.count(
                     crossAxisCount: 2,
-                    children: searchingResults
+                    children: allChainsWidget.map((e) => e.first as Widget).toList()
+                  )
+                  )
+                ))
+              : const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+            : searchFinished ?
+              (
+                searchingHasElements ?
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: StaggeredGrid.count(
+                      crossAxisCount: 2,
+                      children: searchingResults
+                    )
                   )
                 )
+                : Expanded(
+                  child: Center(
+                    child: Text('No chains found :(', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                  ),
+                )
               )
-              : Expanded(
-                child: Center(
-                  child: Text('No chains found :(', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
-                ),
-              )
-            )
-            : const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-        ],
-      ),
+              : const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+          ],
+        ),
+      )
     );
   }
 

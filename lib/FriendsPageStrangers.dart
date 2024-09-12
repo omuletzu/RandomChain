@@ -57,6 +57,10 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
         if(!didPop){
           if(_textController.text.isNotEmpty){
             _textController.text = '';
+            setState(() {
+              searchingMode = false;
+              listToDisplay = Future.value(allFriendsList);
+            });
           }
           else{
             widget.changePageHeader('Go Back', null);
@@ -139,7 +143,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                       );
                     }
 
-                    if(hasCheckedForExistingFriends){
+                    if(hasCheckedForExistingFriends && allFriendsList.isEmpty){
                       return Center(
                         child: Text('No users at the moment', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
                       );
@@ -208,12 +212,12 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
           );
         }
       }
+    }
 
-      if(mounted){
-        setState(() {
-          hasCheckedForExistingFriends = true;
-        });
-      }
+    if(mounted){
+      setState(() {
+        hasCheckedForExistingFriends = true;
+      });
     }
 
     if(!scrollListenerAdded){   // executed only once
