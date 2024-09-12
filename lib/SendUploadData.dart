@@ -134,8 +134,6 @@ class SendUploadData{
       userIdToSendChain = await selectFriendUserToSend(firebase, random, allFriends, chainMap!, newChainOrExtend, userIdToSendChain, userId);
     }
 
-    print(userIdToSendChain);
-
     if(userIdToSendChain.isNotEmpty){
       sendToSpecificUser(userIdToSendChain, chainIdentifier, firebase, categoryName, chainMap!['chainNationality'], chainMap['userIdForFriendList'], chainMap['contributions'], newChainOrExtend ? addData['randomOrFriends'] : chainMap['random']);
     }
@@ -230,7 +228,7 @@ class SendUploadData{
       }
     }
 
-    if(randomFinalUserIndex == 2 && userRandomIndexes[2] != -1){
+    if(userRandomIndexes[2] != -1){
       return allUserNotFromSameCountry.docs[userRandomIndexes[2]].id;
     }
 

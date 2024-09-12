@@ -75,9 +75,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   void initState(){
     super.initState();
 
-    Random random = Random();
-    print(random.nextDouble());
-
     _setUserIdentifier();
     
     currentPage = ExplorePage(exploreData: {
@@ -269,14 +266,6 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
                           Expanded(
                             child: currentPage
                           ),
-
-                          Visibility(
-                            visible: unchainedPage,
-                              child: SizedBox(
-                                height: width * 0.32,
-                                width: width,
-                              ),
-                            )
                         ],
                       ),
                     )
@@ -620,7 +609,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Unchained' :
         assetPath = 'assets/image/newchain.png';
-        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: null);
+        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: null, displayProgress: displayProgress);
         setState(() {
           tempCurrentTitle = 'Unchained';
           topTitleColor = globalPurple;
@@ -634,7 +623,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
 
       case 'Unchained (refresh)' :
         assetPath = 'assets/image/newchain.png';
-        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: UniqueKey());
+        page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: UniqueKey(), displayProgress: displayProgress);
         setState(() {
           topTitleColor = globalPurple;
           friendsPage = false;

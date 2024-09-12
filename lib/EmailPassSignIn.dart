@@ -139,8 +139,8 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                             }
 
                             try{
-                              await widget.firebaseAuth.signInWithEmailAndPassword(email: _emailController.text.trim(), password: _passController.text);
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: _emailController.text.trim())));
+                              UserCredential userCredential = await widget.firebaseAuth.signInWithEmailAndPassword(email: _emailController.text.trim(), password: _passController.text);
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user!.uid)));
                             }
                             on FirebaseAuthException catch(e){
                               switch(e.code){
@@ -149,7 +149,7 @@ class _EmailPassSignIn extends State<EmailPassSignIn>{
                                   break;
 
                                 case 'wrong-password' : 
-                                  Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+                                  Fluttertoast.showToast(msg: 'Invalid password', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                   break; 
 
                                 default : 

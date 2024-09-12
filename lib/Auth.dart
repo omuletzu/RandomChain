@@ -45,12 +45,7 @@ class Auth extends StatefulWidget{
       DocumentSnapshot documentSnapshot = await firebaseFirestore.collection('UserDetails').doc(userCredential.user?.uid).get();
 
       if(documentSnapshot.exists){
-        if(userCredential.user?.phoneNumber != null){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user?.phoneNumber ?? ' ')));
-        }
-        else{
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user?.email ?? ' ')));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userCredential.user!.uid)));
       }
       else{
         currentAuthRefresh(AditionalData(firebaseAuth: firebaseAuth, width: width, firebaseFirestore: firebaseFirestore, currentAuthRefresh: currentAuthRefresh, credentials: null, userCredential: userCredential));

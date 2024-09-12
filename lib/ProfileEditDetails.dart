@@ -273,7 +273,7 @@ class _ProfileEditDetails extends State<ProfileEditDetails> {
                                                 'nicknameLowercase' : _nicknameController.text.toLowerCase().trim(),
                                                 'countryName' : countryName,
                                                 'countryEmoji' : countryEmoji,
-                                                'avatarPath' : 'avatars/${widget.userId}'
+                                                'avatarPath' : notPickedImage ? '-' : 'avatars/${widget.userId}'
                                               });
 
                                               widget.changePageHeader('Profile', {

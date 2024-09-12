@@ -13,8 +13,9 @@ class UnchainedPage extends StatefulWidget{
   final String userId;
   final void Function(String, Map<String, dynamic>?) changePageHeader;
   final Key? key;
+  final void Function(bool)? displayProgress;
 
-  UnchainedPage({required this.changePageHeader, required this.userId, required this.key}) : super(key: key);
+  UnchainedPage({required this.changePageHeader, required this.userId, required this.key, required this.displayProgress}) : super(key: key);
 
   @override
   _UnchainedPage createState() => _UnchainedPage();
@@ -36,6 +37,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
   List<UnchainedElement> allUnchainedWidget = List.empty(growable: true);
 
   int totalNumberOfUnchained = 0;
+  int index = 0;
 
   @override 
   void initState(){
@@ -69,59 +71,89 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
             )
           ),
 
-          hasCheckedForExistingUnchained ?
-            (!existingUnchained 
-              ? Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(width * 0.075),
-                    child: Text('There are no chains at the moment :(\nTry creating a chain yourself', style: GoogleFonts.nunito(fontSize: width * 0.04, color: Colors.grey, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                  )
-                ),
-              )
-              : Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  children: allUnchainedWidget
-                )
-                )
-              ))
-            : const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-
-          Padding(
-              padding: EdgeInsets.only(top: width * 0.05, left: width * 0.2, right: width * 0.2),
-              child: Center(
-                child: Material(
-                  color: globalPurple,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))
+          Expanded(
+            child: Stack(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: hasCheckedForExistingUnchained
+                        ? (!existingUnchained
+                            ? Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(width * 0.075),
+                                  child: Text(
+                                    'There are no chains at the moment :(\nTry creating a chain yourself',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: width * 0.04,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                controller: scrollController,
+                                child: StaggeredGrid.count(
+                                  crossAxisCount: 2,
+                                  children: allUnchainedWidget,
+                                ),
+                              ))
+                        : const Center(
+                            child: CircularProgressIndicator(),
+                          ),
                   ),
-                  child: InkWell(
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    onTap: () {
-                      widget.changePageHeader('New chain (category)', null);
-                    }, 
-                    splashColor: globalBlue,
-                    child: Padding(
-                      padding: EdgeInsets.all(width * 0.02),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/image/create.png', width: width * 0.1, height: width * 0.1, color: Colors.white),
-                          Text('NEW CHAIN', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
-                        ],
-                      )
-                    )
-                  )
                 ),
-              )
+
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: width * 0.3,  
+                      left: width * 0.2,
+                      right: width * 0.2,
+                    ),
+                    child: Material(
+                      color: globalPurple.withOpacity(0.95),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: InkWell(
+                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                        onTap: () {
+                          widget.changePageHeader('New chain (category)', null);
+                        },
+                        splashColor: globalBlue,
+                        child: Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/image/create.png',
+                                width: width * 0.1,
+                                height: width * 0.1,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                'NEW CHAIN',
+                                style: GoogleFonts.nunito(
+                                  fontSize: width * 0.05,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             )
+          )
         ],
       ),
     );
@@ -171,13 +203,21 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   Future<void> _addUnchainedData() async {
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.displayProgress!(true);
+    });
+
     if(allUnchainedWidget.length >= totalNumberOfUnchained){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.displayProgress!(false);
+      });
+
       return;
     }
 
     List<UnchainedElement> tempList = [];
 
-    for(int i = 0, index = 0; i < 9 && index < allUnchained.docs.length; i++, index++){
+    for(int i = 0; i < 9 && index < allUnchained.docs.length; i++, index++){
 
       DocumentSnapshot unchained = allUnchained.docs[index];
 
@@ -201,10 +241,17 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
         allUnchainedWidget.addAll(tempList);
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.displayProgress!(false);
+    });
   }
 
   @override
   void dispose(){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.displayProgress!(false);
+    });
     super.dispose();
   }
 }

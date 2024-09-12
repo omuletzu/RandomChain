@@ -160,14 +160,13 @@ class _PhoneAuth extends State<PhoneAuth>{
                       PhoneAuthCredential credentials = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: _codeController.text.trim());
 
                       try{
-
-                        await widget.firebaseAuth.signInWithCredential(credentials);
-
-                        DocumentSnapshot documentSnapshot = await widget.firebaseFirestore.collection('UserDetails').doc(finalPhoneNumber).get();
-
+                        
+                        UserCredential userDetails = await  widget.firebaseAuth.signInWithCredential(credentials);
+                        
+                        DocumentSnapshot documentSnapshot = await widget.firebaseFirestore.collection('UserDetails').doc(userDetails.user!.uid).get();
+                        
                         if(documentSnapshot.exists){
-                          await widget.firebaseAuth.signInWithCredential(credentials);
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: finalPhoneNumber.trim())));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: userDetails.user!.uid)));
                         }
                         else{
                           SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
