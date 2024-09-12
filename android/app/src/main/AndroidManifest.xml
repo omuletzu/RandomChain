@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
-        android:label="DoomChain"
+        android:label="RandomChain"
         android:name="${applicationName}"
         android:icon="@mipmap/logo">
         <activity
