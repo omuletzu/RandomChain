@@ -30,6 +30,8 @@ class SendUploadData{
     required newChainOrExtend}
   ) async {
 
+    Random random = Random();
+
     String userId = addData!['userId'];
     DocumentSnapshot userDetails = await firebase.collection('UserDetails').doc(userId).get();
     String userNationality = userDetails.get('countryName');
@@ -105,7 +107,9 @@ class SendUploadData{
           'totalPoints' : 0,
           'totalContributions' : 0,
           'likes' : 0,
-          'chainNationality' : userNationality};
+          'chainNationality' : userNationality,
+          'randomIndex' : random.nextDouble()
+        };
 
         firebase.collection('PendingChains').doc(categoryName).collection(userNationality).doc(chainIdentifier).set(chainMap);
       }
@@ -121,7 +125,6 @@ class SendUploadData{
 
     //SENDING TO
 
-    Random random = Random();
     String userIdToSendChain = '';
 
     if(addData['randomOrFriends']){

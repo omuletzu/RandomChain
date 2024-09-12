@@ -12,17 +12,43 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ExplorePage extends StatefulWidget{
 
+  static ExplorePage? _explorePageInstance;
+  static Key? lastKey;
+
   final Map<String, dynamic>? exploreData;
   final void Function(String, Map<String, dynamic>?)? changePageHeader;
   final Key? key;
   final void Function(bool)? displayProgress;
 
-  ExplorePage({
+  ExplorePage._internal({
     required this.exploreData,
     required this.changePageHeader,
     required this.key,
     required this.displayProgress
   }) : super(key: key);
+
+  factory ExplorePage({
+    required Map<String, dynamic>? exploreData,
+    required void Function(String, Map<String, dynamic>?)? changePageHeader,
+    required Key? key,
+    required void Function(bool)? displayProgress
+  }) {
+
+    if(lastKey == null || key != null){
+
+      _explorePageInstance = ExplorePage._internal(
+        exploreData: exploreData, 
+        changePageHeader: changePageHeader, 
+        key: key, displayProgress: displayProgress
+      );
+
+      lastKey = key;
+    }
+
+    key ??= lastKey;
+
+    return _explorePageInstance!;
+  }
 
   @override
   _ExplorePage createState() => _ExplorePage();
@@ -205,8 +231,6 @@ class _ExplorePage extends State<ExplorePage>{
     if(widget.exploreData == null){
       return;
     }
-
-    print(widget.exploreData!['userId']);
     
     userNationality = (await _firebase.collection('UserDetails').doc(widget.exploreData!['userId']).get()).get('countryName');
 

@@ -75,13 +75,16 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
   void initState(){
     super.initState();
 
+    Random random = Random();
+    print(random.nextDouble());
+
     _setUserIdentifier();
     
     currentPage = ExplorePage(exploreData: {
       'userId' : widget.uid
       }, changePageHeader: changePageHeader, 
       displayProgress: displayProgress,
-      key: null);
+      key: UniqueKey());
 
     lastCurrentPage = currentPage;
 
