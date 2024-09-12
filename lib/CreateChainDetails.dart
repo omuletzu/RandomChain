@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 class CreateChainDetails extends StatefulWidget {
 
   final void Function(String, Map<String, dynamic>?) changePageHeader;
-  Map<String, dynamic>? addData;
+  final Map<String, dynamic>? addData;
 
   CreateChainDetails({required this.changePageHeader, required this.addData});
 

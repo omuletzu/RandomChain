@@ -17,7 +17,7 @@ class UnchainedElement extends StatefulWidget{
   final bool calledByExplore;
   final FirebaseFirestore firebase;
   final FirebaseStorage storage;
-  void Function() removeIndexFromWidgetList;
+  final void Function() removeIndexFromWidgetList;
 
   UnchainedElement({required this.userId, 
   required this.firebase, 

@@ -102,7 +102,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
     rowOfChains = [
       Container(
-        width: oneOrTwoTilesContainer ? widget.width / 2 : widget.width,
+        width: widget.width / 2,
         height: widget.width * 0.075,
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -116,26 +116,21 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         ),
       ),
 
-      Visibility(
-        visible: oneOrTwoTilesContainer,
-        child: Container(
-          width: widget.width / 2,
-          height: widget.width * 0.075,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: const AssetImage('assets/image/linkChain.png'),
-              fit: BoxFit.contain,
-              colorFilter: ColorFilter.mode(
-                widget.categoryColor, 
-                BlendMode.srcIn
-              )
+      Container(
+        width: widget.width / 2,
+        height: widget.width * 0.075,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: const AssetImage('assets/image/linkChain.png'),
+            fit: BoxFit.contain,
+            colorFilter: ColorFilter.mode(
+              widget.categoryColor, 
+              BlendMode.srcIn
             )
-          ),
-        )
+          )
+        ),
       )
     ];
-
-    oneOrTwoTilesContainer = !oneOrTwoTilesContainer;
 
     _animationControllerSlideUp1.forward().then((value) => _animationControllerSlideUp2.forward());
 

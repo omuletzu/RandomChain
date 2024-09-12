@@ -1,8 +1,6 @@
 import 'package:doom_chain/GlobalValues.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class CreateChainTagsPage extends StatefulWidget{
 
@@ -19,7 +17,6 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
 
   final TextEditingController _chainPiecesController = TextEditingController(text: '10');
   late final AnimationController _animationControllerIcon;
-  late final Animation<double> _animationIcon;
 
   bool randomOrFriends = true;
   bool allOrPartChain = true;
@@ -43,8 +40,6 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
       vsync: this,
       duration: const Duration(seconds: 1)
     );
-
-    _animationIcon = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationControllerIcon, curve: Curves.easeOut));
   }
 
   @override

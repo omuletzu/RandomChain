@@ -68,7 +68,7 @@ class SendUploadData{
 
         String? tagJSON;
 
-        if(addData!['tagList'] != null){
+        if(addData['tagList'] != null){
           tagJSON = jsonEncode(addData['tagList']);
         }
 
@@ -236,7 +236,7 @@ class SendUploadData{
   }
 
   static Future<String> selectFriendUserToSend(FirebaseFirestore firebase, Random random, QuerySnapshot? allFriends, Map<String, dynamic> chainMap, bool newChainOrExtend, String userIdToSendChain, String userId) async {
-    allFriends ??= await firebase.collection('UserDetails').doc(newChainOrExtend ? userId : chainMap!['userIdForFriendList']).collection('Friends').get();
+    allFriends ??= await firebase.collection('UserDetails').doc(newChainOrExtend ? userId : chainMap['userIdForFriendList']).collection('Friends').get();
 
       if(allFriends.docs.isEmpty){
         return Future.value('');

@@ -106,8 +106,6 @@ class _SplashScreen extends State<SplashScreen> with TickerProviderStateMixin{
 
   void _checkForAlreadyLogged() async 
   {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
     if(firebaseAuth.currentUser != null){
