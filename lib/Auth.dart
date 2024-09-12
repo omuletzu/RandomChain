@@ -42,7 +42,7 @@ class Auth extends StatefulWidget{
 
       UserCredential userCredential = await firebaseAuth.signInWithCredential(credential);
 
-      DocumentSnapshot documentSnapshot = await firebaseFirestore.collection('UserDetails').doc(userCredential.user?.email).get();
+      DocumentSnapshot documentSnapshot = await firebaseFirestore.collection('UserDetails').doc(userCredential.user?.uid).get();
 
       if(documentSnapshot.exists){
         if(userCredential.user?.phoneNumber != null){
