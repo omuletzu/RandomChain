@@ -154,7 +154,7 @@ class _CreateChain extends State<CreateChain>{
             Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(width * 0.075),
+                  padding: EdgeInsets.only(top: width * 0.075, left: width * 0.075, right: width * 0.075, bottom: width * 0.3),
                   child: Material(
                     color: widget.addData!['baseCategoryColor'],
                     shape: const RoundedRectangleBorder(

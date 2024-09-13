@@ -73,7 +73,8 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
       child: Scaffold(
         backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
+        body: Expanded(
+          child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -142,6 +143,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
               SizedBox(
                 width: width * 0.85,
                 child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: tagList.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -163,7 +165,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
                             IconButton(
                               onPressed: () {
                                 if(mounted){
-                                   setState(() {
+                                  setState(() {
                                     tagList.removeAt(index);
                                   });
                                 }
@@ -182,7 +184,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
               ),  
 
               Padding(
-                padding: EdgeInsets.all(width * 0.1),
+                padding: EdgeInsets.only(top: width * 0.075, left: width * 0.075, right: width * 0.075, bottom: width * 0.3),
                 child: Material(
                   color: widget.addData!['baseCategoryColor'],
                   shape: const RoundedRectangleBorder(
@@ -268,6 +270,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
               )
             ],
           )
+        )
         ),
       )
     );

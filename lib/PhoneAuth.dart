@@ -172,6 +172,7 @@ class _PhoneAuth extends State<PhoneAuth>{
                           SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
                           sharedPreferences.setBool('lastAuthPhone', true);
                           UserCredential userCredential = await widget.firebaseAuth.signInWithCredential(credentials);
+                          
                           widget.currentAuthRefresh(AditionalData(firebaseAuth: widget.firebaseAuth, width: width, firebaseFirestore: widget.firebaseFirestore, currentAuthRefresh: widget.currentAuthRefresh, credentials: credentials, userCredential: userCredential));
                         }
                       }

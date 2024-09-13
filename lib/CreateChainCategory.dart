@@ -241,7 +241,7 @@ class _CreateChainCategory extends State<CreateChainCategory> with TickerProvide
               child: FadeTransition(
                 opacity: Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animationControllerSlideUp, curve: Curves.easeOut)),
                 child: Padding(
-                  padding: EdgeInsets.all(width * 0.05),
+                  padding: EdgeInsets.only(top: width * 0.075, left: width * 0.075, right: width * 0.075, bottom: width * 0.3),
                   child: Material(
                     color: globalPurple,
                     shape: const RoundedRectangleBorder(

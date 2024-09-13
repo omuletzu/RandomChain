@@ -37,6 +37,8 @@ class _AditionalData extends State<AditionalData>{
   String countryEmoji = Country.worldWide.flagEmoji;
   String countryName = '-';
 
+  bool finishedAditionalData = false;
+
   @override
   Widget build(BuildContext context){
 
@@ -204,6 +206,9 @@ class _AditionalData extends State<AditionalData>{
 
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: widget.userCredential!.user!.uid)));
 
+                    setState(() {
+                      finishedAditionalData = true;
+                    });
                   }, 
                   splashColor: globalBlue,
                   child: Padding(
@@ -217,5 +222,24 @@ class _AditionalData extends State<AditionalData>{
         )
       )
     );
+  }
+
+  @override
+  void dispose(){
+
+    if(!finishedAditionalData){
+      _signOutIfNotContinuing();
+    }
+
+    super.dispose();
+  }
+
+  void _signOutIfNotContinuing() async {
+    if(widget.userCredential != null){
+      await widget.userCredential!.user!.delete();
+    }
+
+    await widget.firebaseAuth.signOut();
+    await GoogleSignIn().signOut();
   }
 }
