@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/EmailPassSignUp.dart';
 import 'package:doom_chain/GlobalValues.dart';
@@ -202,6 +204,8 @@ class _AditionalData extends State<AditionalData>{
                       'totalPoints' : 0,
                       'accountSince' : Timestamp.now(),
                       'friendsCount' : 0,
+                      'requestsCount' : 0,
+                      'randomIndex' : Random().nextDouble()
                     });
 
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => AbstractMenu(uid: widget.userCredential!.user!.uid)));

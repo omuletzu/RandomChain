@@ -192,7 +192,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   Future<void> updateScrollChainData() async {
     
-    if(allUnchained != null){
+    if(allUnchained!.docs.isNotEmpty){
       _addUnchainedData();
     }
 
@@ -222,14 +222,14 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
     for(DocumentSnapshot unchained in allUnchained!.docs){
 
-      Map<String, dynamic> dataMap = unchained.data() as Map<String, dynamic>;
+      Map<String, dynamic> chainMap = unchained.data() as Map<String, dynamic>;
 
       UnchainedElement widgetToBeAdded = UnchainedElement(userId: widget.userId, 
         firebase: firebase, 
         storage: storage, 
         calledByExplore: false,
-        chainIdAndCategoryName: Pair(first: unchained.id, second: dataMap['categoryName']), 
-        chainData: (await firebase.collection('PendingChains').doc(dataMap['categoryName']).collection(dataMap['chainNationality']).doc(unchained.id).get()).data() as Map<String, dynamic>, 
+        chainIdAndCategoryName: Pair(first: unchained.id, second: chainMap['categoryName']), 
+        chainData:  chainMap,
         changePageHeader: widget.changePageHeader,
         removeIndexFromWidgetList: () {}
       );

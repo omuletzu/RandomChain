@@ -231,6 +231,12 @@ class _PhoneAuth extends State<PhoneAuth>{
           Fluttertoast.showToast(msg: 'Invalid phone number', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
         }
 
+        if(mounted){
+          setState(() {
+            displayProgress = false;
+          });
+        }
+
         print(e);
       }, 
       codeSent: (verificationId, forceResendingToken) => {

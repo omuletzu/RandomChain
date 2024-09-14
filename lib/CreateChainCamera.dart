@@ -268,7 +268,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
                 Visibility(
                   visible: photoTaken,
                   child: Padding(
-                    padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075),
+                    padding: EdgeInsets.only(left: width * 0.075, right: width * 0.075, top: width * 0.025, bottom: width * 0.025),
                     child: AnimatedContainer(
                       decoration: BoxDecoration(
                         border: Border.all(color: widget.addData!['baseCategoryColor'], width: 2.0),

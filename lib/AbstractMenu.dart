@@ -739,7 +739,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
       case 'Profile (chains)' :
         assetPath = 'assets/image/profile.png';
         setState(() {
-          tempCurrentTitle = 'Profile (personal)';
+          tempCurrentTitle = 'Profile (${addData!['nickname']})';
           topTitleColor = globalPurple;
           friendsPage = false;
           unchainedPage = false;

@@ -28,21 +28,28 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
   final ScrollController scrollController = ScrollController();
 
   bool hasCheckedForExistingFriends = false;
-  bool hasFriends = false;
-  bool lastHasFriends = false;
   bool searchingMode = false;
   bool scrollListenerAdded = false;
 
   int index = 0;
 
-  List<FriendElement> allFriendsList = List.empty(growable: true);
+  List<FriendElement> allFriendsList = [];
   Future<List<FriendElement>>? listToDisplay;
+  List<FriendElement> tempListToDisplay = [];
+
+  Map<String, dynamic>? userDetails;
+  QuerySnapshot? queryAllPeopleDifferentCountry;
+  QuerySnapshot? queryAllPeopleSameCountry;
+  QuerySnapshot? filteredFriends;
+  String filterNickname = '';
+  bool queryOrder = false;
 
   @override
   void initState() {
     super.initState();
 
-    retreiveFriendsFirebase();
+    retreiveFriendsFirebase(false);
+    retreiveFriendsFirebase(true);
     listToDisplay = Future.value(allFriendsList);
   }
 
@@ -115,7 +122,14 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
                       });
                     }
                     else{
-                      listToDisplay = _searchByNickname(value.toLowerCase().trim());
+                      setState(() {
+                        filterNickname = value.toLowerCase().trim();
+                        searchingMode = true;
+                        hasCheckedForExistingFriends = false;
+                      });
+                      tempListToDisplay = [];
+                      filteredFriends = null;
+                      listToDisplay = _searchByNickname();
                     }
                   },
                 )
@@ -174,80 +188,97 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
     );
   }
 
-  Future<List<FriendElement>> retreiveFriendsFirebase() async {
+  Future<List<FriendElement>> retreiveFriendsFirebase(bool queryOrder) async {
   
-    QuerySnapshot peopleToSearchDetails = await _firebase.collection('UserDetails').get();
+    userDetails ??= (await _firebase.collection('UserDetails').doc(widget.userId).get()).data() as Map<String, dynamic>;
 
-    for(int i = 0; i < 9 && index < peopleToSearchDetails.docs.length; i++, index++){
-
-      DocumentSnapshot friend = peopleToSearchDetails.docs[index];
-
-      if(friend.id == widget.userId){
-        continue;
-      }
-
-      if((await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(friend.id).get()).exists){
-        i--;
+    if(!queryOrder){
+      if(queryAllPeopleSameCountry == null){
+        queryAllPeopleSameCountry = await _firebase.collection('UserDetails')
+          .where('countryName', isEqualTo: userDetails!['countryName'])
+          .orderBy('randomIndex')
+          .limit(13)
+          .get();
       }
       else{
-        Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(friend.id).get()).data() as Map<String, dynamic>;
-
-        if(mounted){
-          setState(() {
-            allFriendsList.add(
-                FriendElement(
-                  userId: widget.userId, 
-                  friendId: friend.id,
-                  firebase: _firebase, 
-                  storage: _storage,
-                  friendData: friendData,
-                  changePageHeader: widget.changePageHeader,
-                  friendOrStranger : false,
-                  isThisRequests: false,
-                  userNickname: '',
-                  increaseFriendCount: () {},
-                )
-              );
-            }
-          );
-        }
+        queryAllPeopleSameCountry = await _firebase.collection('UserDetails')
+          .where('countryName', isEqualTo: userDetails!['countryName'])
+          .orderBy('randomIndex')
+          .startAfterDocument(queryAllPeopleSameCountry!.docs.last)
+          .limit(13)
+          .get();
+      }
+    }
+    else{
+      if(queryAllPeopleDifferentCountry == null){
+        queryAllPeopleDifferentCountry = await _firebase.collection('UserDetails')
+          .where('countryName', isNotEqualTo: userDetails!['countryName'])
+          .orderBy('randomIndex')
+          .limit(13)
+          .get();
+      }
+      else{
+        queryAllPeopleDifferentCountry = await _firebase.collection('UserDetails')
+          .where('countryName', isNotEqualTo: userDetails!['countryName'])
+          .orderBy('randomIndex')
+          .startAfterDocument(queryAllPeopleDifferentCountry!.docs.last)
+          .limit(13)
+          .get();
       }
     }
 
-    if(mounted){
+    if(!queryOrder){
+      if(queryAllPeopleSameCountry != null && queryAllPeopleSameCountry!.docs.isNotEmpty){
+        _addUserElements(queryAllPeopleSameCountry!);
+      }
+    }
+    else{
+      if(queryAllPeopleDifferentCountry != null && queryAllPeopleDifferentCountry!.docs.isNotEmpty){
+        _addUserElements(queryAllPeopleDifferentCountry!);
+      }
+    }
+
+    queryOrder = !queryOrder;
+
+    if(!scrollListenerAdded){   
+      scrollController.addListener(scrollListenerFunction);
+      scrollListenerAdded = true;
+    }
+
+    if(mounted && !hasCheckedForExistingFriends){
       setState(() {
         hasCheckedForExistingFriends = true;
       });
     }
 
-    if(!scrollListenerAdded){   // executed only once
-    
-      scrollController.addListener(scrollListenerFunction);
-      scrollListenerAdded = true;
-    }
-
     return allFriendsList;
   }
 
-  Future<List<FriendElement>> _searchByNickname(String filterNickname) async {
+  void _addUserElements(QuerySnapshot queryUsers) async {
 
-    List<FriendElement> tempListToDisplay = List.empty(growable: true);
+    List<FriendElement> tempList = [];
 
-    QuerySnapshot filteredFriends = await _firebase.collection('UserDetails').where('nicknameLowercase', isEqualTo: filterNickname).get();
+    for(DocumentSnapshot user in queryUsers.docs){
 
-    for(DocumentSnapshot friend in filteredFriends.docs){
+      if(user.id == widget.userId){
+        continue;
+      }
 
-      Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(friend.id).get()).data() as Map<String, dynamic>;
+      if((await _firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(user.id).get()).exists){
+        continue;
+      }
+      
+      Map<String, dynamic> friendData = (await _firebase.collection('UserDetails').doc(user.id).get()).data() as Map<String, dynamic>;
 
-      tempListToDisplay.add(
+      tempList.add(
         FriendElement(
           userId: widget.userId, 
-          friendId: friend.id, 
-          storage: _storage, 
+          friendId: user.id,
           firebase: _firebase, 
-          friendData: friendData, 
+          storage: _storage,
+          friendData: friendData,
           changePageHeader: widget.changePageHeader,
-          friendOrStranger: false, 
+          friendOrStranger : false,
           isThisRequests: false,
           userNickname: '',
           increaseFriendCount: () {},
@@ -256,23 +287,53 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
     }
 
     if(mounted){
-
       setState(() {
-        if(tempListToDisplay.isEmpty){
-          hasFriends = false;
-        }
+        searchingMode 
+          ? tempListToDisplay.addAll(tempList) 
+          : allFriendsList.addAll(tempList);
+      });
+    }
+  }
+  
+  void scrollListenerFunction(){
+    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
+      if(searchingMode){
+        _searchByNickname();
+      }
+      else{
+        retreiveFriendsFirebase(queryOrder);
+        queryOrder = !queryOrder;
+      }
+    }
+  }
 
-        searchingMode = true;
+  Future<List<FriendElement>> _searchByNickname() async {
+
+    if(filteredFriends == null){
+      filteredFriends = await _firebase.collection('UserDetails')
+        .where('nicknameLowercase', isEqualTo: filterNickname)
+        .limit(13)
+        .get();
+    }
+    else{
+      filteredFriends = await _firebase.collection('UserDetails')
+        .where('nicknameLowercase', isEqualTo: filterNickname)
+        .startAfterDocument(filteredFriends!.docs.last)
+        .limit(13)
+        .get();
+    }
+  
+    if(filteredFriends!.docs.isNotEmpty){
+      _addUserElements(filteredFriends!);
+    }
+
+    if(mounted && !hasCheckedForExistingFriends){
+      setState(() {
+        hasCheckedForExistingFriends = true;
       });
     }
 
     return tempListToDisplay;
-  }
-
-  void scrollListenerFunction(){
-    if(scrollController.position.pixels == scrollController.position.maxScrollExtent){
-      retreiveFriendsFirebase();
-    }
   }
 
   @override

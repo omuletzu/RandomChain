@@ -115,7 +115,7 @@ class _FriendElement extends State<FriendElement>{
                       ),
 
                       Visibility(
-                        visible: !widget.friendOrStranger,
+                        visible: !widget.friendOrStranger && !friendAddedOrNot,
                         child: !friendAddedOrNot 
                           ? IconButton(
                               onPressed: () async {
@@ -246,7 +246,7 @@ class _FriendElement extends State<FriendElement>{
       height: globalWidth * 0.15,
       fit: BoxFit.cover,
       placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => Icon(Icons.error, size: globalWidth * 0.25)
+      errorWidget: (context, url, error) => Image.asset('assets/image/profile.png')
     );
 
     if(mounted){

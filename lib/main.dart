@@ -75,17 +75,14 @@ void callBackDipatcher(){
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
       }
 
-      FirebaseFirestore _firebase = FirebaseFirestore.instance;
-      FirebaseStorage _storage = FirebaseStorage.instance;
-      DateTime timestamp = Timestamp.now().toDate();
-
+      FirebaseFirestore firebase = FirebaseFirestore.instance;
+      FirebaseStorage storage = FirebaseStorage.instance;
       SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      DateTime timestamp = Timestamp.now().toDate();
 
       int lastNumberOfStory = sharedPreferences.getInt('lastNumberOfStory') ?? 0;
       int lastNumberOfrandom = sharedPreferences.getInt('lastNumberOfrandom') ?? 0;
       int lastNumberOfChainllange = sharedPreferences.getInt('lastNumberOfChainllange') ?? 0;
-
-      QuerySnapshot pendingChains = await _firebase.collection('UserDetails').doc(inputData!['userId']).collection('PendingPersonalChains').get();
 
       Map<String, int> updatedNumberOfStory = {
         'Story' : 0,
@@ -93,27 +90,32 @@ void callBackDipatcher(){
         'Chainllange' : 0
       };
 
+      QuerySnapshot pendingChains = await firebase.collection('UserDetails').doc(inputData!['userId']).collection('PendingPersonalChains').get();
+
       for(DocumentSnapshot pendingChain in pendingChains.docs){
 
-        DateTime timeDifference = pendingChain.get('receivedTime').toDate();
+        Map<String, dynamic> chainMap = pendingChain.data() as Map<String, dynamic>;
+        DateTime timeDifference = chainMap['receivedTime'].toDate();
 
         if(timestamp.difference(timeDifference).inHours >= 2){
 
+          chainMap['receivedTime'] = Timestamp.now();
+
           SendUploadData.uploadData(
-            firebase: _firebase, 
-            storage: _storage, 
+            firebase: firebase, 
+            storage: storage, 
             addData: {
               'userId' : inputData['userId'],
-              'randomOrFriends' : pendingChain['randomOrFriend']
+              'randomOrFriends' : chainMap['random']
             }, 
-            chainMap: pendingChain.data() as Map<String, dynamic>, 
+            chainMap: chainMap, 
             disableFirstPhraseForChallange: false, 
             contributorsList: null,
             theme: '', 
             title: '', 
             photoSkipped: false, 
             chainIdentifier: pendingChain.id, 
-            categoryName: pendingChain.get('categoryName'), 
+            categoryName: chainMap['categoryName'], 
             chainSkipped: true, 
             photoPath: null, 
             mounted: false, 
@@ -121,12 +123,9 @@ void callBackDipatcher(){
             changePageHeader: null, 
             newChainOrExtend: false
           );
-
-          _firebase.collection('UserDetails').doc(inputData['userId']).collection('PendingPersonalChains').doc(pendingChain.id).delete();
         }
         else{
-          String categoryName = pendingChain.get('categoryName') as String;
-          updatedNumberOfStory[categoryName] = updatedNumberOfStory[categoryName]! + 1;
+          updatedNumberOfStory[chainMap['categoryName']] = updatedNumberOfStory[chainMap['categoryName']]! + 1;
         }
       }
 
@@ -150,7 +149,7 @@ void callBackDipatcher(){
       sharedPreferences.setInt('lastNumberOfrandom', updatedNumberOfStory['random']!);
       sharedPreferences.setInt('lastNumberOfChainllange', updatedNumberOfStory['Chainllange']!);
 
-      QuerySnapshot pendingFriends = await _firebase.collection('UserDetails').doc(inputData['userId']).collection('FriendRequests').get();
+      QuerySnapshot pendingFriends = await firebase.collection('UserDetails').doc(inputData['userId']).collection('FriendRequests').get();
 
       int lastNumberOfPendingFriends = sharedPreferences.getInt('lastNumberOfPendingFriends') ?? 0;
 

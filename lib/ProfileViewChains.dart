@@ -5,6 +5,7 @@ import 'package:doom_chain/Pair.dart';
 import 'package:doom_chain/UnchainedElement.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -17,7 +18,7 @@ class ProfileViewChains extends StatefulWidget {
     required this.changePageHeader,
     required this.userData,
     required this.personalLikedSavedChains
-  });
+  }) : super(key: UniqueKey());
 
   @override
   _ProfileViewChains createState() => _ProfileViewChains();
@@ -26,6 +27,7 @@ class ProfileViewChains extends StatefulWidget {
 class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderStateMixin {
   final FirebaseFirestore _firebase = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  List<ScrollController> scrollControllers = List.filled(3, ScrollController());
 
   late AnimationController _animationControllerSlideRight;
   late AnimationController _animationControllerSlideLeft;
@@ -51,6 +53,10 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
   List<List<Widget>> allCategoryChains = [[], [], []];
   List<bool> hasCheckedCategory = [false, false, false];
   List<bool> hasElementsCategory = [false, false, false];
+
+  List<QuerySnapshot?> queryAllCategory = List.filled(3, null);
+  
+  bool scrollListenerAdded = false;
 
   @override
   void initState() {
@@ -128,16 +134,13 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
                       fontSize: width * 0.04, fontWeight: FontWeight.bold, color: globalTextBackground),
                   textAlign: TextAlign.center),
             ),
-            Padding(
-              padding: EdgeInsets.all(width * 0.00),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory, storySelected),
-                  _buildCategoryIcon(width, 1, 'assets/image/random.png', _animationColorRandom, randomSelected),
-                  _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange, chainllangeSelected),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildCategoryIcon(width, 0, 'assets/image/book.png', _animationColorStory, storySelected),
+                _buildCategoryIcon(width, 1, 'assets/image/random.png', _animationColorRandom, randomSelected),
+                _buildCategoryIcon(width, 2, 'assets/image/challange.png', _animationColorChainllange, chainllangeSelected),
+              ],
             ),
             Padding(
               padding: EdgeInsets.only(top: width * 0.025, bottom: width * 0.025),
@@ -157,7 +160,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
   }
 
   Future<void> retreiveChainsFromFirebase(int categoryIndex) async {
-
+    
     String personalLikedSavedChainsCategory;
 
     switch (widget.personalLikedSavedChains) {
@@ -174,38 +177,24 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
         personalLikedSavedChainsCategory = 'FinishedChains${categoryNameByIndex[categoryIndex]}';
     }
 
-    QuerySnapshot allChains = await _firebase.collection('UserDetails').doc(widget.userData['userId']).collection(personalLikedSavedChainsCategory).get();
-
-    for (DocumentSnapshot chain in allChains.docs) {
-      Map<String, dynamic> chainMiniData = chain.data() as Map<String, dynamic>;
-
-      allCategoryChains[categoryIndex].add(
-        UnchainedElement(
-          userId: widget.userData['userId'],
-          firebase: _firebase,
-          storage: _storage,
-          calledByExplore: true,
-          chainIdAndCategoryName: Pair(first: chain.id, second: categoryNameByIndex[categoryIndex]),
-          chainData: (await _firebase
-                  .collection('FinishedChains')
-                  .doc(chainMiniData['categoryName'])
-                  .collection(chainMiniData['chainNationality'])
-                  .doc(chain.id)
-                  .get())
-              .data() as Map<String, dynamic>,
-          changePageHeader: widget.changePageHeader,
-          removeIndexFromWidgetList: () {},
-        ),
-      );
+    queryAllCategory[categoryIndex] = await _firebase.collection('UserDetails')
+      .doc(widget.userData['userId'])
+      .collection(personalLikedSavedChainsCategory)
+      .limit(9)
+      .get();
+    
+    if(queryAllCategory[categoryIndex]!.docs.isNotEmpty){
+      updateScrollChainData(categoryIndex, personalLikedSavedChainsCategory);
+      if(mounted){
+        setState(() {
+          hasElementsCategory[categoryIndex] = true;
+        });
+      }
     }
 
     if(mounted){
       setState(() {
         hasCheckedCategory[categoryIndex] = true;
-
-        if(allCategoryChains[categoryIndex].isNotEmpty){
-          hasElementsCategory[categoryIndex] = true;
-        }
       });
     }
   }
@@ -222,6 +211,7 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
               ? (
                 hasElementsCategory[categoryIndex] 
                   ? SingleChildScrollView(
+                    controller: scrollControllers[categoryIndex],
                     child: Column(
                       children: [
                         StaggeredGrid.count(
@@ -322,6 +312,29 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
     lastCategorySelected = index;
   }
 
+  Future<void> updateScrollChainData(int categoryIndex, String personalLikedSavedChainsCategory) async {
+    
+    if(queryAllCategory[categoryIndex]!.docs.isNotEmpty){
+      _addElementsByCategory(categoryIndex, personalLikedSavedChainsCategory);
+    }
+
+    if(!scrollListenerAdded){
+      scrollControllers[categoryIndex].addListener(() {
+        _scrollListenerFunction(categoryIndex, personalLikedSavedChainsCategory);
+      });
+
+      scrollListenerAdded = true;
+    }
+  }
+
+  void _scrollListenerFunction(int categoryIndex, String personalLikedSavedChainsCategory){
+
+    if(scrollControllers[categoryIndex].position.pixels >= scrollControllers[categoryIndex].position.maxScrollExtent){
+
+      updateScrollChainData(categoryIndex, personalLikedSavedChainsCategory);
+    }
+  }
+
   void updateSelectedValues(bool value, int selectedIndex){
     switch(selectedIndex){
         case 0:
@@ -333,6 +346,48 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
         default:
           chainllangeSelected = value;
       }
+  }
+
+  void _addElementsByCategory(int categoryIndex, String personalLikedSavedChainsCategory) async {
+
+    List<UnchainedElement> tempList = [];
+    
+    for (DocumentSnapshot chain in queryAllCategory[categoryIndex]!.docs) {
+      
+      Map<String, dynamic> chainMiniData = chain.data() as Map<String, dynamic>;
+
+      tempList.add(
+        UnchainedElement(
+          userId: widget.userData['userId'],
+          firebase: _firebase,
+          storage: _storage,
+          calledByExplore: true,
+          chainIdAndCategoryName: Pair(first: chain.id, second: categoryNameByIndex[categoryIndex]),
+          chainData: (await _firebase
+                  .collection('FinishedChains')
+                  .doc(chainMiniData['categoryName'])
+                  .collection(chainMiniData['chainNationality'])
+                  .doc(chain.id)
+                  .get())
+              .data() as Map<String, dynamic>,
+          changePageHeader: widget.changePageHeader,
+          removeIndexFromWidgetList: () {},
+        ),
+      );
+    }
+
+    if(mounted){
+      setState(() {
+        allCategoryChains[categoryIndex].addAll(tempList);
+      });
+    }
+
+    queryAllCategory[categoryIndex] = await _firebase.collection('UserDetails')
+      .doc(widget.userData['userId'])
+      .collection(personalLikedSavedChainsCategory)
+      .startAfterDocument(queryAllCategory[categoryIndex]!.docs.last)
+      .limit(9)
+      .get();
   }
 
   Color? getColorForIndex(int catIndex) {

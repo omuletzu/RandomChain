@@ -39,15 +39,15 @@ class MainActivity: FlutterActivity() {
             // }
 
             when(call.method){
-                // "startNotif" -> {
-                //     startForegroundService(serviceIntent)
-                //     result.success(null)
-                // }
+                "startNotif" -> {
+                    startForegroundService(serviceIntent)
+                    result.success(null)
+                }
 
-                // "stopNotif" -> {
-                //     ServiceIntent.stopNotif()
-                //     result.success(null);
-                // }
+                "stopNotif" -> {
+                    ServiceIntent.stopNotif()
+                    result.success(null);
+                }
 
                 "pushNotif" -> {
 

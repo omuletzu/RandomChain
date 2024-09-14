@@ -1,6 +1,5 @@
 
 import 'dart:math';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doom_chain/GlobalValues.dart';
@@ -84,6 +83,9 @@ class _ExplorePage extends State<ExplorePage>{
   List<Pair> allForeignCountryWithFinishedChains = [];
   List<Pair> allForeignCountryCategoriesConsumedByAdding = [];
   List<String> allCategoriesName = ['Story', 'Random', 'Chainllange'];
+
+  QuerySnapshot? queryTagResults;
+  String tagToSearch = '';
 
   Random random = Random();
 
@@ -214,10 +216,18 @@ class _ExplorePage extends State<ExplorePage>{
                   Expanded(
                     child: SingleChildScrollView(
                       controller: scrollController,
-                      child: StaggeredGrid.count(
-                      crossAxisCount: 2,
-                      children: searchingResults
-                    )
+                      child: Column(
+                        children: [
+                          StaggeredGrid.count(
+                            crossAxisCount: 2,
+                            children: searchingResults
+                          ),
+                          SizedBox(
+                            width: width,
+                            height: width * 0.3,
+                          )
+                        ],
+                      )
                   )
                 )
                 : Expanded(
@@ -309,7 +319,11 @@ class _ExplorePage extends State<ExplorePage>{
     });
   }
 
-  void _searchByTag(String tagToSearch) async {
+  void _searchByTag(String tag) async {
+
+    setState(() {
+      tagToSearch = tag;
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if(mounted){
@@ -321,30 +335,18 @@ class _ExplorePage extends State<ExplorePage>{
     });
 
     searchingResults.clear();
-    List<UnchainedElement> tempSearchingResults = [];
 
-    DocumentSnapshot searchingDocuments = await _firebase.collection('ChainTags').doc(tagToSearch).get();
-    
-    if(searchingDocuments.exists){
-      for(var mapEntry in (searchingDocuments.data() as Map<String, dynamic>).entries){
+    queryTagResults = await _firebase.collection('ChainTags')
+      .doc('ChainTags')
+      .collection(tagToSearch)
+      .orderBy('randomIndex')
+      .limit(9)
+      .get();
 
-        List<dynamic> chainMiniDetails = jsonDecode(mapEntry.value);
-        
-        Map<String, dynamic> chainDetails = (await _firebase.collection('FinishedChains').doc(chainMiniDetails[0]).collection(chainMiniDetails[1]).doc(mapEntry.key).get()).data() as Map<String, dynamic>;
+    if(queryTagResults!.docs.isNotEmpty){
 
-        tempSearchingResults.add(
-          UnchainedElement(
-            userId: widget.exploreData!['userId'], 
-            firebase: _firebase, 
-            storage: _storage, 
-            calledByExplore: true, 
-            chainIdAndCategoryName: Pair(first: mapEntry.key, second: chainMiniDetails[0]), 
-            chainData: chainDetails, 
-            changePageHeader: widget.changePageHeader!, 
-            removeIndexFromWidgetList: () {})
-        );
-      };
-      
+      updateScrollChainData();
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if(mounted){
           setState(() {
@@ -358,7 +360,6 @@ class _ExplorePage extends State<ExplorePage>{
       if(mounted){
         setState(() {
           searchFinished = true;
-          searchingResults.addAll(tempSearchingResults);
         });
       }
     });
@@ -366,14 +367,19 @@ class _ExplorePage extends State<ExplorePage>{
 
   Future<void> updateScrollChainData() async {
     
-    if(orderForCountryRandomness == 0 && finishedChainsCategory.isNotEmpty){
-      _addDataFromSameCountry();
+    if(searchingMode && queryTagResults!.docs.isNotEmpty){
+      _addDataFromSearch();
     }
-    else if(allForeignCountryWithFinishedChains.isNotEmpty){
-      _addDataFromDifferentCountry();
-    }
+    else{
+      if(orderForCountryRandomness == 0 && finishedChainsCategory.isNotEmpty){
+        _addDataFromSameCountry();
+      }
+      else if(allForeignCountryWithFinishedChains.isNotEmpty){
+        _addDataFromDifferentCountry();
+      }
 
-    orderForCountryRandomness = (orderForCountryRandomness + 1) % 2;
+      orderForCountryRandomness = (orderForCountryRandomness + 1) % 2;
+    }
 
     if(!scrollListenerAdded){
       scrollController.addListener(() {
@@ -587,6 +593,56 @@ class _ExplorePage extends State<ExplorePage>{
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.displayProgress!(false);
     });
+  }
+
+  void _addDataFromSearch() async {
+
+    List<UnchainedElement> tempSearchingResults = [];
+
+    for(DocumentSnapshot singleTagResult in queryTagResults!.docs){
+
+      Map<String, dynamic> chainMiniData = singleTagResult.data() as Map<String, dynamic>;
+      
+      String categoryName;
+      String chainNationality;
+
+      if(chainMiniData['Story'] != null){
+        categoryName = 'Story';
+        chainNationality = chainMiniData['Story'];
+      } else if(chainMiniData['Random'] != null){
+        categoryName = 'Random';
+        chainNationality = chainMiniData['Random'];
+      }else{
+        categoryName = 'Chainllange';
+        chainNationality = chainMiniData['Chainllange'];
+      }
+
+      Map<String, dynamic> chainMap = (await _firebase.collection('FinishedChains').doc(categoryName).collection(chainNationality).doc(singleTagResult.id).get()).data() as Map<String, dynamic>;
+
+      tempSearchingResults.add(
+        UnchainedElement(
+          userId: widget.exploreData!['userId'], 
+          firebase: _firebase, 
+          storage: _storage, 
+          calledByExplore: true, 
+          chainIdAndCategoryName: Pair(first: singleTagResult.id, second: categoryName), 
+          chainData: chainMap, 
+          changePageHeader: widget.changePageHeader!, 
+          removeIndexFromWidgetList: () {})
+      );
+    }
+
+    setState(() {
+      searchingResults.addAll(tempSearchingResults);
+    });
+    
+    queryTagResults = await _firebase.collection('ChainTags')
+      .doc('ChainTags')
+      .collection(tagToSearch)
+      .orderBy('randomIndex')
+      .startAfterDocument(queryTagResults!.docs.last)
+      .limit(9)
+      .get();
   }
 
   bool _checkIfPairContainedInList(List<Pair> listPair, Pair pair){

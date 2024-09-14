@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -524,7 +525,10 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           ),
                                           child: InkWell(
                                             borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                            onLongPress: () async {
+                                            onTap: () async {
+
+                                              FocusScope.of(context).unfocus();
+
                                               final List<CameraDescription> cameraList;
                                               final CameraDescription camera;
                                               CameraController _cameraController;
@@ -617,13 +621,15 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                         });
                                       },
                                       onTap: () {
-                                        Fluttertoast.showToast(msg: 'To send hold button longer', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+                                        Fluttertoast.showToast(msg: 'Hold button longer to send', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                       },
                                       onLongPress: () {
                                         if(_textController.text.trim().isEmpty){
                                           Fluttertoast.showToast(msg: 'Empty text', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
                                           return;
                                         }
+
+                                        FocusScope.of(context).unfocus();
 
                                         _animationControllerSlideDown.forward();
                                         uploadExtendData(false);
@@ -656,6 +662,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                                           child: InkWell(
                                             borderRadius: const BorderRadius.all(Radius.circular(15)),
                                             onLongPress: () async {
+                                              FocusScope.of(context).unfocus();
                                               uploadExtendData(true);
                                             }, 
                                             splashColor: Colors.grey,
@@ -695,7 +702,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
 
   void uploadExtendData(bool extendingSkipped) async {
     if(extendingSkipped){
-      callStaticSentMethod(extendingSkipped);
+      callStaticSentMethod(extendingSkipped, '');
       Fluttertoast.showToast(msg: 'SKIPPED', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
     }
     else{
@@ -706,10 +713,10 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
             chainSentForUpload = true;
           });
         }
-        
-        String extensionImagePath = '-';
 
-        widget.chainMap['remainingOfContrib']--;
+        widget.chainMap['remainingOfContrib']--; 
+
+        String extensionImagePath = '-';
 
         if(extensionHasImage){
           extensionImagePath = 'uploads/${widget.chainId}/${widget.chainMap['remainingOfContrib']}_${widget.userId}';
@@ -721,13 +728,11 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
           widget.userId, _textController.text, extensionImagePath
         ]));
 
-        await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).update({
-          'contributions' : jsonEncode(widget.contributors),
-          'remainingOfContrib' : widget.chainMap['remainingOfContrib']
-        }); 
+        widget.chainMap['contributions'] = jsonEncode(widget.contributors);
+        widget.chainMap['receivedTime'] = Timestamp.now();
 
-        callStaticSentMethod(extendingSkipped);
-        Fluttertoast.showToast(msg: 'SENT', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+        callStaticSentMethod(extendingSkipped, widget.chainMap['tagList']);
+        Fluttertoast.showToast(msg: 'Chain sent', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
       }
       catch(e){
         print(e);
@@ -735,26 +740,22 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     }
   }
 
-  void callStaticSentMethod(bool extendingSkipped) async {
-    String chainNationality = '';
-    Map<String, dynamic> chainMap = (await widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).get()).data() as Map<String, dynamic>;
-
-    chainNationality = chainMap['chainNationality'];
+  void callStaticSentMethod(bool extendingSkipped, String tagListEncoded) async {
 
     bool disableFirstPhraseForChallange = false;
     if(widget.categoryName != 'Story'){
       disableFirstPhraseForChallange = true;
     }
 
-    if(widget.chainMap['remainingOfContrib'] > 0 || extendingSkipped){
+    if(widget.chainMap['remainingOfContrib'] > 0){
       SendUploadData.uploadData(
         firebase: widget.firebase, 
         storage: widget.storage, 
         addData: {
           'userId' : widget.userId,
-          'randomOrFriends' : chainMap['random']
+          'randomOrFriends' : widget.chainMap['random']
         },
-        chainMap: chainMap, 
+        chainMap: widget.chainMap, 
         contributorsList: widget.contributors,
         disableFirstPhraseForChallange: disableFirstPhraseForChallange, 
         chainSkipped: extendingSkipped,
@@ -772,27 +773,28 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
     }
     else{
 
-      widget.firebase.collection('UserDetails').doc(chainMap['userIdForFriendList']).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
+      widget.firebase.collection('UserDetails').doc(widget.chainMap['userIdForFriendList']).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
         'categoryName' : widget.categoryName, 
-        'chainNationality' : chainMap['chainNationality']
+        'chainNationality' : widget.chainMap['chainNationality']
       });
 
       for(List<String> contributor in widget.contributors){
-
         String contributorId = contributor[0];
         
         widget.firebase.collection('UserDetails').doc(contributorId).collection('FinishedChains${widget.categoryName}').doc(widget.chainId).set({
         'categoryName' : widget.categoryName, 
-        'chainNationality' : chainMap['chainNationality']
+        'chainNationality' : widget.chainMap['chainNationality']
       });
       }
 
-      widget.firebase.collection('AllCountryFinishedChains').doc(chainNationality).set({});
-      widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).set(chainMap);
-      widget.firebase.collection('PendingChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).delete();
-    }
+      widget.firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').doc(widget.chainId).delete();
+      widget.firebase.collection('AllCountryFinishedChains').doc(widget.chainNationality).set({});
+      widget.firebase.collection('FinishedChains').doc(widget.categoryName).collection(widget.chainNationality).doc(widget.chainId).set(widget.chainMap);
 
-    widget.firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').doc(widget.chainId).delete(); 
+      List<String> tagListDecoded = (jsonDecode(tagListEncoded) as List<dynamic>).map((e) => e as String).toList();
+
+      SendUploadData.updateGlobalTagList(tagListDecoded, Random(), widget.chainId, widget.categoryName, widget.chainNationality, widget.firebase);
+    }
 
     if(!extendingSkipped){
       DocumentSnapshot userDetails = await widget.firebase.collection('UserDetails').doc(widget.userId).get();
