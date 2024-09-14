@@ -222,9 +222,17 @@ class _ProfileViewChains extends State<ProfileViewChains> with TickerProviderSta
               ? (
                 hasElementsCategory[categoryIndex] 
                   ? SingleChildScrollView(
-                    child: StaggeredGrid.count(
-                      crossAxisCount: 2,
-                      children: allCategoryChains[categoryIndex],
+                    child: Column(
+                      children: [
+                        StaggeredGrid.count(
+                          crossAxisCount: 2,
+                          children: allCategoryChains[categoryIndex],
+                        ),
+                        SizedBox(
+                          width: width,
+                          height: width * 0.3,
+                        )
+                      ],
                     ),
                   )
                   : Center(

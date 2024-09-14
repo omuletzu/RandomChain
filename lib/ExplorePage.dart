@@ -189,10 +189,18 @@ class _ExplorePage extends State<ExplorePage>{
                   child: SingleChildScrollView(
                     controller: scrollController,
                     physics: scrollPhysics,
-                    child: StaggeredGrid.count(
-                    crossAxisCount: 2,
-                    children: allChainsWidget.map((e) => e.first as Widget).toList()
-                  )
+                    child: Column(
+                      children: [
+                        StaggeredGrid.count(
+                          crossAxisCount: 2,
+                          children: allChainsWidget.map((e) => e.first as Widget).toList()
+                        ),
+                        SizedBox(
+                          width: width,
+                          height: width * 0.3,
+                        )
+                      ],
+                    )
                   )
                 ))
               : const Expanded(
@@ -531,7 +539,7 @@ class _ExplorePage extends State<ExplorePage>{
             storage: _storage, 
             calledByExplore: true, 
             chainIdAndCategoryName: Pair(
-              first: selectedCountryLastQuerySnapshot!.docs[selectedCountryLastIndex].id, 
+              first: selectedCountryLastQuerySnapshot.docs[selectedCountryLastIndex].id, 
               second: selectedLastCategory
             ), 
             chainData: selectedCountryLastQuerySnapshot.docs[selectedCountryLastIndex].data() as Map<String, dynamic>, 

@@ -26,7 +26,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
   final FirebaseFirestore firebase = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
   final ScrollController scrollController = ScrollController();
-  late QuerySnapshot allUnchained;
+  late QuerySnapshot? allUnchained;
 
   bool scrollListenerAdded = false;
   bool existingUnchained = false;
@@ -36,7 +36,6 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
   List<Pair> unchainedId = List.empty(growable: true);
   List<UnchainedElement> allUnchainedWidget = List.empty(growable: true);
 
-  int totalNumberOfUnchained = 0;
   int index = 0;
 
   @override 
@@ -59,7 +58,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
             alignment: Alignment.center,
             child: Padding(
               padding: EdgeInsets.all(width * 0.05),
-              child: Text('Down below are all the chains sent to you ($totalNumberOfUnchained)', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+              child: Text('Down below are all the chains sent to you', style: GoogleFonts.nunito(fontSize: width * 0.04, color: globalTextBackground, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
             )
           ),
 
@@ -74,36 +73,42 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
           Expanded(
             child: Stack(
               children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: hasCheckedForExistingUnchained
-                        ? (!existingUnchained
-                            ? Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(width * 0.075),
-                                  child: Text(
-                                    'There are no chains at the moment :(\nTry creating a chain yourself',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: width * 0.04,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: hasCheckedForExistingUnchained
+                      ? (!existingUnchained
+                          ? Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(width * 0.075),
+                                child: Text(
+                                  'There are no chains at the moment :(\nTry creating a chain yourself',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: width * 0.04,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              )
-                            : SingleChildScrollView(
-                                controller: scrollController,
-                                child: StaggeredGrid.count(
-                                  crossAxisCount: 2,
-                                  children: allUnchainedWidget,
-                                ),
-                              ))
-                        : const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                  ),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              controller: scrollController,
+                              child: Column(
+                                children: [
+                                  StaggeredGrid.count(
+                                    crossAxisCount: 2,
+                                    children: allUnchainedWidget,
+                                  ),
+                                  SizedBox(
+                                    width: width,
+                                    height: width * 0.3,
+                                  )
+                                ],
+                              ),
+                            ))
+                      : const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                 ),
 
                 Align(
@@ -161,15 +166,19 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   Future<void> _fetchFirebaseUnchained() async {
 
-    allUnchained = await firebase.collection('UserDetails').doc(widget.userId).collection('PendingPersonalChains').get();
+    allUnchained = await firebase.collection('UserDetails')
+      .doc(widget.userId)
+      .collection('PendingPersonalChains')
+      .orderBy('randomIndex')
+      .limit(9)
+      .get();
 
-    if(allUnchained.docs.isNotEmpty && mounted){
+    if(allUnchained != null && allUnchained!.docs.isNotEmpty && mounted){
       setState(() {
         existingUnchained = true;
-        totalNumberOfUnchained = allUnchained.docs.length;
       });
 
-      allUnchained.docs.shuffle();
+      allUnchained!.docs.shuffle();
 
       updateScrollChainData();
     }
@@ -183,7 +192,9 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   Future<void> updateScrollChainData() async {
     
-    _addUnchainedData();
+    if(allUnchained != null){
+      _addUnchainedData();
+    }
 
     if(!scrollListenerAdded){
       scrollController.addListener(() {
@@ -207,19 +218,9 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
       widget.displayProgress!(true);
     });
 
-    if(allUnchainedWidget.length >= totalNumberOfUnchained){
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.displayProgress!(false);
-      });
-
-      return;
-    }
-
     List<UnchainedElement> tempList = [];
 
-    for(int i = 0; i < 9 && index < allUnchained.docs.length; i++, index++){
-
-      DocumentSnapshot unchained = allUnchained.docs[index];
+    for(DocumentSnapshot unchained in allUnchained!.docs){
 
       Map<String, dynamic> dataMap = unchained.data() as Map<String, dynamic>;
 
@@ -241,6 +242,14 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
         allUnchainedWidget.addAll(tempList);
       });
     }
+
+    allUnchained = await firebase.collection('UserDetails')
+      .doc(widget.userId)
+      .collection('PendingPersonalChains')
+      .orderBy('randomIndex')
+      .limit(9)
+      .startAfterDocument(allUnchained!.docs.last)
+      .get();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.displayProgress!(false);
