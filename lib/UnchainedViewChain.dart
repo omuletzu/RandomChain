@@ -242,7 +242,6 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                         child: InkWell(
                           borderRadius: const BorderRadius.all(Radius.circular(15)),
                           onTap: () async {
-                            widget.changePageHeader('Go Back', null);
                             Navigator.of(context).popUntil((route) => route.isFirst);
                           }, 
                           splashColor: globalBlue,
@@ -976,14 +975,14 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
               ),
 
               Padding(
-                padding: EdgeInsets.only(top: widget.width * 0.01, bottom: widget.width * 0.01),
+                padding: EdgeInsets.all(widget.width * 0.03),
                 child: Text(contributor[1], style: GoogleFonts.nunito(fontSize: widget.width * 0.04, color: globalTextBackground), textAlign: TextAlign.center),
               ),
 
               Visibility(
                 visible: hasImage,
                 child: Padding(
-                  padding: EdgeInsets.only(left: widget.width * 0.075, top: widget.width * 0.075, right: widget.width * 0.075, bottom: widget.width * 0.025),
+                  padding: EdgeInsets.only(left: widget.width * 0.075, top: widget.width * 0.0, right: widget.width * 0.075, bottom: widget.width * 0.03),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(15)),
                     child: FutureBuilder(
@@ -993,6 +992,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
                           return hasImage 
                             ? CachedNetworkImage(
                               imageUrl: snapshot.data!,
+                              useOldImageOnUrlChange: true,
                               fit: BoxFit.cover,
                               placeholder: (context, url) => CircularProgressIndicator(color: widget.categoryColor),
                               errorWidget: (context, url, error) => Icon(Icons.error, size: widget.width * 0.25)
