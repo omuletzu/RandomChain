@@ -24,7 +24,10 @@ class Auth extends StatefulWidget{
   static void googleAuth(BuildContext context, FirebaseAuth firebaseAuth, FirebaseFirestore firebaseFirestore, void Function(Widget) currentAuthRefresh, double width) async {
     try{
 
-      GoogleSignIn googleSignIn = GoogleSignIn();
+      GoogleSignIn googleSignIn = GoogleSignIn(scopes: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+      ]);
 
       GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
 

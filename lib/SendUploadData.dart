@@ -136,12 +136,6 @@ class SendUploadData{
       return Future.value(false);
     }
 
-    if(!photoSkipped){
-      int indexOfCurrentPhoto = newChainOrExtend ? addData['chainPieces'] : chainMap['remainingOfContrib'];
-      Reference reference = storage.ref().child('uploads/$chainIdentifier/${indexOfCurrentPhoto}_$userId');
-      await reference.putFile(File(photoPath!));
-    }
-
     if(!chainSkipped){
 
       int categoryTypeContributions = userDetails['${categoryName}Contributions'];
@@ -151,6 +145,12 @@ class SendUploadData{
         '${categoryName}Contributions' : categoryTypeContributions + 1,
         'totalContributions' : totalContributions + 1
       });
+
+      if(!photoSkipped){
+        int indexOfCurrentPhoto = newChainOrExtend ? addData['chainPieces'] : chainMap['remainingOfContrib'];
+        Reference reference = storage.ref().child('uploads/$chainIdentifier/${indexOfCurrentPhoto}_$userId');
+        await reference.putFile(File(photoPath!));
+      }
     }
 
     if(context != null && mounted && context.mounted){

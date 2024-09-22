@@ -73,8 +73,7 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
       child: Scaffold(
         backgroundColor: globalBackground,
         resizeToAvoidBottomInset: false,
-        body: Expanded(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -271,7 +270,6 @@ class _CreateChainDetails extends State<CreateChainDetails> with TickerProviderS
             ],
           )
         )
-        ),
       )
     );
   }

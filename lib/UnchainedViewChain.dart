@@ -760,7 +760,7 @@ class _UnchainedViewChain extends State<UnchainedViewChain> with TickerProviderS
         chainSkipped: extendingSkipped,
         theme: '', 
         title: '', 
-        photoSkipped: false, 
+        photoSkipped: !extensionHasImage, 
         chainIdentifier: widget.chainId, 
         categoryName: widget.categoryName, 
         photoPath: null, 

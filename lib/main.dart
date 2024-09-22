@@ -113,7 +113,7 @@ void callBackDipatcher(){
             contributorsList: null,
             theme: '', 
             title: '', 
-            photoSkipped: false, 
+            photoSkipped: true, 
             chainIdentifier: pendingChain.id, 
             categoryName: chainMap['categoryName'], 
             chainSkipped: true, 
