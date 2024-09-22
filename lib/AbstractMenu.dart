@@ -599,6 +599,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
           key: UniqueKey()
         );
         setState(() {
+          tempCurrentTitle = 'Explore';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
@@ -625,6 +626,7 @@ class _AbstractMenu extends State<AbstractMenu> with TickerProviderStateMixin{
         assetPath = 'assets/image/newchain.png';
         page = UnchainedPage(changePageHeader: changePageHeader, userId: widget.uid, key: UniqueKey(), displayProgress: displayProgress);
         setState(() {
+          tempCurrentTitle = 'Unchained';
           topTitleColor = globalPurple;
           friendsPage = false;
           profilePage = false;
