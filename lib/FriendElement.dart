@@ -15,7 +15,7 @@ class FriendElement extends StatefulWidget{
   final bool friendOrStranger;
   final bool isThisRequests;
   final String userNickname;
-  final void Function() increaseFriendCount;
+  final void Function(bool) increaseFriendCount;
   final Map<String, dynamic>? friendData;
   final FirebaseFirestore firebase;
   final FirebaseStorage storage;
@@ -43,7 +43,8 @@ class _FriendElement extends State<FriendElement>{
   bool containerImageLoaded = false;
   bool hasImage = false;
   bool friendAddedOrNot = false;
-  late CachedNetworkImage pfpImage;
+  bool friendBlocked = false;
+  CachedNetworkImage? pfpImage;
 
   String friendNickname = '';
 
@@ -153,26 +154,46 @@ class _FriendElement extends State<FriendElement>{
                                 actionsAlignment: MainAxisAlignment.center,
                                 content: Text('${widget.friendData!['nickname']}', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.black87, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                                 actions: [
-                                  Padding(
-                                    padding: EdgeInsets.all(width * 0.01),
-                                    child: Material(
-                                      color: globalPurple,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(15))
-                                      ),
-                                      child: InkWell(
-                                        borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                        onTap: () async {
-                                          widget.firebase.collection('UserDetails').doc(widget.userId).collection('BlockedUsers').doc(widget.friendId).set({});
-                                          widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).delete();
-                                          widget.firebase.collection('UserDetails').doc(widget.friendId).collection('Friends').doc(widget.userId).delete();
-                                          Navigator.of(context).pop();
-                                          Fluttertoast.showToast(msg: '${widget.friendData!['nickname']} blocked', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
-                                        }, 
-                                        splashColor: globalBlue,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(width * 0.025),
-                                          child: Text('Block', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                                  Visibility(
+                                    visible: !friendBlocked,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(width * 0.01),
+                                      child: Material(
+                                        color: globalPurple,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(15))
+                                        ),
+                                        child: InkWell(
+                                          borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                          onTap: () async {
+                                            widget.firebase.collection('UserDetails').doc(widget.userId).collection('BlockedUsers').doc(widget.friendId).set({});
+                                            widget.firebase.collection('UserDetails').doc(widget.friendId).collection('BlockedUsers').doc(widget.userId).set({});
+
+                                            if((await widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).get()).exists){
+                                              widget.increaseFriendCount(false);
+                                              widget.firebase.collection('UserDetails').doc(widget.friendId).update({
+                                                'friendsCount' : widget.friendData!['friendsCount'] - 1
+                                              });
+
+                                              widget.firebase.collection('UserDetails').doc(widget.userId).collection('Friends').doc(widget.friendId).delete();
+                                              widget.firebase.collection('UserDetails').doc(widget.friendId).collection('Friends').doc(widget.userId).delete();
+                                            }
+                                            
+                                            if(mounted){
+                                              Navigator.of(context).pop();
+                                            }
+
+                                            Fluttertoast.showToast(msg: '${widget.friendData!['nickname']} blocked', toastLength: Toast.LENGTH_SHORT, backgroundColor: globalBlue);
+
+                                            setState(() {
+                                              friendBlocked = true;
+                                            });
+                                          }, 
+                                          splashColor: globalBlue,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(width * 0.025),
+                                            child: Text('Block', style: GoogleFonts.nunito(fontSize: width * 0.05, color: Colors.white, fontWeight: FontWeight.bold))
+                                          )
                                         )
                                       )
                                     )
@@ -238,16 +259,22 @@ class _FriendElement extends State<FriendElement>{
       }
 
       friendNickname = widget.friendData!['nickname'];
-    }
 
-    pfpImage = CachedNetworkImage(
-      imageUrl: containerImageUrl,
-      width: globalWidth * 0.15,
-      height: globalWidth * 0.15,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => Image.asset('assets/image/profile.png')
-    );
+      if((await widget.firebase.collection('UserDetails').doc(widget.userId).collection('BlockedUsers').doc(widget.friendId).get()).exists){
+        setState(() {
+          friendBlocked = true;
+        });
+      }
+
+      pfpImage = CachedNetworkImage(
+        imageUrl: containerImageUrl,
+        width: globalWidth * 0.15,
+        height: globalWidth * 0.15,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => Image.asset('assets/image/profile.png')
+      );
+    }
 
     if(mounted){
       setState(() {
@@ -275,10 +302,10 @@ class _FriendElement extends State<FriendElement>{
 
     if(widget.isThisRequests){
 
-      widget.increaseFriendCount();
+      widget.increaseFriendCount(true);
 
       widget.firebase.collection('UserDetails').doc(widget.friendId).update({
-        'friendsCount' : widget.friendData!['friendsCount']
+        'friendsCount' : widget.friendData!['friendsCount'] + 1
       });
 
       widget.firebase.collection('UserDetails').doc(widget.userId).collection('FriendRequests').doc(widget.friendId).delete();

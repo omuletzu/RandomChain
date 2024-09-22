@@ -281,7 +281,7 @@ class _FriendsPageStrangers extends State<FriendsPageStrangers>{
           friendOrStranger : false,
           isThisRequests: false,
           userNickname: '',
-          increaseFriendCount: () {},
+          increaseFriendCount: (x) {},
         )
       );
     }

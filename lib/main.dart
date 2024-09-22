@@ -81,12 +81,12 @@ void callBackDipatcher(){
       DateTime timestamp = Timestamp.now().toDate();
 
       int lastNumberOfStory = sharedPreferences.getInt('lastNumberOfStory') ?? 0;
-      int lastNumberOfrandom = sharedPreferences.getInt('lastNumberOfrandom') ?? 0;
+      int lastNumberOfRandom = sharedPreferences.getInt('lastNumberOfRandom') ?? 0;
       int lastNumberOfChainllange = sharedPreferences.getInt('lastNumberOfChainllange') ?? 0;
 
-      Map<String, int> updatedNumberOfStory = {
+      Map<String, int> updatedNumber = {
         'Story' : 0,
-        'random' : 0,
+        'Random' : 0,
         'Chainllange' : 0
       };
 
@@ -125,29 +125,29 @@ void callBackDipatcher(){
           );
         }
         else{
-          updatedNumberOfStory[chainMap['categoryName']] = updatedNumberOfStory[chainMap['categoryName']]! + 1;
+          updatedNumber[chainMap['categoryName']] = updatedNumber[chainMap['categoryName']]! + 1;
         }
       }
 
-      updatedNumberOfStory['Story'] = updatedNumberOfStory['Story']! - lastNumberOfStory;
-      updatedNumberOfStory['random'] = updatedNumberOfStory['random']! - lastNumberOfrandom;
-      updatedNumberOfStory['Chainllange'] = updatedNumberOfStory['Chainllange']! - lastNumberOfChainllange;
+      updatedNumber['Story'] = updatedNumber['Story']! - lastNumberOfStory;
+      updatedNumber['Random'] = updatedNumber['Random']! - lastNumberOfRandom;
+      updatedNumber['Chainllange'] = updatedNumber['Chainllange']! - lastNumberOfChainllange;
 
-      if(updatedNumberOfStory['Story']! < 0){
-        updatedNumberOfStory['Story'] = 0;
+      if(updatedNumber['Story']! < 0){
+        updatedNumber['Story'] = 0;
       }
 
-      if(updatedNumberOfStory['random']! < 0){
-        updatedNumberOfStory['random'] = 0;
+      if(updatedNumber['Random']! < 0){
+        updatedNumber['Random'] = 0;
       }
 
-      if(updatedNumberOfStory['Chainllange']! < 0){
-        updatedNumberOfStory['Chainllange'] = 0;
+      if(updatedNumber['Chainllange']! < 0){
+        updatedNumber['Chainllange'] = 0;
       }
 
-      sharedPreferences.setInt('lastNumberOfStory', updatedNumberOfStory['Story']!);
-      sharedPreferences.setInt('lastNumberOfrandom', updatedNumberOfStory['random']!);
-      sharedPreferences.setInt('lastNumberOfChainllange', updatedNumberOfStory['Chainllange']!);
+      sharedPreferences.setInt('lastNumberOfStory', updatedNumber['Story']!);
+      sharedPreferences.setInt('lastNumberOfRandom', updatedNumber['Random']!);
+      sharedPreferences.setInt('lastNumberOfChainllange', updatedNumber['Chainllange']!);
 
       QuerySnapshot pendingFriends = await firebase.collection('UserDetails').doc(inputData['userId']).collection('FriendRequests').get();
 
@@ -155,7 +155,7 @@ void callBackDipatcher(){
 
       sharedPreferences.setInt('lastNumberOfPendingFriends', pendingFriends.docs.length);
 
-      if(updatedNumberOfStory['Story']! > 0 || updatedNumberOfStory['random']! > 0 || updatedNumberOfStory['Chainllange']! > 0 || (pendingFriends.docs.length != lastNumberOfPendingFriends && pendingFriends.docs.isNotEmpty)){
+      if(updatedNumber['Story']! > 0 || updatedNumber['Random']! > 0 || updatedNumber['Chainllange']! > 0 || (pendingFriends.docs.length != lastNumberOfPendingFriends && pendingFriends.docs.isNotEmpty)){
         FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
         AndroidInitializationSettings androidInitializationSettings = const AndroidInitializationSettings('@mipmap/logo');
 
@@ -188,11 +188,11 @@ void callBackDipatcher(){
           );
         }
 
-        if(updatedNumberOfStory['Story']! > 0 || updatedNumberOfStory['random']! > 0 || updatedNumberOfStory['Chainllange']! > 0){
+        if(updatedNumber['Story']! > 0 || updatedNumber['Random']! > 0 || updatedNumber['Chainllange']! > 0){
           flutterLocalNotificationsPlugin.show(
             random.nextInt(69420), 
             'Looks like you have new chains',
-            '${updatedNumberOfStory['Story']} Story | ${updatedNumberOfStory['random']} random | ${updatedNumberOfStory['Chainllange']} Chainllange',
+            '${updatedNumber['Story']} Story | ${updatedNumber['Random']} Random | ${updatedNumber['Chainllange']} Chainllange',
             notificationDetails
           );
         }

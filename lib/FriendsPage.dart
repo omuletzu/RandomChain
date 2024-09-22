@@ -280,8 +280,13 @@ class _FriendsPage extends State<FriendsPage>{
     }
   }
 
-  void increaseFriendCount() async {
-    numberOfResults++;
+  void increaseFriendCount(bool addOrSub) async {
+    if(addOrSub){
+      numberOfResults++;
+    }
+    else{
+      numberOfResults--;
+    }
   }
 
   void _addFriendsElements(QuerySnapshot queryUsers) async {
