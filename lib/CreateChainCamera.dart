@@ -390,6 +390,8 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
 
                                             Navigator.of(context).pop();
 
+                                            widget.addData!['theme'] = _themeController.text;
+
                                             bool uploadedSuccessfully = await SendUploadData.uploadData(
                                               firebase: _firebase,
                                               storage: _storage,
@@ -532,7 +534,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
               });
             }
           }, 
-          icon: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground) : Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
+          icon: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground) : Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
         )
       ),
 
@@ -544,6 +546,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
               setState(() {
                 widget.addData!['randomOrFriends'] = !widget.addData!['randomOrFriends'];
               });
+              print(widget.addData!['randomOrFriends']);
             }
           }, 
           icon: widget.addData!['randomOrFriends'] ? Image.asset('assets/image/random.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground) : Image.asset('assets/image/friends.png', width: width * 0.1, height: width * 0.1, color: globalTextBackground)
@@ -563,7 +566,7 @@ class _CreateChainCamera extends State<CreateChainCamera> with TickerProviderSta
     return [
       Padding(
         padding: EdgeInsets.all(width * 0.05),
-        child: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1) : Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1)
+        child: widget.addData!['allOrPartChain'] ? Image.asset('assets/image/logo.png', width: width * 0.1, height: width * 0.1) : Image.asset('assets/image/one.png', width: width * 0.1, height: width * 0.1)
       ),
 
       Padding(

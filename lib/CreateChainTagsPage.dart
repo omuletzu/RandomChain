@@ -198,17 +198,17 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/one.png', width: width * 0.12, height: width * 0.12, color: allOrPartChain ? Colors.white : globalTextBackground),
+                                      child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: allOrPartChain ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Last piece', style: GoogleFonts.nunito(fontSize: width * 0.04, color: allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
+                                    Text('Whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
                             ),
                           )
-                        )
+                        ),
                       ),
-                      
+
                       Padding(
                         padding: EdgeInsets.only(left: width * 0.05, top: width * 0.075, bottom: width * 0.075),
                         child: Material(
@@ -232,16 +232,16 @@ class _CreateChainTagsPage extends State<CreateChainTagsPage> with TickerProvide
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(width * 0.01),
-                                      child: Image.asset('assets/image/logo.png', width: width * 0.12, height: width * 0.12, color: !allOrPartChain ? Colors.white : globalTextBackground),
+                                      child: Image.asset('assets/image/one.png', width: width * 0.12, height: width * 0.12, color: !allOrPartChain ? Colors.white : globalTextBackground),
                                     ),
-                                    Text('Whole chain', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
+                                    Text('Last piece', style: GoogleFonts.nunito(fontSize: width * 0.04, color: !allOrPartChain ? Colors.white : globalTextBackground, fontWeight: FontWeight.bold))
                                   ],
                                 )
                               )
                             ),
                           )
-                        ),
-                      ),
+                        )
+                      )
                     ],
                   )
                 ],

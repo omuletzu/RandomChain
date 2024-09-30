@@ -21,12 +21,13 @@ class UnchainedPage extends StatefulWidget{
   _UnchainedPage createState() => _UnchainedPage();
 }
 
-class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderStateMixin{
+class _UnchainedPage extends State<UnchainedPage> with TickerProviderStateMixin{
 
   final FirebaseFirestore firebase = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
   final ScrollController scrollController = ScrollController();
   late QuerySnapshot? allUnchained;
+  late AnimationController _animationOpacity;
 
   bool scrollListenerAdded = false;
   bool existingUnchained = false;
@@ -38,10 +39,22 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
   int index = 0;
 
+  double previousScrollPosition = 0.0;
+  bool newChainButtonVisible = true;
+
   @override 
   void initState(){
     super.initState();
+
+    _animationOpacity = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1)
+    );
+
+    _addScrollListener();
     _fetchFirebaseUnchained();
+
+    _animationOpacity.forward();
   }
 
   @override
@@ -53,7 +66,7 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
       backgroundColor: globalBackground,
       body: Column(
         children: [
-       
+    
           Align(
             alignment: Alignment.center,
             child: Padding(
@@ -111,51 +124,54 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
                         ),
                 ),
 
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: width * 0.3,  
-                      left: width * 0.2,
-                      right: width * 0.2,
-                    ),
-                    child: Material(
-                      color: globalPurple.withOpacity(0.95),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                FadeTransition(
+                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationOpacity, curve: Curves.easeOut)),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: width * 0.3,  
+                        left: width * 0.2,
+                        right: width * 0.2,
                       ),
-                      child: InkWell(
-                        borderRadius: const BorderRadius.all(Radius.circular(15)),
-                        onTap: () {
-                          widget.changePageHeader('New chain (category)', null);
-                        },
-                        splashColor: globalBlue,
-                        child: Padding(
-                          padding: EdgeInsets.all(width * 0.02),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/image/create.png',
-                                width: width * 0.1,
-                                height: width * 0.1,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'NEW CHAIN',
-                                style: GoogleFonts.nunito(
-                                  fontSize: width * 0.05,
+                      child: Material(
+                        color: globalPurple.withOpacity(0.95),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: InkWell(
+                          borderRadius: const BorderRadius.all(Radius.circular(15)),
+                          onTap: () {
+                            widget.changePageHeader('New chain (category)', null);
+                          },
+                          splashColor: globalBlue,
+                          child: Padding(
+                            padding: EdgeInsets.all(width * 0.02),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/image/create.png',
+                                  width: width * 0.1,
+                                  height: width * 0.1,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'NEW CHAIN',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: width * 0.05,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  )
+                )
               ],
             )
           )
@@ -253,6 +269,31 @@ class _UnchainedPage extends State<UnchainedPage> with SingleTickerProviderState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.displayProgress!(false);
+    });
+  }
+
+  void _addScrollListener(){
+    scrollController.addListener(() {
+      if(scrollController.position.pixels > previousScrollPosition){
+        if(newChainButtonVisible){
+          _animationOpacity.reverse();
+          newChainButtonVisible = false;
+        }
+      }
+      else{
+        if(!newChainButtonVisible){
+          newChainButtonVisible = true;
+          _animationOpacity.forward();
+        }
+      }
+
+      previousScrollPosition = scrollController.position.pixels;
+    });
+  }
+
+  void changeNewChainButtonVisibility(bool isVisible){
+    setState(() {
+      newChainButtonVisible = isVisible;
     });
   }
 
