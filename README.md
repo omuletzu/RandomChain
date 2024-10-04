@@ -20,7 +20,7 @@
 
 - **Technologies used**: This app was made using **Flutter** for both frontend and backend.
 - **Data Storage and Management**: User data, artwork information and other relevant data are stored in **Firebase**, a database hosted by Google.
-- - **User authentication and authorization**: This is handled by **Firebase Authentication**. It requires each user to input an email and a strong password, or his phone number, in order to create an account, or he can use Google Sign In.
+- **User authentication and authorization**: This is handled by **Firebase Authentication**. It requires each user to input an email and a strong password, or his phone number, in order to create an account, or he can use Google Sign In.
  
 ## Installation 
 
